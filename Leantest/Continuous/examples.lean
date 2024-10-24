@@ -84,3 +84,6 @@ example [T1 : TopologicalSpace ℝ]
 
   rw [h2] at hU
   rw [UsualTopology] at hU
+
+  sorry
+  -- este ejemplo es bastante más difícil
