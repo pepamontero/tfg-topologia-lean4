@@ -4,9 +4,25 @@ open TopologicalSpace
 
 /- DEFINITION OF CONTINUOUS FUNCTION -/
 
+
+
 example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' U) := by
   exact continuous_def
+
+/-
+Osea que esto igual lo reescribo desde 0 ajaja
+-/
+
+def ContinuousPepa {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) : Prop :=
+    ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' U)
+
+example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
+    ContinuousPepa f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' U) := by
+  rfl
+
+-- no se habrá que ver si lo re escribo o que
 
 /- COMPOSITION -/
 
