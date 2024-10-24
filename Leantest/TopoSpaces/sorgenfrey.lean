@@ -68,7 +68,7 @@ lemma Sorgenfrey.isOpen_sUnion (S : Set (Set ℝ)) (hS : ∀ t ∈ S, IsOpen t) 
     exact Set.mem_sUnion_of_mem hy ht.left
 
 
-def SorgenfreyPepa : TopologicalSpace ℝ where
+def Sorgenfrey : TopologicalSpace ℝ where
   IsOpen (s : Set ℝ) :=  ∀ x ∈ s, ∃ δ > 0, Set.Ico x (x + δ) ⊆ s
   isOpen_univ := Sorgenfrey.isOpen_univ
   isOpen_inter := Sorgenfrey.isOpen_inter

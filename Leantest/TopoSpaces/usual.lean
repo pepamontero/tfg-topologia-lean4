@@ -64,12 +64,11 @@ lemma Real.isOpen_sUnion (F : Set (Set ℝ)) (hF : ∀ s ∈ F, IsOpen s) : IsOp
     exact h2
 
 
-example : TopologicalSpace ℝ where
+def UsualTopology : TopologicalSpace ℝ where
   IsOpen := Real.IsOpen
   isOpen_univ := Real.isOpen_univ
   isOpen_inter := Real.isOpen_inter
   isOpen_sUnion := Real.isOpen_sUnion
-
 
 /-
 Extra results needed:
