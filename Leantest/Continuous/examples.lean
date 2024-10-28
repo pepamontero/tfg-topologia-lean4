@@ -50,7 +50,7 @@ lemma preimage_of_empty {X Y : Type}
 
 theorem continuous_to_trivial {X Y : Type}
     [TopologicalSpace X]
-    [T: TopologicalSpace Y]
+    [T : TopologicalSpace Y]
     (h : T = TrivialTopology Y)
     (f : X → Y) : ContinuousPepa f := by
 
