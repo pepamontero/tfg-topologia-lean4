@@ -283,9 +283,10 @@ lemma A_open_iff_is_heighbourhood_of_all
     constructor
     exact hx
     exact h
+
   · -- ←
     -- classeical choose?
-    have h' : ∀ x ∈ A, ∃ Ux : Set X, (Ux ⊆ A ∧ OpenNeighbourhood Ux x)
+    have h : ∀ a : X, a ∈ A → ∃ Ua : Set X, (Ua ⊆ A ∧ OpenNeighbourhood Ua a)
     · exact h
 
     have aux : A = ∅ ∨ ¬ (A = ∅)
@@ -303,12 +304,30 @@ lemma A_open_iff_is_heighbourhood_of_all
         simp at h2
         exact h2
 
-      let g : A → Set X := fun a : A ↦ Classical.choose h' a
+      let g : A → Set X := fun a : A ↦ Classical.choose (h a a.property)
 
-      let a := Classical.choose hA
-      let ha := Classical.choose_spec hA
-      specialize h' a ha
-      sorry
+      have hUnion : A = ⋃ a : A, Classical.choose (h a a.property)
+      · ext x ; constructor <;> intro hx
+        · let hx' := Classical.choose_spec (h x hx)
+          simp
+          use x
+          use hx
+          exact hx'.right.left
+        · simp at hx
+          cases' hx with y hy
+          cases' hy with hy hx
+          let m := Classical.choose_spec (h y hy)
+          apply m.left
+          exact hx
+
+      rw [hUnion]
+
+      have hOpen : ∀ a : A, IsOpen (Classical.choose (h a a.property))
+      · intro a
+        let ha := Classical.choose_spec (h a a.property)
+        exact ha.right.right
+
+      exact isOpen_iUnion hOpen
 
 
 
