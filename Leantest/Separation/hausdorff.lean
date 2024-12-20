@@ -266,9 +266,6 @@ example {X : Type} (A : Set X) (hA : ¬ (∃ a, a ∈ A)) : A = ∅ := by
   exact Set.not_nonempty_iff_eq_empty.mp hA
 
 
-example {X : Type} (A : Set X) (hA : ¬ (A = ∅)) : ∃ a, a ∈ A := by
-  by_contra
-
 lemma A_open_iff_is_heighbourhood_of_all
     {X : Type} [T : TopologicalSpace X]
     (A : Set X) : IsOpen A ↔
@@ -304,7 +301,7 @@ lemma A_open_iff_is_heighbourhood_of_all
         simp at h2
         exact h2
 
-      let g : A → Set X := fun a : A ↦ Classical.choose (h a a.property)
+      --let g : A → Set X := fun a : A ↦ Classical.choose (h a a.property)
 
       have hUnion : A = ⋃ a : A, Classical.choose (h a a.property)
       · ext x ; constructor <;> intro hx
