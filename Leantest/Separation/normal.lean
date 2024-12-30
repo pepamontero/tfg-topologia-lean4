@@ -11,26 +11,6 @@ def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
     C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅
 
 
-#check DiscreteTopo
-example {X : Type} (T : TopologicalSpace X)
-    (f : X → (Set.Icc 0 1 : Set ℝ)) (hT : T = DiscreteTopo X) :
-    ContinuousPepa f := by
-
-  rw [ContinuousPepa]
-  intro U hU
-  cases' hU with A hA
-  sorry
-
-example (f : (Set.Ioo 0 1 : Set ℝ) → (Set.Ioo 0 1: Set ℝ))
-    (hf : f x = x) : ContinuousPepa [UsualSpace] [] f := by
-
-
-  rw [ContinuousPepa]
-  intro U hU
-
-  cases' hU with A hA
-
-
 lemma left_empty_implies_disjoint_open_neighbourhoods
     {X : Type} {T : TopologicalSpace X} (C1 : Set X) (C2 : Set X) (hempty : C1 = ∅) : ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
     C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅ := by
@@ -190,6 +170,16 @@ lemma ioc_open_in_Icc01 {Y : Set ℝ}
       · exact hx2
 
 
+
+lemma characterization_of_normal {X : Type}
+    (T : TopologicalSpace X) :
+    NormalTopoSpace T ↔
+    ∀ U : Set X, IsOpen U →
+    ∀ C : Set X, C ⊆ U →
+    ∃ V : Set X, IsOpen V ∧
+    C ⊆ V ∧ V.Adherencia ⊆ U :=
+
+  sorry
 
 
 
