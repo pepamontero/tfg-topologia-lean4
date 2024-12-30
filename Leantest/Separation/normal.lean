@@ -158,7 +158,36 @@ lemma ioc_open_in_Icc01 {Y : Set ℝ}
     (b : ℝ) (hb2 : 0 < b ∧ b < 1) :
     R.IsOpen ({y | (y : ℝ) ∈ Set.Ioc b 1} : Set Y) := by
 
-  sorry
+  rw [hR] -- usar la topo. del subesp.
+  rw [UsualTopology] -- usar la def. de T_u
+  use ((Set.Ioo b 2) : Set ℝ)
+  constructor
+  · exact ioo_open_in_R b 2
+  · ext x
+    constructor
+    all_goals intro hx
+    · simp
+      simp at hx
+      cases' hx with hx1 hx2
+      constructor
+      · rw [hY] at hx2
+        simp at hx2
+        cases' hx2 with hx2 hx3
+        constructor
+        · linarith
+        · simp at hx3
+          linarith
+      · exact hx2
+    · simp
+      simp at hx
+      cases' hx with hx1 hx2
+      constructor
+      · rw [hY] at hx2
+        simp at hx2
+        constructor
+        · linarith
+        · linarith
+      · exact hx2
 
 
 
@@ -237,10 +266,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     use f ⁻¹' u
     use f ⁻¹' v
 
-    constructor
-
     -- * is `f⁻¹( [0, 1/2) )` Open?
-
+    constructor
     apply hf.left -- aplicar def. de f continua
     apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
@@ -248,12 +275,22 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     · simp
       norm_num
 
-    constructor
-    -- * is `f⁻¹( (1/2, 0] )` Open?
 
-    sorry
+    -- * is `f⁻¹( (1/2, 0] )` Open?
     constructor
+    apply hf.left -- aplicar def. de f continua
+    apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+    · exact hY
+    · exact hR
+    · simp
+      norm_num
+
+
     -- * is `C1 ⊆ U1` ?
+    constructor
+
+
+
     sorry
     constructor
     -- * is `C2 ⊆ U2` ?
