@@ -74,62 +74,52 @@ lemma ioo_open_in_R (a b : ℝ) :
 
 lemma ico_open_in_Icc01 {Y : Set ℝ}
     {hY : Y = Set.Icc 0 1}
+    {R : TopologicalSpace Y}
+    {hR : R = TopoSubspace UsualTopology Y}
     (b : ℝ) (hb : 0 < b ∧ b < 1) :
-    (TopoSubspace UsualTopology Y).IsOpen
-      ((fun y => (y : ℝ) ∈ Set.Ico 0 b) : Set Y) := by
+    R.IsOpen ({y | (y : ℝ) ∈ Set.Ico 0 b} : Set Y) := by
 
-  -- use U = [0, b) = (-1, b) ∩ [0, 1] = V ∩ Y
-  let V : Set ℝ := Set.Ioo (-1) b
-  have Vdef : V = Set.Ioo (-1) b
-  rfl
-  use V
+  rw [hR] -- usar la topo. del subesp.
+  rw [UsualTopology] -- usar la def. de T_u
+  use ((Set.Ioo (-1) b) : Set ℝ)
   constructor
-  rw [Vdef]
-
-  -- show V is open
-  exact ioo_open_in_R (-1) b
-
-  -- show U = V ∩ Y
-  ext x
-  constructor
-  · simp
-    intro hx hx'
+  · exact ioo_open_in_R (-1) b
+  · ext x
     constructor
-    · rw [Vdef]
-      simp
-      constructor
-      · rw [hY] at hx
-        simp at hx
-        linarith
-      · exact hx'.right
-    · exact hx
-
-  · intro hx
-    simp
-    cases' hx with hx hx'
-    use hx'
-    constructor
-    · rw [hY] at hx'
-      simp at hx'
-      exact hx'.left
-    · rw [Vdef] at hx
+    all_goals intro hx
+    · simp
       simp at hx
-      exact hx.right
+      cases' hx with hx1 hx2
+      constructor
+      · rw [hY] at hx2
+        simp at hx2
+        cases' hx2 with hx2 hx3
+        constructor
+        · linarith
+        · simp at hx3
+          linarith
+      · exact hx2
+    · simp
+      simp at hx
+      cases' hx with hx1 hx2
+      constructor
+      · rw [hY] at hx2
+        simp at hx2
+        constructor
+        · linarith
+        · linarith
+      · exact hx2
 
-lemma idk {X : Type} {Y : Set X}
-    {TX : TopologicalSpace X}
-    {TY : TopologicalSpace Y}
-    {hT : TY = TopoSubspace TX Y}
-    (u : Set X) (hu : TX.IsOpen u)
-    {v : Set Y}
-    {hv : v = fun y => (y : Y) ∈ u} :
-    TY.IsOpen := by
+lemma ioc_open_in_Icc01 {Y : Set ℝ}
+    {hY : Y = Set.Icc 0 1}
+    {R : TopologicalSpace Y}
+    {hR : R = TopoSubspace UsualTopology Y}
+    (b : ℝ) (hb2 : 0 < b ∧ b < 1) :
+    R.IsOpen ({y | (y : ℝ) ∈ Set.Ioc b 1} : Set Y) := by
+
   sorry
 
 
-example (x y : ℝ) : (x < y) → (x ≤ y) := by
-  exact fun a ↦ le_of_lt a
-  sorry
 
 
 
@@ -211,35 +201,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -- * is `f⁻¹( [0, 1/2) )` Open?
 
     apply hf.left -- aplicar def. de f continua
-    rw [hR] -- usar la topo. del subesp.
-    rw [UsualTopology] -- usar la def. de T_u
-    use ((Set.Ioo (-1) (1/2)) : Set ℝ)
-    constructor
-    · exact ioo_open_in_R (-1) (1/2)
-    · -- NOTA: todo lo siguiente (o incluso con la linea ant) debería ser un lema aparte
-      ext x
-      constructor
-      all_goals intro hx
-      · simp
-        simp at hx
-        cases' hx with hx1 hx2
-        constructor
-        · cases' hx2 with hx2 hx3
-          constructor
-          · linarith
-          · simp at hx3
-            linarith
-        · exact hx1
-      · simp
-        simp at hx
-        cases' hx with hx1 hx2
-        use hx2
-        constructor
-        · rw [hY] at hx2
-          simp at hx2
-          exact hx2.left
-        · simp
-          exact hx1.right
+    apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+    · exact hY
+    · exact hR
+    · simp
+      norm_num
 
     constructor
     -- * is `f⁻¹( (1/2, 0] )` Open?
