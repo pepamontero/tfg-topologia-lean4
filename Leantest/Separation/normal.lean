@@ -68,8 +68,49 @@ lemma ioo_open_in_R (a b : ℝ) :
     UsualTopology.IsOpen ((Set.Ioo a b) : Set ℝ) := by
 
   rw [UsualTopology]
-  intro ε hε
-  sorry
+  intro x hx
+
+  use min (x-a) (b-x)  -- nuestro δ
+
+  constructor
+  · -- δ > 0 ?
+    simp
+    exact hx
+
+  · -- (x - δ, x + δ) ⊆ (a, b) ?
+
+    -- hay que diferenciar cuando δ = x-a y δ = b-x
+
+    have cases : (x - a < b - x) ∨ (x - a ≥ b - x)
+    exact lt_or_le (x - a) (b - x)
+
+    cases' cases with case1 case2
+
+    · -- case δ = x-a
+      intro y hy
+
+      have hδ :  min (x-a) (b-x) = x-a
+      simp
+      linarith
+
+      rw [hδ] at hy
+      simp at hy
+      simp
+      constructor
+      all_goals linarith
+
+    · -- case δ = b-x
+      intro y hy
+
+      have hδ :  min (x-a) (b-x) = b-x
+      simp
+      linarith
+
+      rw [hδ] at hy
+      simp at hy
+      simp
+      constructor
+      all_goals linarith
 
 
 lemma ico_open_in_Icc01 {Y : Set ℝ}
