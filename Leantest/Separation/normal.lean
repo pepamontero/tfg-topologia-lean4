@@ -329,4 +329,15 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
 
     -- * is `U1 ∩ U2 = ∅` ?
-    sorry
+    ext x
+    constructor
+    all_goals intro hx
+
+    · simp at hx
+      cases' hx with hxu hxv
+      cases' hxu with hxu1 hxu2
+      cases' hxv with hxv1 hxv2
+      linarith
+
+    · by_contra
+      exact hx
