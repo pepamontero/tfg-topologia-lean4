@@ -127,8 +127,13 @@ lemma idk {X : Type} {Y : Set X}
   sorry
 
 
+example (x y : ℝ) : (x < y) → (x ≤ y) := by
+  exact fun a ↦ le_of_lt a
+  sorry
 
-lemma Uryshon {X : Type} {Y : Set ℝ}
+
+
+lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X) {R : TopologicalSpace Y}
     {hY : Y = Set.Icc 0 1}
     {hR : R = TopoSubspace UsualTopology Y} :
@@ -150,32 +155,32 @@ lemma Uryshon {X : Type} {Y : Set ℝ}
   · -- ←
 
     /- DEMO
-    Queremos ver que `X` es Normal.
-    Consideramos `C1` y `C2` disjuntos y cerrados.
-    Queremos ver que existen `U1` y `U2` abiertos disjuntos conteniendo a `C1` y `C2`.
+    1. Queremos ver que `X` es Normal.
+    2. Consideramos `C1` y `C2` disjuntos y cerrados.
+        Queremos ver que existen `U1` y `U2` abiertos disjuntos conteniendo a `C1` y `C2`.
 
-    Para la definición de Espacio Normal no se pide que sean no vacíos,
-    pero, si alguno de los dos es vacío, es fácil ver que existen tales abiertos.
+    3. Para la definición de Espacio Normal no se pide que sean no vacíos,
+        pero, si alguno de los dos es vacío, es fácil ver que existen tales abiertos.
 
-    Si ambos son no vacíos, podemos aplicar la hipótesis.
-    Tomamos la función `f` de la hipótesis.
-    Consideramos entonces: `U1 = f⁻¹([0, 1/2))` y `U2 = f⁻¹((1/2, 1])`
-      * Trivialmente son disjuntos por serlo `[0, 1/2)` y `(1/2, 1]`
-      * `[0, 1/2)` y `(1/2, 1]` son abiertos en `[0, 1]` con la top. usual del subesp.
-      * Luego `Ui` son abiertos por ser la preimagen por una función continua de abiertos
+    4. Si ambos son no vacíos, podemos aplicar la hipótesis.
+        Tomamos la función `f` de la hipótesis.
+        Consideramos entonces: `U1 = f⁻¹([0, 1/2))` y `U2 = f⁻¹((1/2, 1])`
+          * Trivialmente son disjuntos por serlo `[0, 1/2)` y `(1/2, 1]`
+          * `[0, 1/2)` y `(1/2, 1]` son abiertos en `[0, 1]` con la top. usual del subesp.
+          * Luego `Ui` son abiertos por ser la preimagen por una función continua de abiertos
     -/
 
     intro h
-    rw [NormalTopoSpace]
-    intro C1 C2 hC1 hC2 hinter
+    rw [NormalTopoSpace] -- `1`
+    intro C1 C2 hC1 hC2 hinter -- `2`
 
+    -- `3`
     have hcases1 : C1 = ∅ ∨ C1 ≠ ∅
     · exact eq_or_ne C1 ∅
     have hcases2 : C2 = ∅ ∨ C2 ≠ ∅
     · exact eq_or_ne C2 ∅
 
     cases' hcases1 with hcases1 hcases1
-    -- CASOS
 
     -- si C1 es vacío
     exact left_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases1
@@ -184,7 +189,7 @@ lemma Uryshon {X : Type} {Y : Set ℝ}
     cases' hcases2 with hcases2 hcases2
     exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases2
 
-    -- ambos son no vacíos (aplicamos hipótesis)
+    -- `4`
     specialize h C1 C2 hcases1 hcases2 hC1 hC2 hinter
 
     let f := Classical.choose h
@@ -195,8 +200,28 @@ lemma Uryshon {X : Type} {Y : Set ℝ}
 
     rw [← fdef] at hf
 
+    let u : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)} -- nueva idea
+
+
+
     let u : Set ℝ := Set.Ico 0 (1/2)
     let u_Y : Set Y := fun y => (y : ℝ) ∈ u
+
+    have udef : u = Set.Ico 0 (1/2)
+    rfl
+
+    have hu : u ⊆ Y
+    intro x
+    rw [udef, hY]
+    simp
+    intro hx1 hx2
+    constructor
+    exact hx1
+    trans 1/2
+    simp
+    exact le_of_lt hx2
+    norm_num
+
 
     let v : Set ℝ := Set.Ioc (1/2) 0
     let v_Y : Set Y := fun y => (y : ℝ) ∈ v
@@ -206,8 +231,7 @@ lemma Uryshon {X : Type} {Y : Set ℝ}
 
     constructor
 
-    -- 1
-    -- is `f⁻¹( [0, 1/2) )` Open?
+    -- * is `f⁻¹( [0, 1/2) )` Open?
     -- by the definition of continuous
     apply hf.left
     -- is `[0, 1/2)` Open in Y?
@@ -223,23 +247,19 @@ lemma Uryshon {X : Type} {Y : Set ℝ}
         simp
         cases' hx with hx1 hx2
         constructor
-        rw [u_Y] at hx2
         sorry
         exact hx1
+      · sorry
 
 
-
-
-
-    exact ico_open_in_Icc01 (1/2)
     constructor
-    -- `f⁻¹( (1/2, 0] )` is Open?
+    -- * is `f⁻¹( (1/2, 0] )` Open?
     sorry
     constructor
+    -- * is `C1 ⊆ U1` ?
     sorry
     constructor
+    -- * is `C2 ⊆ U2` ?
     sorry
-
-
-
+    -- * is `U1 ∩ U2 = ∅` ?
     sorry
