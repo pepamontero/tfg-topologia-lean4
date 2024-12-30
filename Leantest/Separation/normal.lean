@@ -288,12 +288,45 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- * is `C1 ⊆ U1` ?
     constructor
+    intro x hx
+    simp
 
+    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C1)
+    · simp
+      use x
 
+    rw [hf.right.left] at aux
 
-    sorry
+    have aux': Subtype.val (f x) = 0
+    trivial
+
     constructor
+    rw [aux']
+    rw [aux']
+    norm_num
+
+    -- NOTA . PROBABLEMENTE SE PUEDE SINTETIZAR
+
+
     -- * is `C2 ⊆ U2` ?
-    sorry
+    constructor
+    intro x hx
+    simp
+
+    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C2)
+    · simp
+      use x
+
+    rw [hf.right.right] at aux
+
+    have aux': Subtype.val (f x) = 1
+    trivial
+
+    constructor
+    rw [aux']
+    norm_num
+    rw [aux']
+
+
     -- * is `U1 ∩ U2 = ∅` ?
     sorry
