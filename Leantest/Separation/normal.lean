@@ -200,60 +200,50 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     rw [← fdef] at hf
 
-    let u : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)} -- nueva idea
+    let u : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
+    let v : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
 
-
-
-    let u : Set ℝ := Set.Ico 0 (1/2)
-    let u_Y : Set Y := fun y => (y : ℝ) ∈ u
-
-    have udef : u = Set.Ico 0 (1/2)
-    rfl
-
-    have hu : u ⊆ Y
-    intro x
-    rw [udef, hY]
-    simp
-    intro hx1 hx2
-    constructor
-    exact hx1
-    trans 1/2
-    simp
-    exact le_of_lt hx2
-    norm_num
-
-
-    let v : Set ℝ := Set.Ioc (1/2) 0
-    let v_Y : Set Y := fun y => (y : ℝ) ∈ v
-
-    use f ⁻¹' u_Y
-    use f ⁻¹' v_Y
+    use f ⁻¹' u
+    use f ⁻¹' v
 
     constructor
 
     -- * is `f⁻¹( [0, 1/2) )` Open?
-    -- by the definition of continuous
-    apply hf.left
-    -- is `[0, 1/2)` Open in Y?
-    rw [hR]
-    rw [UsualTopology]
+
+    apply hf.left -- aplicar def. de f continua
+    rw [hR] -- usar la topo. del subesp.
+    rw [UsualTopology] -- usar la def. de T_u
     use ((Set.Ioo (-1) (1/2)) : Set ℝ)
     constructor
     · exact ioo_open_in_R (-1) (1/2)
-    · ext x
+    · -- NOTA: todo lo siguiente (o incluso con la linea ant) debería ser un lema aparte
+      ext x
       constructor
-      · intro hx
+      all_goals intro hx
+      · simp
         simp at hx
-        simp
         cases' hx with hx1 hx2
         constructor
-        sorry
-        exact hx1
-      · sorry
-
+        · cases' hx2 with hx2 hx3
+          constructor
+          · linarith
+          · simp at hx3
+            linarith
+        · exact hx1
+      · simp
+        simp at hx
+        cases' hx with hx1 hx2
+        use hx2
+        constructor
+        · rw [hY] at hx2
+          simp at hx2
+          exact hx2.left
+        · simp
+          exact hx1.right
 
     constructor
     -- * is `f⁻¹( (1/2, 0] )` Open?
+
     sorry
     constructor
     -- * is `C1 ⊆ U1` ?
