@@ -249,6 +249,18 @@ lemma characterization_of_normal {X : Type}
             exact set_inside_closure V
 
 
+example {X : Type} (T : TopologicalSpace X)
+    (hT : NormalTopoSpace T) (Q : Set ℝ)
+    (hQ : Q = {x | x ∈ Set.Icc (0 : ℝ) 1 ∧ ∃ q : ℚ, (q : ℝ) = x} ):
+    ∃ (f : Q → Set X),
+    ∀ (p q : Q), p < q →
+    Closure (f p) ⊆ f q := by
+
+
+
+  sorry
+
+
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X) {R : TopologicalSpace Y}
     {hY : Y = Set.Icc 0 1}
@@ -265,6 +277,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
   · -- →
     intro hT C1 C2 hC1 hC2 hC
+
 
     sorry
 
