@@ -2,11 +2,13 @@ import Mathlib.Tactic
 import Leantest.BasicProp.basic
 
 
-
+-- DEFINICIÓN DE INTERIOR DE UN CONJUNTO
 def Interior {X : Type} [T : TopologicalSpace X] (A : Set X) : Set X :=
     {x : X | ∃ U : Set X, OpenNeighbourhood U x ∧ U ⊆ A}
 
 
+-- CARACTERIZACIÓN DE CONJUNTO ABIERTO
+-- (A abierto sii todos sus puntos tienen un entorno abierto contenido en A)
 lemma characterization_of_open {X : Type} [T : TopologicalSpace X]
     (A : Set X):
     IsOpen A ↔
@@ -72,7 +74,7 @@ lemma characterization_of_open {X : Type} [T : TopologicalSpace X]
     exact hU.left.right
 
 
-
+-- EL INTERIOR DE UN CONJUNTO ES UN ABIERTO
 lemma interior_is_open {X : Type} [T : TopologicalSpace X] (A : Set X) :
     IsOpen (Interior A) := by
 
