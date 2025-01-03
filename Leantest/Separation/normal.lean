@@ -260,6 +260,42 @@ example {X : Type} (T : TopologicalSpace X)
 
   sorry
 
+example {X : Type} (T : TopologicalSpace X)
+    (hT : NormalTopoSpace T) (Q : Set ℝ)
+    (hQ : Q = {x | x ∈ Set.Icc (0 : ℝ) 1 ∧ ∃ q : ℚ, (q : ℝ) = x} ) :
+    ∀ (p q : Q), p< q → ∃ Up Uq : Set X,
+    IsOpen Up ∧ IsOpen Uq ∧ Closure (Up) ⊆ Uq := by
+
+  intro p q hpq
+
+  rw [hQ] at p
+  simp at p
+  cases' p with p hp
+  cases' hp with hp1 hp3
+  cases' hp1 with hp1 hp2
+
+
+  sorry
+
+example {X : Type} (T : TopologicalSpace X)
+    (hT : NormalTopoSpace T)
+    (p q : ℚ)
+    (hp1 : p ≥ 0) (hp2 : p ≤ 1)
+    (hq1 : q ≥ 0) (hq2 : q ≤ 1)
+    (hpq : p < q) :
+    ∃ Up Uq : Set X,
+    IsOpen Up ∧ IsOpen Uq ∧ Closure (Up) ⊆ Uq := by
+
+
+  sorry
+
+def thissucc {X : Type} [T : TopologicalSpace X]
+    (hT : NormalTopoSpace T) (Q : Set ℚ)
+    (hQ : Q = {x : ℚ | 0 ≤ x ∧ x ≥ 1})
+    : Q → Set X :=
+
+
+
 
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X) {R : TopologicalSpace Y}
