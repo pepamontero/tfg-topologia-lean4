@@ -289,10 +289,25 @@ example {X : Type} (T : TopologicalSpace X)
 
   sorry
 
+
+/- QUIERO INTENTAR ALGO ASI:
+def f : ℕ → ℕ
+| 0 => 0
+| 1 => 1
+| (n+2) => f n + f (n+1)
+
+#eval f 5
+
+example : f 5 = 5 := by
+  repeat rw [f]
+-/
+
 def thissucc {X : Type} [T : TopologicalSpace X]
     (hT : NormalTopoSpace T) (Q : Set ℚ)
     (hQ : Q = {x : ℚ | 0 ≤ x ∧ x ≥ 1})
     : Q → Set X :=
+
+    sorry
 
 
 
@@ -312,8 +327,31 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
   constructor
 
   · -- →
-    intro hT C1 C2 hC1 hC2 hC
+    intro hT C1 C2 hC1 hC2 hC1' hC2' hC1C2
 
+    have h : ∀ U : Set X, ∀ C : Set X,
+    IsOpen U → IsClosed C → C ⊆ U →
+    ∃ V : Set X, IsOpen V ∧
+    C ⊆ V ∧ (Closure V) ⊆ U
+    · rw [characterization_of_normal] at hT
+      exact hT
+
+    let Q : Set ℚ := {x : ℚ | 0 ≤ x ∧ x ≥ 1}
+
+    have aux : IsOpen C2ᶜ
+    exact IsClosed.isOpen_compl
+
+    have aux' : C1 ⊆ C2ᶜ
+    sorry
+
+    let f : Q → Set X := fun p =>
+      match p with
+      | ⟨1, trivial⟩ => C2ᶜ
+      | ⟨0, trivial⟩ => Classical.choose (h C2ᶜ C1 aux hC1' aux')
+      | q => C2
+
+    have hf1 : ∀ q : Q, IsOpen (f q)
+    sorry
 
     sorry
 
