@@ -5,6 +5,8 @@ import Leantest.TopoSpaces.usual
 import Leantest.BasicProp.subspaces
 import Leantest.BasicProp.closure
 
+set_option diagnostics true
+
 def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
     ∀ C1 : Set X, ∀ C2 : Set X,
     IsClosed C1 → IsClosed C2 → C1 ∩ C2 = ∅ →
@@ -342,13 +344,17 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     exact IsClosed.isOpen_compl
 
     have aux' : C1 ⊆ C2ᶜ
-    sorry
+    exact ABdisjoint_iff_AsubsBc.mp hC1C2
 
-    let f : Q → Set X := fun p =>
+    let g : Q → Set X := fun p =>
       match p with
       | ⟨1, trivial⟩ => C2ᶜ
       | ⟨0, trivial⟩ => Classical.choose (h C2ᶜ C1 aux hC1' aux')
-      | q => C2
+      | q => ∅
+
+    let g_rec : ℚ → Set ℚ → Set X := fun q P =>
+      if Classical.propDecidable (q ∈ P) then g q
+
 
     have hf1 : ∀ q : Q, IsOpen (f q)
     sorry
