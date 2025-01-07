@@ -6,6 +6,18 @@
 \usepackage{amsfonts}
 \usepackage{array} % Matrices, tablas
 \usepackage{xcolor} % Colores de texto
+%LEAN
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{color}
+\definecolor{keywordcolor}{rgb}{0.8, 0.1, 0.1}   % red
+\definecolor{tacticcolor}{rgb}{0.0, 0.1, 0.9}    % blue
+\definecolor{commentcolor}{rgb}{0.4, 0.4, 0.4}   % grey
+\definecolor{symbolcolor}{rgb}{0.0, 0.1, 0.6}    % blue
+\definecolor{sortcolor}{rgb}{0.1, 0.5, 0.1}      % green
+\definecolor{attributecolor}{rgb}{0.7, 0.1, 0.1} % red
 
 % Distancias entre párrafos, quitar sangrías
 \setlength{\parindent}{0pt}
@@ -32,7 +44,13 @@
     \tikz \node[anchor=base,fill=black!12]{#1};% added this percent
 }}
 
-% Spell checker setting
+% Lean code
+
+\def\lstlanguagefiles{lstlean.tex}
+% set default language
+\lstset{language=lean}
+
+% Spell checker settings
 % spell-checker: disable
 
 
@@ -43,6 +61,16 @@
 \section{Introducción}
 
 Introducción al trabajo.
+
+
+\begin{lstlisting}
+  theorem funext {f₁ f₂ : ∀ (x : α), β x} (h : ∀ x, f₁ x = f₂ x) : f₁ = f₂ := by
+    show extfunApp (Quotient.mk f₁) = extfunApp (Quotient.mk f₂)
+    apply congrArg
+    apply Quotient.sound
+    exact h
+    sorry
+\end{lstlisting}
 
 \section{Lean Theorem Prover}
 
@@ -56,13 +84,27 @@ El objetivo del proyecto Lean es reducir la distancia entre demostraciones matem
 
 \subsection{Teoría de tipos dependientes}
 
+[No se hasta qué punto desarrollar este apartado]
+
 Para ambos aspectos de Lean es importante entender la teoría de tipos dependientes en la que se basa. En esta teoría, cada expresión tiene un "tipo" asociado. Por ejemplo, una variable "x" puede hacer referencia a un número natural en un contexto y a un número real en otro.
 
-En Lean podemos declarar variables de un tipo determinado utilizando 
+En Lean podemos declarar variables de un tipo determinado utilizando el operador \code{:}. Por ejemplo \code{n : $\mathbb{N}$} \footnote{Podemos escribir $\mathbb{N}$ en Lean escibiendo \code{$\backslash$nat} y después pulsando espacio.} quiere decir que $n$ es un número natural.
 
-Explicar como funciona Lean con teoría de tipos.
+Ejemplos:
 
-Ejemplos de tipos en Lean para entender como funciona la movida??
+constant n : nat
+constant f : nat to nat
+constant g : nat prod nat
+
+Podemos utilizar entonces el comando \code{check} para ver que ocurre por detrás. 
+
+También podemos declarar nuevos tipos y construcciones sobre tipos. Ejemplo:
+
+constant X : Type
+constant F : Type to Type (función que recibe un tipo y devuelve otro)
+
+
+* Jerarquía de tipos. Necesario explicar?
 
 
 \subsection{Lean como asistente de demostración}
