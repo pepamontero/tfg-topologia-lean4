@@ -1,0 +1,278 @@
+\documentclass{article}
+
+% Paquetes usados
+\usepackage{graphicx} % Imágenes
+\usepackage{amsmath} % Algunos símbolos matemáticos
+\usepackage{amsfonts}
+\usepackage{array} % Matrices, tablas
+\usepackage{xcolor} % Colores de texto
+
+% Distancias entre párrafos, quitar sangrías
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{.8em}
+
+% Espaciados entre palabras en el justificado.
+\sloppy
+
+% Título
+\title{Formalización de las matemáticas con Lean. Un caso de estudio: Resultados de Topología General.}
+\author{Pepa Montero Jimena}
+\date{}
+
+% Inline code
+\usepackage{tikz}
+\tikzset{%
+    baseline,
+    inner sep=2pt,
+    minimum height=12pt,
+    rounded corners=2pt  
+}
+\newcommand{\code}[1]{\mbox{% added this percent
+    \ttfamily
+    \tikz \node[anchor=base,fill=black!12]{#1};% added this percent
+}}
+
+% Spell checker setting
+% spell-checker: disable
+
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+
+Introducción al trabajo.
+
+\section{Lean Theorem Prover}
+
+El proyecto Lean fue iniciado en 2012 por Leonardo de Moura, que formaba parte de Microsoft Research Redmond. Es un proyecto activo con una visión a largo plazo, y con miras en el potencial de automatización en las demostraciones matemáticas.\cite{avigad2015theorem}
+
+Lean es un asistente de demostración, es decir, es un software que proporciona un lenguaje para definir objetos, especificar propiedades de esos objetos y probar que estas especificaciones se cumplen. El sistema comprueba que dichas pruebas son correctas y coherentes desde un punto de vista lógico. \cite{leanprover2024} 
+
+Sin embargo, Lean es también un lenguaje de programación, en particular un lenguaje funcional basado en tipos dependientes. Lean 4 es el resultado de volver a implementar el asistente de demostración de Lean 3 en el propio lenguaje de Lean. El nuevo compilador produce código en C, lo que permite a los usuarios implementar automatizaciones de pruebas en Lean de manera eficiente, compilar estas automatizaciones a C y añadirlas como plugins\cite{moura2021lean}.
+
+El objetivo del proyecto Lean es reducir la distancia entre demostraciones matemáticas asistidas y automatizadas, integrando herramientas y métodos automatizados en un marco que facilita la interacción con el usuario y la construcción de pruebas axiomáticas completamente especificadas\cite{avigad2015theorem}.
+
+\subsection{Teoría de tipos dependientes}
+
+Para ambos aspectos de Lean es importante entender la teoría de tipos dependientes en la que se basa. En esta teoría, cada expresión tiene un "tipo" asociado. Por ejemplo, una variable "x" puede hacer referencia a un número natural en un contexto y a un número real en otro.
+
+En Lean podemos declarar variables de un tipo determinado utilizando 
+
+Explicar como funciona Lean con teoría de tipos.
+
+Ejemplos de tipos en Lean para entender como funciona la movida??
+
+
+\subsection{Lean como asistente de demostración}
+
+Nos centramos en la función de theorem proving.
+
+Explicar lo que es mathlib
+
+Explicar la sintaxis de como se expresa un resultado. Ejemplos de proposiciones algunas más simples y otras más complejas? Ej. modus ponens vs. algún otro resultado.
+
+Hay varias formas de demostrar cosas en Lean. Notar que en este proyecto nos vamos a centrar en pruebas en la forma de tácticas.
+
+
+\subsection{Modo táctico}
+
+[Muchos ejemplos de esta parte en cierto sentido están sacados del curso de Buzzard y demás. No se como debería escribir esas citas xd]
+
+Dado un enunciado, un término de tipo prueba es una representación de una demostración matemática de la veracidad de este. Las tácticas son comandos, o instrucciones, que describen cómo se construye esta prueba.
+
+Explicar lo que son las hipótesis y los goals
+
+Cada vez que utilicemos una táctica, las hipótesis y los objetivos que aparecen en el Lean Info se actualizarán.
+
+Para construir una prueba en el modo táctico, escribimos :=
+
+Explicar lo que es el Lean Infoview.
+
+[ejemplo]
+
+En general, y sobretodo en los casos sencillos, existe una relación bastante clara entre estos comandos (tácticas) y las expresiones que utilizamos en las demostraciones formales a las que estamos acostumbrados.
+
+A continuación vamos a ver una a una las tácticas que más se utilizan en las demostraciones.
+
+\subsubsection{Tácticas básicas}
+
+\begin{itemize}
+    \item \textbf{\textcolor{blue}{intro}}
+\end{itemize}
+    
+Imaginemos que queremos demostrar un resultado del estilo de "si A, entonces B". Normalmente, empezaríamos la demostración diciendo "Supongamos que se da A. Veamos que entonces se tiene B"
+
+En el modo táctico, utilizamos la táctica \code{\textcolor{blue}{intro}} con esta finalidad. Si nuestro objetivo es \code{$\vdash$ A $\rightarrow$ B}, donde A y B son elementos de tipo Prop (\code{A B : \textcolor{blue}{Prop}}), entonces \code{\textcolor{blue}{intro} hA} añade la hipótesis \code{hA : A}, y nuestro objetivo pasa a ser \code{$\vdash$ B}.
+
+%[EJEMPLO intro_1]
+
+Otra forma de utilizar "intro" es en las expresiones de la forma "Para todo $x \in X$, $x$ tiene la propiedad $P$". Normalmente, empezaríamos diciendo "sea un $x \in X$ fijo pero arbitrario... veamos que $x$ satisface $P$".
+
+En Lean, utilizamos "intro" con este fin. Si tenemos como objetivo "$\vdash \forall$ x : X, P x", donde P es una función que asigna a cada x en X un término de tipo Prop, entonces "intro x" añade la hipótesis "x : X", y el objetivo pasa a ser "$\vdash$ P x".
+
+%[EJEMPLO intro_2]
+
+\begin{itemize}
+  \item \textbf{\textcolor{red}{sorry}}
+\end{itemize}
+
+Notemos que en ambos ejemplos anteriores, la demostración termina con "sorry". "sorry" es una táctica también, que indica a Lean que la demostración no está terminada, pero que no queremos terminarla por ahora. Si ponemos el cursor sobre la palabra "example", que está subrayada en amarillo, obtenemos el mensaje "declaration uses sorry" (es decir, la prueba no está completa). Podemos utilizar resultados incompletos en otras pruebas, pero estas pruebas también estarán marcadas como incompletas.
+
+\begin{itemize}
+  \item \textbf{\textcolor{blue}{exact}}
+\end{itemize}
+
+Otra táctica fundamental es "exact". Usamos "exact" cuando el objetivo es exactamente igual\footnote{Para Lean, literalmente igual es lo mismo que igual por definición.} a una de nuestras hipótesis. Por ejemplo:
+
+% Ejemeplos exact
+
+En el segundo ejemplo, como en Lean "$x \in A \cap B$" está definido como "$x \in A \land x \in B$", los trata como la misma expresión exactamente.
+
+\begin{itemize}
+  \item \textbf{\textcolor{blue}{rfl}}
+\end{itemize}
+
+Utilizamos "rfl" cuando tenemos en el objetivo una expresión con una igualdad, una doble implicación o cualquier otra relación de equivalencia, en la que los términos a ambos lados son exactamente iguales (o iguales por definición).
+
+% Ejemplos rfl
+
+\begin{itemize}
+  \item \textbf{\textcolor{blue}{trivial}}
+\end{itemize}
+
+La táctica "trivial" se utiliza cuando el objetivo es "True" o igual a "True" por definición. En algún momento de todo esto tengo que utilizar la palabra unificar? Supongo jajaja
+
+% ejemplos trivial
+
+En el último ejemplo, "x $\in$ Set.univ" está definido en Lean como True para todo x.
+
+\begin{itemize}
+  \item \textbf{\textcolor{blue}{apply}}
+\end{itemize}
+
+La táctica "apply" consiste en aplicar Modus Ponens. Si quiero demostrar B, y tengo como hipótesis "A implica B", entonces basta con demostrar A. Bueno esto hay que explicarlo mejor.
+
+Notar que también sirve para expresiones que aunque no sean implicaciones, son iguales a implicaciones por definición. Por ejemplo, en Lean 4, $A \subset B$ es igual a $x \in A \implies x \in B$. Por tanto podemos hacer lo siguiente:
+
+% ejemplos apply
+
+También podemos usar apply en otra hipótesis (en vez de en el objetivo!). Para ello utilizamos "apply h1 at h2".
+
+% ejemplo apply at
+
+\begin{itemize}
+  \item \textbf{\textcolor{blue}{by\_contra}}
+\end{itemize}
+
+Esta táctica es equivalente a utilizar el método de reducción al absurdo. Se puede utilizar en cualquier momento, y lo que hace es añadir una nueva hipótesis resultante de negar el objetivo, y el objetivo pasa a ser "False".
+
+Para llegar a demostrar False, necesitaremos tener dos hipótesis que sean contradictorias (lo que normalmente conocemos como "llegar a una contradicción"), utilizaremos entonces "exact h1 h2", donde h1 siempre debe ser la negación natural de h2 (y no al revés).
+
+% ejemplos by_contra
+
+Notar que si una de mis hipótesis es False (o igual a False por definición), entonces puedo demostrar cualquier cosa utilizando by\_contra. (último ejemplo)
+
+\subsubsection{Resumen de las tácticas básicas}
+
+% TABLA CON LAS TÁCTICAS
+% poner bien el ancho de las filas :/
+
+[Esto igual debería ir en un anexo? no se]
+
+\renewcommand{\arraystretch}{2}
+
+\begin{center}
+\begin{tabular}{|  m{8em}  |m{8em} |m{8em}  |} 
+  \hline
+  \textbf{antes} & \textbf{táctica} & \textbf{después} \\
+  \hline
+  $\vdash$ P $\rightarrow$ Q & intro hP & \parbox{8em}{hP : P \\ $\vdash$ Q} \\ 
+  \hline
+  $\vdash \forall$x : X, P x & intro x &  \parbox{8em}{x : X \\ $\vdash$ P x} \\ 
+  \hline
+  \parbox{8em}{h : P \\ $\vdash$ P}& exact h & No goals\\ 
+  \hline
+  $\vdash$ x = x & rfl & No goals\\ 
+  \hline
+  $\vdash$ x $\leftrightarrow$ x & rfl & No goals\\ 
+  \hline
+  $\vdash$ True & trivial & No goals \\ 
+  \hline
+  \parbox{8em}{h : P $\rightarrow$ Q \\ $\vdash$ Q} & apply h & $\vdash$ P\\ 
+  \hline
+  \parbox{8em}{h1 : P $\rightarrow$ Q \\ h2 : P} & apply h1 at h2 & h2 : Q\\ 
+  \hline
+  $\vdash$ P & by\_contra h & \parbox{8em}{h : $\neg$ P \\ $\vdash$ False} \\\hline
+\end{tabular}
+\end{center}
+
+Pasamos a ver otras tácticas más avanzadas.
+
+\subsubsection{Simplificar expresiones}
+
+rw y simp, dsimp
+
+\subsection{Trabajar con varias tesis a la vez}
+
+En ocasiones tendremos varias tesis en vez de sólo una (en la siguiente sección podemos ver varios ejemplos en los que esto ocurre). En este caso, podremos ver arriba del InfoView el número de tesis activas que tenemos, y a continuación veremos la primera tesis, seguida de la siguiente.
+
+Para poder trabajar sólo con una tesis a la vez (menos congestión visual), podemos separar las tesis utilizando puntos : · (alt+3). Ejemplo: (poner imagen de como se ve el InfoView)
+
+\subsubsection{Trabajar con conectores lógicos}
+
+En muchas ocasiones estaremos trabajando con los conectores $\land, \lor, \leftrightarrow$. Podemos utilizar varias tácticas para facilitar esta tarea.
+
+\begin{itemize}
+    \item \textbf{left, right}
+\end{itemize}
+
+Para tesis de la forma "A ó B" basta demostrar que se da A (análogamente, basta demostrar que se da B). Para esto, utilizamos la táctica "left" (respectivamente "right"). Es decir, le comunico a Lean que me voy a centrar sólo en la parte izquierda (resp. derecha) del "ó".
+
+% ejemplos left, right
+
+Notar que, en el último ejemplo, como x in A union B es equivalente a x in A or x in B por definición, podemos utilizar right directamente.
+
+Además, en hipótesis de la forma A $\land$ B, podemos querer utilizar sólo A (ó sólo B). Podemos utilizar h.left (h.right), respectivamente.
+
+\begin{itemize}
+    \item \textbf{cases'}
+\end{itemize}
+
+La táctica "cases'"\footnote{existe una táctica cases pero es menos potente que esta, y esta es la que utilizaremos normalmente} se utiliza sobre una hipótesis de la forma "P $\lor$ Q", y queremos proceder de forma distinta en caso de que P y de que Q.
+
+Es el equivalente a dividir una demostración en casos en el lenguaje natural. Movida: esto genera varios goals. Esto habría que explicarlo bien. Poner que gestionamos los distintos goals con · ?
+
+Esta táctica también tiene otro uso práctico interesante para $\land$ : si se aplica a una hipótesis de la forma "P $\land$ Q", dividimos esta hipótesis en dos. Esto nos puede servir en ocasiones para simplificar las hipótesis y trabajar más fácilmente con ellas.
+
+\begin{itemize}
+    \item \textbf{constructor}
+\end{itemize}
+
+Podemos utilizar costructor cuando tengamos tesis que se puedan separar en dos partes, por ejemplo tesis de la forma "P $\land$ Q" se convierten en dos tesis distintas, por un lado P y por otro Q. Igualmente, tesis de la forma "P $\leftrightarrow$ Q" se divide en "P $\rightarrow$ Q" y "Q $\rightarrow$ P".
+
+
+\begin{center}
+\begin{tabular}{ | m{8em} | m{8em}| m{8em} | } 
+  \hline
+  \textbf{antes} & \textbf{táctica} & \textbf{después} \\
+  \hline
+  $\vdash$ P $\lor$ Q & left & $\vdash$ P \\
+  \hline
+  $\vdash$ P $\lor$ Q & right & $\vdash$ Q \\
+  \hline
+  \parbox{8em}{h : P $\lor$ Q \\ $\vdash$ goal} & cases' h with hP hQ & \parbox{8em}{goal 1: \\ hP : P \\ $\vdash$ goal \\[1ex] goal 2: \\ $~~$ hQ : Q \\ $~~$ $\vdash$ goal} \\
+  \hline
+  h : P $\land$ Q & cases' h with hP hQ & \parbox{8em}{hP : P \\ hQ : Q }\\
+  \hline
+  
+\end{tabular}
+\end{center}
+
+% Bibliografía
+
+\bibliographystyle{plain}
+\bibliography{references.bib}
+
+\end{document}
