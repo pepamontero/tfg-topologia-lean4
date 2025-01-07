@@ -27,10 +27,11 @@ calc, have, show, suffices, by, in, at, let, forall, Pi, fun,
 exists, if, dif, then, else, assume, obtain, from, register_simp_ext, unless, break, continue,
 mutual, do, def, run_cmd, const,
 partial, mut, where, macro, syntax, deriving,
-return, try, catch, for, macro_rules, declare_syntax_cat, abbrev},
+return, try, catch, for, macro_rules, declare_syntax_cat, abbrev,
+Sort, Type, Prop},
 
-% Sorts
-morekeywords=[2]{Sort, Type, Prop},
+% sorry
+morekeywords=[2]{sorry},
 
 % tactics, list taken from lean-syntax.el
 morekeywords=[3]{
@@ -269,10 +270,10 @@ identifierstyle={\ttfamily\color{black}},
 % document. Don't know how to do better.
 
 % Style for declaration keywords
-keywordstyle=[1]{\ttfamily\color{keywordcolor}},
+keywordstyle=[1]{\ttfamily\color{tacticcolor}},
 
 % Style for sorts
-keywordstyle=[2]{\ttfamily\color{sortcolor}},
+keywordstyle=[2]{\ttfamily\color{keywordcolor}},
 
 % Style for tactics keywords
 keywordstyle=[3]{\ttfamily\color{tacticcolor}},
