@@ -46,15 +46,16 @@ Introducción al trabajo.
 
 \section{Lean Theorem Prover}
 
-El proyecto Lean fue iniciado en 2012 por Leonardo de Moura, que formada parte de Microsoft Research Redmond. Es un proyecto activo con una visión a largo plazo, y con miras en el potencial de automatización en las demostraciones matemáticas.\cite{avigad2015theorem}
+El proyecto Lean fue iniciado en 2012 por Leonardo de Moura, que formaba parte de Microsoft Research Redmond. Es un proyecto activo con una visión a largo plazo, y con miras en el potencial de automatización en las demostraciones matemáticas.\cite{avigad2015theorem}
 
-Lean es un lenguaje de programación funcional y un asistente de demostración. Un asistente de demostración es taltaltal. \cite{leanprover2024} Por otro lado, al tratarse de un lenguaje de programación, permite taltaltal (cita)
+Lean es un asistente de demostración, es decir, es un software que proporciona un lenguaje para definir objetos, especificar propiedades de esos objetos y probar que estas especificaciones se cumplen. El sistema comprueba que dichas pruebas son correctas y coherentes desde un punto de vista lógico. \cite{leanprover2024} 
 
-En particular, Lean 4 es una reprogramación de Lean 3 (explicar) \cite{moura2021lean}, donde Lean 3 era taltal y decir que está implementado en C?
+Sin embargo, Lean es también un lenguaje de programación, en particular un lenguaje funcional basado en tipos dependientes. Lean 4 es el resultado de volver a implementar el asistente de demostración de Lean 3 en el propio lenguaje de Lean. El nuevo compilador produce código en C, lo que permite a los usuarios implementar automatizaciones de pruebas en Lean de manera eficiente, compilar estas automatizaciones a C y añadirlas como plugins\cite{moura2021lean}.
 
-
+El objetivo del proyecto Lean es reducir la distancia entre demostraciones matemáticas asistidas y automatizadas, integrando herramientas y métodos automatizados en un marco que facilita la interacción con el usuario y la construcción de pruebas axiomáticas completamente especificadas\cite{avigad2015theorem}.
 
 \subsection{Teoría de tipos dependientes}
+
 
 Explicar como funciona Lean con teoría de tipos.
 
