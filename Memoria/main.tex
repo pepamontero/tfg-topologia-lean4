@@ -18,6 +18,7 @@
 \definecolor{symbolcolor}{rgb}{0.0, 0.1, 0.6}    % blue
 \definecolor{sortcolor}{rgb}{0.1, 0.5, 0.1}      % green
 \definecolor{attributecolor}{rgb}{0.7, 0.1, 0.1} % red
+\definecolor{backgroundcolor}{rgb}{0.92, 0.92, 0.92} % light grey
 
 % Distancias entre párrafos, quitar sangrías
 \setlength{\parindent}{0pt}
@@ -41,15 +42,15 @@
 }
 \newcommand{\code}[1]{\mbox{% added this percent
     \ttfamily
-    \tikz \node[anchor=base,fill=black!12]{#1};% added this percent
+    \tikz \node[anchor=base,fill=backgroundcolor]{#1};% added this percent
 }}
 \newcommand{\bluecode}[1]{\code{\textcolor{blue}{#1}}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\redcode}[1]{\code{\textcolor{red}{#1}}}
 
 % Lean code
-
 \def\lstlanguagefiles{lstlean.tex}
-% set default language
-\lstset{language=lean}
+\lstset{language=lean, backgroundcolor=\color{backgroundcolor}} %default language  
 
 % Spell checker settings
 % spell-checker: disable
@@ -186,7 +187,7 @@ Ejemplos:
 \begin{lstlisting}
   example : 2 + 2 = 4 := ...
 
-  lemma my_obvious_lemma (P : Prop) (h : P) : P := ...
+  lemma my_obvious_lemma (P : Prop) : P → P := ...
 
   theorem modus_ponens (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := ...
 
@@ -205,7 +206,7 @@ Cómo utilizamos Mathlib?? <- esto es importante
 
 Keywords: exact?, apply?, rw?
 
-Todas sirven para buscar en la librería de mathlib (o en los resultados anteriores que hayamos escrito nosotros) y aplicar la táctica correspondiente. 
+Todas sirven para buscar en la librería de mathlib (o en los resultados anteriores que hayamos escrito nosotros) y aplicar la táctica correspondiente.
 
 \subsubsection{Pruebas}
 
@@ -215,91 +216,250 @@ En Lean, existen dos formas de formalizar demostraciones: utilizando términos y
 
 Para el objetivo de este trabajo, nos vamos a centrar en las demostraciones que utilizan tácticas. Una demostración de tipo táctico en Lean consiste en una sucesión de comandos o instrucciones, a las que llamamos tácticas, que describen cómo se construye la demostración.
 
-Explicar lo que son las hipótesis y los goals
+Una vez hemos descrito un resultado o enunciado en Lean, si después de \code{:=} escribimos la palabra clave \bluecode{by}, entraremos en lo que llamamos \textit{modo táctico}. El modo táctico tiene dos particularidades:
 
-Cada vez que utilicemos una táctica, las hipótesis y los objetivos que aparecen en el Lean Info se actualizarán.
+Por un lado, contamos en nuestro editor con una nueva ventana llamada \textit{Lean Infoview} que ahora mostrará una lista de elementos. Por ejemplo, si en nuestro archivo lean tenemos lo siguiente
 
-Para construir una prueba en el modo táctico, escribimos :=
+\begin{lstlisting}
+  theorem modus_ponens (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := by
+\end{lstlisting}
 
-Explicar lo que es el Lean Infoview.
+En el infoview ahora veremos lo siguiente:
 
-[ejemplo]
+\begin{lstlisting}
+  P Q : Prop
+  hP : P
+  hPQ : P → Q
+  ⊢ Q
+\end{lstlisting}
+
+Las tres primeras líneas se corresponden con las hipótesis de nuestro enunciado. La última línea, que siempre comienza con el símbolo \code{$\vdash$}, muestra nuestra tesis, es decir, lo que queremos demostrar en este momento.
+
+Cuando aplicamos una táctica (escribimos un comando) las hipótesis y/o la tesis se actualizan automáticamente en el infoview. Aplicando una táctica detrás de otra, queremos modificar la tesis hasta llegar a algo que es cierto trivialmente. En este caso, el infoview mostrará el mensaje \code{No goals}. Sabremos entonces que hemos completado la prueba correctamente.
 
 En general, y sobretodo en los casos sencillos, existe una relación bastante clara entre estos comandos (tácticas) y las expresiones que utilizamos en las demostraciones formales a las que estamos acostumbrados.
 
 A continuación vamos a ver una a una las tácticas que más se utilizan en las demostraciones.
 
-\subsubsection{Tácticas básicas}
+[NOTA : NO SE SI HACERLO COMO ESTÁ O DEFINIR LAS VARIABLES AL PRINCIPIO NO SE QUE ES MENOS LIOSO]
 
 \begin{itemize}
-    \item \textbf{\textcolor{blue}{intro}}
+    \item \textbf{\blue{intro}}
 \end{itemize}
     
-Imaginemos que queremos demostrar un resultado del estilo de "si A, entonces B". Normalmente, empezaríamos la demostración diciendo "Supongamos que se da A. Veamos que entonces se tiene B"
+Imaginemos que queremos demostrar un resultado del estilo de "Si A, entonces B". Normalmente, empezaríamos la demostración diciendo "Supongamos que se da A. Veamos que entonces se tiene B".
 
-En el modo táctico, utilizamos la táctica \code{\textcolor{blue}{intro}} con esta finalidad. Si nuestro objetivo es \code{$\vdash$ A $\rightarrow$ B}, donde A y B son elementos de tipo Prop (\code{A B : \textcolor{blue}{Prop}}), entonces \code{\textcolor{blue}{intro} hA} añade la hipótesis \code{hA : A}, y nuestro objetivo pasa a ser \code{$\vdash$ B}.
+En el modo táctico, utilizamos la táctica \bluecode{intro} con esta finalidad. Si en el infoview tenemos
 
-%[EJEMPLO intro_1]
+\begin{lstlisting}
+  A B : Prop
+  ⊢ A → B
+\end{lstlisting}
 
-Otra forma de utilizar "intro" es en las expresiones de la forma "Para todo $x \in X$, $x$ tiene la propiedad $P$". Normalmente, empezaríamos diciendo "sea un $x \in X$ fijo pero arbitrario... veamos que $x$ satisface $P$".
+Y escribimos \code{\blue{intro} hA}, donde \code{hA} es el nombre que le queremos dar a la nueva hipótesis, obtendremos
 
-En Lean, utilizamos "intro" con este fin. Si tenemos como objetivo "$\vdash \forall$ x : X, P x", donde P es una función que asigna a cada x en X un término de tipo Prop, entonces "intro x" añade la hipótesis "x : X", y el objetivo pasa a ser "$\vdash$ P x".
+\begin{lstlisting}
+  A B : Prop
+  hA : A        -- supongamos A
+  ⊢ B           -- queremos ver si B
+\end{lstlisting}
 
-%[EJEMPLO intro_2]
+Por ejemplo, la demostración de nuestro lema \code{my\_obvious\_lemma} debería empezar de la siguiente forma
+
+\begin{lstlisting}
+  lemma my_obvious_lemma (P : Prop) : P → P := by
+    intro hP
+    sorry
+\end{lstlisting}
+
+Otra forma de utilizar \bluecode{intro} es en las expresiones de la forma "Para todo $x \in X$, $x$ tiene la propiedad $P$". Normalmente, empezaríamos diciendo "sea un $x \in X$ fijo pero arbitrario... veamos que $x$ satisface $P$".
+
+También utilizaremos \bluecode{intro} en este caso. Si tenemos
+
+\begin{lstlisting}
+  P : X → Prop
+  ⊢ ∀ (x : X), P x
+\end{lstlisting}
+
+y utilizamos \code{\blue{intro} x}, donde \code{x} es la nueva variable que vamos a definir, obtendremos
+
+\begin{lstlisting}
+  P : X → Prop
+  x : X       -- sea x ∈ X
+  ⊢ P x       -- veamos que x cumple P
+\end{lstlisting}
 
 \begin{itemize}
   \item \textbf{\textcolor{red}{sorry}}
 \end{itemize}
 
-Notemos que en ambos ejemplos anteriores, la demostración termina con "sorry". "sorry" es una táctica también, que indica a Lean que la demostración no está terminada, pero que no queremos terminarla por ahora. Si ponemos el cursor sobre la palabra "example", que está subrayada en amarillo, obtenemos el mensaje "declaration uses sorry" (es decir, la prueba no está completa). Podemos utilizar resultados incompletos en otras pruebas, pero estas pruebas también estarán marcadas como incompletas.
+Notemos que en el apartado anterior, la demostración de \code{my\_obvious\_lemma} termina con \redcode{sorry}. Esta es una táctica también, que indica a Lean que la demostración no está terminada, pero que no queremos terminarla por ahora.
+
+Lean mostrará sobre los resultados que acaben en \redcode{sorry} la advertencia \code{declaration uses sorry}. Podemos utilizar resultados incompletos en otras pruebas, pero estas pruebas también estarán marcadas como incompletas.
 
 \begin{itemize}
-  \item \textbf{\textcolor{blue}{exact}}
+  \item \textbf{\blue{exact}}
 \end{itemize}
 
-Otra táctica fundamental es "exact". Usamos "exact" cuando el objetivo es exactamente igual\footnote{Para Lean, literalmente igual es lo mismo que igual por definición.} a una de nuestras hipótesis. Por ejemplo:
+Otra táctica fundamental es \bluecode{exact}. Usamos \bluecode{exact} cuando nuestra tesis sea literalmente igual o igual por definición\footnote{Para Lean, literalmente igual es lo mismo que igual por definición.} a una de nuestras hipótesis.
 
-% Ejemeplos exact
+Con esta nueva táctica podemos terminar nuestra demostración de \code{my\_obvious\_lemma}; como en el infoview tenemos, despuñes de utilizar \code{\blue{intro} hP},
 
-En el segundo ejemplo, como en Lean "$x \in A \cap B$" está definido como "$x \in A \land x \in B$", los trata como la misma expresión exactamente.
+\begin{lstlisting}
+  P : Prop
+  hP : P
+  ⊢ P
+\end{lstlisting}
+
+Enotnces podemos utilizar \code{\blue{exact} hP} para terminar.
+
+\begin{lstlisting}
+  lemma my_obvious_lemma (P : Prop) : P → P := by
+    intro hP
+    exact hP
+\end{lstlisting}
+
+Ahora, en el infoview obtendremos el mensaje \code{No goals}.
+
+Veamos un ejemplo en el que en vez de tener una hipótesis literalmente igual que nuestra tesis, es igual por definición. Consideramos el resultado
+
+\begin{lstlisting}
+  example (A B : Set X)
+      (x : X) (hx : x ∈ A ∧ x ∈ B) :
+      x ∈ A ∩ B := by sorry
+\end{lstlisting}
+
+Tenemos un tipo $X$, subconjuntos $A, B \subset X$ y un elemento $x \in X$. Suponemos que $x \in A \land x \in B$ (\code{hx}). Queremos ver que $x \in A \cap B$. Pero, en Lean, $x \in A \cap B$ está definido como $x \in A \land x \in B$, luego realmente tenemos lo mismo. El resultado anterior se puede demostrar, por tanto, utilizando simplemente
+
+\begin{lstlisting}
+  example (A B : Set X)
+      (x : X) (hx : x ∈ A ∧ x ∈ B) :
+      x ∈ A ∩ B := by
+    exact hx
+\end{lstlisting}
+
+
 
 \begin{itemize}
-  \item \textbf{\textcolor{blue}{rfl}}
+  \item \textbf{\blue{rfl}}
 \end{itemize}
 
-Utilizamos "rfl" cuando tenemos en el objetivo una expresión con una igualdad, una doble implicación o cualquier otra relación de equivalencia, en la que los términos a ambos lados son exactamente iguales (o iguales por definición).
+Utilizamos \bluecode{rfl} cuando tenemos en el objetivo una expresión con una igualdad, una doble implicación o cualquier otra relación de equivalencia, en la que los términos a ambos lados son exactamente iguales (o iguales por definición). Consiste en aplicar la propiedad reflexiva ($x \cong x$) de las relaciones de equivalencia.
 
-% Ejemplos rfl
+Ejemplos:
+
+\begin{lstlisting}
+  example (x : X) : x = x := by
+    rfl
+\end{lstlisting}
+
+\begin{lstlisting}
+  example (A B : Set X) (x : X) :
+      (x ∈ A ∪ B) ↔ (x ∈ A ∨ x ∈ B) := by
+    rfl
+\end{lstlisting}
 
 \begin{itemize}
-  \item \textbf{\textcolor{blue}{trivial}}
+  \item \textbf{\blue{trivial}}
 \end{itemize}
 
-La táctica "trivial" se utiliza cuando el objetivo es "True" o igual a "True" por definición. En algún momento de todo esto tengo que utilizar la palabra unificar? Supongo jajaja
+La táctica \bluecode{trivial} se utiliza cuando el objetivo es \bluecode{True} o igual a \bluecode{True} por definición. Ejemplos:
 
-% ejemplos trivial
+\begin{lstlisting}
+  example : True := by
+    trivial
+\end{lstlisting}
 
-En el último ejemplo, "x $\in$ Set.univ" está definido en Lean como True para todo x.
+En Lean, existe un subconjunto especial, el \code{Set.univ}, que contiene a todos los elementos del tipo asociado; es el universo, el todo. Por tanto, si $x \in X$, entonces \code{$x \in$ Set.univ} está definido simplemente como \bluecode{True}.
+
+\begin{lstlisting}
+  example (x : X) : x ∈ Set.univ := by
+    trivial
+\end{lstlisting}
+
+
 
 \begin{itemize}
   \item \textbf{\textcolor{blue}{apply}}
 \end{itemize}
 
-La táctica "apply" consiste en aplicar Modus Ponens. Si quiero demostrar B, y tengo como hipótesis "A implica B", entonces basta con demostrar A. Bueno esto hay que explicarlo mejor.
+La táctica \bluecode{apply} consiste en aplicar Modus Ponens. Si quiero demostrar B, y tengo como hipótesis "A implica B", entonces basta con demostrar A.
 
-Notar que también sirve para expresiones que aunque no sean implicaciones, son iguales a implicaciones por definición. Por ejemplo, en Lean 4, $A \subset B$ es igual a $x \in A \implies x \in B$. Por tanto podemos hacer lo siguiente:
+Es decir, si en el infoview tengo algo de la forma
+
+\begin{lstlisting}
+  P Q : Prop
+  hPQ : P → Q
+  ⊢ Q
+\end{lstlisting}
+
+y utilizo \code{\blue{apply} hPQ}, paso a tener P como objetivo:
+
+\begin{lstlisting}
+  P Q : Prop
+  hPQ : P → Q
+  ⊢ P
+\end{lstlisting}
+
+Con esto, ya podemos demostrar nuestro teorema \code{modus\_ponens}
+
+\begin{lstlisting}
+  theorem modus_ponens (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := by
+    apply hPQ
+    exact hP
+\end{lstlisting}
+
+Notar que \bluecode{apply} también sirve para expresiones que aunque no sean implicaciones, son iguales a implicaciones por definición. Por ejemplo, en Lean, $A \subset B$ está definido como $x \in A \implies x \in B$. Por tanto, si tenemos en el infoview
+
+\begin{lstlisting}
+  A B : Set X
+  x : X
+  h : A ⊆ B
+  ⊢ x ∈ B
+\end{lstlisting}
+
+Podemos utilizar \code{\blue{apply} h}, y la tesis pasará a ser
+
+\begin{lstlisting}
+  ⊢ x ∈ A
+\end{lstlisting}
 
 % ejemplos apply
 
-También podemos usar apply en otra hipótesis (en vez de en el objetivo!). Para ello utilizamos "apply h1 at h2".
+También podemos usar apply en otra hipótesis utilizando la palabra clave \blue{at}. Por ejemplo, supongamos que tenemos las hipótesis
 
-% ejemplo apply at
+\begin{lstlisting}
+  hP : P
+  hPQ : P → Q
+\end{lstlisting}
+
+Aplicar \code{\blue{apply} hPQ \blue{at} hP}, actualizaría las hipótesis a
+
+\begin{lstlisting}
+  hP : Q
+  hPQ : P → Q
+\end{lstlisting}
+
+
 
 \begin{itemize}
-  \item \textbf{\textcolor{blue}{by\_contra}}
+  \item \textbf{\blue{by\_contra}}
 \end{itemize}
 
-Esta táctica es equivalente a utilizar el método de reducción al absurdo. Se puede utilizar en cualquier momento, y lo que hace es añadir una nueva hipótesis resultante de negar el objetivo, y el objetivo pasa a ser "False".
+Esta táctica es equivalente a utilizar el método de reducción al absurdo. Al utilizarla, añade una nueva hipótesis, resultante de negar la tesis, y la tesis pasa a ser \bluecode{False}.
+
+Por ejemplo, si tenemos en el infoview
+
+\begin{lstlisting}
+  ⊢ P
+\end{lstlisting}
+
+y aplicamos \code{\blue{by\_contra} h}, ahora tendremos
+
+\begin{lstlisting}
+  h : ¬P
+  ⊢ False
+\end{lstlisting}
 
 Para llegar a demostrar False, necesitaremos tener dos hipótesis que sean contradictorias (lo que normalmente conocemos como "llegar a una contradicción"), utilizaremos entonces "exact h1 h2", donde h1 siempre debe ser la negación natural de h2 (y no al revés).
 

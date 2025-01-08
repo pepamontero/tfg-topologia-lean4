@@ -65,15 +65,20 @@ end resultados
 
 
 
--- ejemplo intro_1
+section tacticas
+
+/-
+INTRO
+-/
+
 example (P Q : Prop) : P → Q := by
   intro hP
   sorry
 
--- ejemplo intro_2
 example (P : X → Prop) : ∀ x : X, P x := by
   intro x
   sorry
+
 
 -- ejemplos exact
 example (P : Prop) : P → P := by
@@ -122,6 +127,10 @@ example (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := by
   exact hP
 
 -- ejemplos by_contra
+
+example : P := by
+  by_contra h
+
 example (P Q : Prop) (hPQ : P → Q) (hP : P) : Q := by
   by_contra hQ
   apply hPQ at hP
@@ -173,3 +182,9 @@ example (A B : Set X) (h : A = B) : x ∈ A ↔ x ∈ B := by
   constructor
   all_goals rw [h]
   all_goals simp
+
+
+
+
+
+end tacticas
