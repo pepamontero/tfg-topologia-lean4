@@ -2,7 +2,75 @@ import Mathlib.Tactic
 
 -- meter variables aquí y unificar la notacion
 
+section deptypes
+
+variable (n m : ℚ)
+variable (f : ℕ → ℕ)
+variable (g : ℕ → ℕ × ℕ)
+
+#check (n, m)
+
+variable (P Q : Prop)
+#check P
+#check ¬P
+#check P ∧ Q
+
+
+
 variable (X : Type)
+variable (F : Type → Type)
+
+#check fun x : ℕ  ↦ x + 5
+#check λ x : ℕ ↦ x + 5
+
+end deptypes
+
+
+section definitions
+
+
+def x : ℕ := 2
+def X : Type := ℕ
+
+
+
+
+#check X
+def Y := ℝ
+#check Y
+
+def y := 0
+#check y
+def z := (0 : ℝ)
+#check z
+
+def f : ℕ → ℕ := fun x ↦ x + 5
+def g : ℕ → Prop :=  λ x ↦ x = 2
+
+#eval f 4
+#eval f x
+#eval g 2
+
+end definitions
+
+section paradoja
+
+variable (g c f : Prop)
+
+example (h1 : c ↔ (g ∧ f)) (h2: ¬ f ↔ g ∧ ¬ c) : g ∧ (c ↔ ¬ f) := by
+  constructor
+  have hf : f ∨ ¬ f
+  exact Classical.em f
+
+  cases' hf with hf1 hf2
+
+
+  sorry
+  sorry
+
+end paradoja
+
+
 
 -- ejemplo intro_1
 example (P Q : Prop) : P → Q := by

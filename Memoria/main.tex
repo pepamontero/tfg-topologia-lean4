@@ -43,6 +43,7 @@
     \ttfamily
     \tikz \node[anchor=base,fill=black!12]{#1};% added this percent
 }}
+\newcommand{\bluecode}[1]{\code{\textcolor{blue}{#1}}}
 
 % Lean code
 
@@ -61,16 +62,6 @@
 \section{Introducción}
 
 Introducción al trabajo.
-
-
-\begin{lstlisting}
-  theorem funext {f₁ f₂ : ∀ (x : α), β x} (h : ∀ x, f₁ x = f₂ x) : f₁ = f₂ := by
-    show extfunApp (Quotient.mk f₁) = extfunApp (Quotient.mk f₂)
-    apply congrArg
-    apply Quotient.sound
-    exact h
-    sorry
-\end{lstlisting}
 
 \section{Lean Theorem Prover}
 
@@ -92,33 +83,103 @@ En Lean podemos declarar variables de un tipo determinado utilizando el operador
 
 Ejemplos:
 
-constant n : nat
-constant f : nat to nat
-constant g : nat prod nat
+\begin{lstlisting}
+  variable (n : ℕ)
+  variable (f : ℕ → ℕ)
+  variable (g : ℕ → ℕ × ℕ)
+  variable (p q : ℚ) -- puedo definir varias variables del mismo tipo a la vez
+\end{lstlisting}
 
-Podemos utilizar entonces el comando \code{check} para ver que ocurre por detrás. 
+\code{A → B}
+
+Podemos utilizar entonces el comando \bluecode{$\#$check} para ver que interpreta Lean en cada caso. 
+
+\begin{lstlisting}
+  #check n            -- output: n : ℕ
+  #check f            -- output: f : ℕ → ℕ
+  #check f 2            -- output: f 2 : ℕ
+  #check (p, q)            -- output: (p, q) : ℚ × ℚ
+\end{lstlisting}
+
+TIPO PROP
+
+Un tipo a destacar en Lean es el tipo \bluecode{Prop}. Un objeto de tipo \bluecode{Prop} es una expresión lógica, que puede tomar los valores verdadero o falso, y se puede operar con los conectores lógicos que conocemos. Podemos declarla como cualquier otra:
+
+\begin{lstlisting}
+  variable (P Q : Prop)
+  #check P            -- output: P : Prop
+  #check ¬P            -- output: ¬P : Prop
+  #check P ∧ Q            -- output: P ∧ Q : Prop
+\end{lstlisting}
 
 También podemos declarar nuevos tipos y construcciones sobre tipos. Ejemplo:
 
-constant X : Type
-constant F : Type to Type (función que recibe un tipo y devuelve otro)
+\begin{lstlisting}
+  variable (X : Type)
+  variable (F : Type → Type)
+  #check F ℕ            -- output: F ℕ : Type
+\end{lstlisting}
 
+"Tipo" es un tipo en si mismo.* Jerarquía de tipos. Necesario explicar?
 
-* Jerarquía de tipos. Necesario explicar?
+* Tipos dependientes : lista de reales vs. lista de enteros?
 
 
 \subsection{Lean como asistente de demostración}
 
 Nos centramos en la función de theorem proving.
 
-Explicar lo que es mathlib
+\subsubsection{Definiciones}
+
+Podemos definir constantes en Lean utilizando el comando \bluecode{def} y el operador \code{:=}. Por ejemplo:
+
+\begin{lstlisting}
+  def x : ℕ := 2
+  def X : Type := ℕ
+\end{lstlisting}
+
+Cuando hacemos definiciones también podemos declarar el tipo de objeto que estamos definiendo. Esto no es necesario siempre, porque Lean puede, en general, inferir el tipo directamente.
+
+\begin{lstlisting}
+  #check X            -- output: X : Type
+  def Y := ℝ
+  #check Y            -- output: Y : Type
+\end{lstlisting}
+
+\begin{lstlisting}
+  def y := 0
+  #check y            -- output: y : ℕ
+  def z := (0 : ℝ)
+  #check z            -- output: z : ℝ
+\end{lstlisting}
+
+También podemos definir funciones utilizando el operador \bluecode{fun} (o \bluecode{$\lambda$}), y evaluar estas funciones en elementos concretos utilizando \bluecode{$\#$eval}.
+
+\begin{lstlisting}
+  def f : ℕ → ℕ := fun x ↦ x + 5
+  def g : ℕ → Prop :=  λ x ↦ x > 0
+
+  #eval f 4            -- output: 9
+  #eval f x            -- output: 7
+  #eval g 2            -- error: no sabe decidir inmediatamente si 2 > 0
+\end{lstlisting}
+
+
+\subsubsection{Mathlib}
+
+
+
+
+
+
+\subsubsection{Resultados}
 
 Explicar la sintaxis de como se expresa un resultado. Ejemplos de proposiciones algunas más simples y otras más complejas? Ej. modus ponens vs. algún otro resultado.
 
+
+\subsubsection{Pruebas}
+
 Hay varias formas de demostrar cosas en Lean. Notar que en este proyecto nos vamos a centrar en pruebas en la forma de tácticas.
-
-
-\subsection{Modo táctico}
 
 [Muchos ejemplos de esta parte en cierto sentido están sacados del curso de Buzzard y demás. No se como debería escribir esas citas xd]
 
