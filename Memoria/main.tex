@@ -125,9 +125,13 @@ También podemos declarar nuevos tipos y construcciones sobre tipos. Ejemplo:
 * Tipos dependientes : lista de reales vs. lista de enteros?
 
 
+
+
 \subsection{Lean como asistente de demostración}
 
-Nos centramos en la función de theorem proving.
+Para nuestro fin, nos centraremos en la función de asistente de demostración de Lean. A continuación vamos a introducir las herramientas principales que utilizaremos a la hora de formalizar resultados en Lean 4.
+
+
 
 \subsubsection{Definiciones}
 
@@ -165,25 +169,51 @@ También podemos definir funciones utilizando el operador \bluecode{fun} (o \blu
 \end{lstlisting}
 
 
-\subsubsection{Mathlib}
-
-
-
-
-
-
 \subsubsection{Resultados}
 
-Explicar la sintaxis de como se expresa un resultado. Ejemplos de proposiciones algunas más simples y otras más complejas? Ej. modus ponens vs. algún otro resultado.
+Un resultado consiste de varios elementos: el tipo de enunciado (ejemplo, lema o teorema), un nombre, unas hipótesis y una tesis.
 
+Para diferenciar el tipo de enunciado utilizaremos las palabras clave \bluecode{example}, \bluecode{lemma} y \bluecode{theorem} [no se si hay alguno más]. Los resultados de tipo ejemplo no se identifican con un nombre. En el caso de los lemas y los teoremas, el nombre se escribe directamente detrás de la palabra clave.
+
+Las hipótesis, que son opcionales, se escriben después del nombre, utilizando paréntesis para separarlas entre sí. Las hipótesis incluyen objetos que se inicializan (ej. "Sea $n \in \mathbb{N}$" se podría escribir como \code{(n : $\mathbb{N}$)}) y también hipótesis propiamente dichas que suponemos como ciertas. Estas últimas necesitan un nombre seguido de \code{:} (ej. "Supongamos que $n > 0$" se podría escribir como \code{(hn : n > 0)}).
+
+A su vez, utilizamos los dos puntos \code{:} para separarlas de la tesis, que se escribe a continuación.
+
+Al final de la expresión escribimos \code{:=}, y después de este símbolo escribiremos la demostración del enunciado. Por ahora ignoraremos esa parte.
+
+Ejemplos:
+
+\begin{lstlisting}
+  example : 2 + 2 = 4 := ...
+
+  lemma my_obvious_lemma (P : Prop) (h : P) : P := ...
+
+  theorem modus_ponens (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := ...
+
+  lemma i_am_error (P Q : Prop) (h : P) : Q := ... 
+\end{lstlisting}
+
+En el último ejemplo quería destacar que Lean no pone ninguna pega a un resultado que no sea cierto, este último resultado no dará ningún error (salvo un mensaje de que queda por demostrar). Lean no comprueba la veracidad de los enunciados, sólo comprueba si la demostración a continuación es correcta.
+
+\subsubsection{Mathlib}
+
+[No se donde poner esta sección si antes de defs y resultados o despues o incluso dentro de pruebas??]
+
+La librería de matemáticas de Lean, \textit{Mathlib}, es un proyecto colaborativo con el objetivo de construir una base de datos unificada de definiciones y resultados matemáticos formalizadas en el lenguaje Lean, y cuenta con numerosos colaboradores habituales y actividad diaria\cite{leanprover2024}.
+
+Cómo utilizamos Mathlib?? <- esto es importante
+
+Keywords: exact?, apply?, rw?
+
+Todas sirven para buscar en la librería de mathlib (o en los resultados anteriores que hayamos escrito nosotros) y aplicar la táctica correspondiente. 
 
 \subsubsection{Pruebas}
 
-Hay varias formas de demostrar cosas en Lean. Notar que en este proyecto nos vamos a centrar en pruebas en la forma de tácticas.
-
 [Muchos ejemplos de esta parte en cierto sentido están sacados del curso de Buzzard y demás. No se como debería escribir esas citas xd]
 
-Dado un enunciado, un término de tipo prueba es una representación de una demostración matemática de la veracidad de este. Las tácticas son comandos, o instrucciones, que describen cómo se construye esta prueba.
+En Lean, existen dos formas de formalizar demostraciones: utilizando términos y utilizando tácticas. Una prueba es un objeto de tipo \bluecode{Proof}. Un término de tipo \bluecode{Proof} es una representación de una demostración matemática de la veracidad de un enunciado.
+
+Para el objetivo de este trabajo, nos vamos a centrar en las demostraciones que utilizan tácticas. Una demostración de tipo táctico en Lean consiste en una sucesión de comandos o instrucciones, a las que llamamos tácticas, que describen cómo se construye la demostración.
 
 Explicar lo que son las hipótesis y los goals
 

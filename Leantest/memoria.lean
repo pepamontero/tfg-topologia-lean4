@@ -49,26 +49,19 @@ def g : ℕ → Prop :=  λ x ↦ x = 2
 
 #eval f 4
 #eval f x
-#eval g 2
 
 end definitions
 
-section paradoja
 
-variable (g c f : Prop)
+section resultados
 
-example (h1 : c ↔ (g ∧ f)) (h2: ¬ f ↔ g ∧ ¬ c) : g ∧ (c ↔ ¬ f) := by
-  constructor
-  have hf : f ∨ ¬ f
-  exact Classical.em f
+  example : 2 + 2 = 4 := by sorry
 
-  cases' hf with hf1 hf2
+lemma my_obvious_lemma (P : Prop) (h : P) : P := by sorry
 
+theorem modus_ponens (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := by sorry
 
-  sorry
-  sorry
-
-end paradoja
+end resultados
 
 
 
