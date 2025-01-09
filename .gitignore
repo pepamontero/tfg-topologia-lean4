@@ -1,1 +1,19 @@
+# Archivos de Lean
 /.lake
+
+# Archivos generados por LaTeX
+*.aux
+*.bbl
+*.blg
+*.fls
+*.log
+*.run.xml
+*.fdb_latexmk
+*.synctex.gz
+
+# Archivos PDF generados
+*.pdf
+
+# Archivos de backup
+*~
+
