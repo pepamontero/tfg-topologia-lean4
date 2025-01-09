@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{array} % Matrices, tablas
 \usepackage{xcolor} % Colores de texto
+\usepackage{enumitem} % Listas con letras
 %LEAN
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -591,35 +592,100 @@ La táctica \bluecode{apply?} funciona de la misma forma, aunque suele sugerir u
 \end{itemize}
 
 
-Varias tácticas nos pueden servir para simplificar expresiones. La más básica es simplemente \bluecode{simp}
+Varias tácticas nos pueden servir para simplificar expresiones. Por un lado tenemos \bluecode{rw} (rewrite). Esta táctica toma entre corchetes una expresión (una hipótesis o un resultado) que sea una equivalencia (como $x = y$ o $P \leftrightarrow Q$) e intenta reescribir cada instancia en la tesis de la parte izquierda de la equivalencia por la parte derecha. Una definición también se considera una equivalencia.
 
-rw y simp, dsimp
+Por ejemplo, el siguiente resultado
 
-\subsection{Trabajar con varias tesis a la vez}
+\begin{lstlisting}
+  example (a b : ℕ) (h : a = b) : es_par (a + b) := by sorry
+\end{lstlisting}
 
-En ocasiones tendremos varias tesis en vez de sólo una (en la siguiente sección podemos ver varios ejemplos en los que esto ocurre). En este caso, podremos ver arriba del InfoView el número de tesis activas que tenemos, y a continuación veremos la primera tesis, seguida de la siguiente.
+imprime en el infoview
 
-Para poder trabajar sólo con una tesis a la vez (menos congestión visual), podemos separar las tesis utilizando puntos : · (alt+3). Ejemplo: (poner imagen de como se ve el InfoView)
+\begin{lstlisting}
+  a b : ℕ
+  h : a = b
+  ⊢ es_par (a + b)
+\end{lstlisting}
 
-\subsubsection{Trabajar con conectores lógicos}
+Si ahora escribimos \code{\blue{rw} [h]}, entonces la tesis pasará a ser
 
-En muchas ocasiones estaremos trabajando con los conectores $\land, \lor, \leftrightarrow$. Podemos utilizar varias tácticas para facilitar esta tarea.
+\begin{lstlisting}
+  ⊢ es_par (b + b)
+\end{lstlisting}
+
+Ahora podemos escribir \code{\blue{rw} [es\_par]}, y la tesis cambiará a
+
+\begin{lstlisting}
+  ⊢ ∃ m, b + b = 2 * m
+\end{lstlisting}
+
+También podemos utilizar \code{\blue{rw} [ · ] \blue{at} h} para aplicar los cambios a una hipótesis \code{h} en lugar de la tesis, y \code{\blue{rw} [ · ] \blue{at} *} para aplicarlos en todas las expresiones posibles.
+
+Para hacer el camino inverso, cambiar las instancias de la parte derecha de la equivalencia a la parte izquierda, utilizamos la flecha hacia la izquierda: \code{\blue{rw} [$\leftarrow$  · ]}.
+
+Una táctica bastante más simple que esta es \bluecode{simp}, que intenta simplificar la tesis utilizando todos los resultados y definiciones posibles de Mathlib (que estén marcados como simplificaciones) y reescribiendo la expresión. 
+
+Existen otras tácticas más particulares, como \bluecode{dsimp}, que funciona como \bluecode{simp} pero sólo utiliza definiciones (y no resultados), o \bluecode{ring}, que utiliza resultados relacionados con anillos para simplificar expresiones.
+
+En el fondo, estas últimas tácticas hacen lo mismo que \bluecode{rw}, pero sin necesitar el paso de buscar en la librería.
 
 \begin{itemize}
-    \item \textbf{left, right}
+  \item \textbf{Conectores lógicos}
 \end{itemize}
 
-Para tesis de la forma "A ó B" basta demostrar que se da A (análogamente, basta demostrar que se da B). Para esto, utilizamos la táctica "left" (respectivamente "right"). Es decir, le comunico a Lean que me voy a centrar sólo en la parte izquierda (resp. derecha) del "ó".
+Algunas de nuestras hipótesis o tesis tendrán conectores lógicos más complicados como $\land$, $\lor$ y $\leftrightarrow$. Esto significará que tendremos que dividir la demostraciones en varias tesis más simples (por ejemplo, si quiero demostrar que se dan A y B, primero demuestro A y luego B).
 
-% ejemplos left, right
+Cuando trabajemos con varias tesis a la vez, podremos ver arriba del InfoView el número de tesis activas que tenemos, y a continuación veremos la primera tesis, seguida de la siguiente.
 
-Notar que, en el último ejemplo, como x in A union B es equivalente a x in A or x in B por definición, podemos utilizar right directamente.
+Para poder trabajar sólo con una tesis a la vez, por claridad, podemos separar las tesis utilizando puntos \code{·}. Cada punto simboliza una hipótesis distinta.
 
-Además, en hipótesis de la forma A $\land$ B, podemos querer utilizar sólo A (ó sólo B). Podemos utilizar h.left (h.right), respectivamente.
+A continuación vamos a ver varios ejemplos en los que necesitamos trabajar con varias hipótesis, en particular cuando trabajemos con los conectores lógicos $\land$, $\lor$ y $\leftrightarrow$
 
-\begin{itemize}
-    \item \textbf{cases'}
-\end{itemize}
+
+\begin{enumerate}[label=\alph*., left=35pt]
+  \item \textbf{$\lor$ en la tesis: \blue{left}, \blue{right}}
+\end{enumerate}
+
+El caso más sencillo es aquel en el que la tesis es de la forma "A o B", y sabemos que se tiene A (o B). En ese caso, utilizaremos la táctica \bluecode{left} (respectivamente \bluecode{right}) para simplificar la tesis.
+
+Por ejemplo, si tenemos en el infoview
+
+\begin{lstlisting}
+  P Q : Prop
+  h : P
+  ⊢ P ∨ Q
+\end{lstlisting}
+
+y escribimos
+
+\begin{lstlisting}
+  example (P Q : Prop) (h : P) : P ∨ Q := by
+    left
+\end{lstlisting}
+
+ahora tendremos
+
+\begin{lstlisting}
+  P Q : Prop
+  h : P
+  ⊢ P
+\end{lstlisting}
+
+Además, en hipótesis de la forma "A y B", podemos querer utilizar sólo A (o sólo B). Podemos utilizar \code{h.left} (respectivamente \code{h.right}). Por ejemplo
+
+\begin{lstlisting}
+  example (P Q : Prop) (h : P ∧ Q) : Q := by
+    exact h.right
+\end{lstlisting}
+
+
+
+\begin{enumerate}[resume, label=\alph*., left=35pt]
+  \item \textbf{$\lor$ en las hipótesis: \blue{cases'}}
+\end{enumerate}
+
+La táctica \bluecode{cases'}
 
 La táctica "cases'"\footnote{existe una táctica cases pero es menos potente que esta, y esta es la que utilizaremos normalmente} se utiliza sobre una hipótesis de la forma "P $\lor$ Q", y queremos proceder de forma distinta en caso de que P y de que Q.
 

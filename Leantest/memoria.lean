@@ -65,7 +65,7 @@ end resultados
 
 
 
-section tacticas
+section tacticas_basicas
 
 /-
 INTRO
@@ -145,7 +145,10 @@ example (h : x ∈ (∅ : Set X)) : 1 = 2 := by
   by_contra
   exact h
 
+end tacticas_basicas
 
+
+section otros_resultados
 
 /-
   EJEMPLO EXACT O APPLY UTILIZANDO OTROS RESULTADOS
@@ -169,6 +172,26 @@ def es_par (n : ℕ) : Prop := ∃ m : ℕ, n = 2 * m
 
 example : es_par 2 := by sorry
 
+
+end otros_resultados
+
+section simplificaciones
+
+-- rw
+
+example (a b : ℕ) (h : a = b) : es_par (a + b) := by
+  rw [h]
+  rw [es_par]
+
+example : 1 + 1 = 2 := by simp
+example : 1 + 1 = 2 := by ring
+
+
+end simplificaciones
+
+
+
+section conectores_logicos
 
 
 
