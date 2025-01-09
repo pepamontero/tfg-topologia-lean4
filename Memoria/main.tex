@@ -363,7 +363,7 @@ Ejemplos:
   \item \textbf{\blue{trivial}}
 \end{itemize}
 
-La táctica \bluecode{trivial} se utiliza cuando el objetivo es \bluecode{True} o igual a \bluecode{True} por definición. Ejemplos:
+La táctica \bluecode{trivial} se utiliza cuando el objetivo es \code{True} o igual a \code{True} por definición. Ejemplos:
 
 \begin{lstlisting}
   example : True := by
@@ -424,8 +424,6 @@ Podemos utilizar \code{\blue{apply} h}, y la tesis pasará a ser
   ⊢ x ∈ A
 \end{lstlisting}
 
-% ejemplos apply
-
 También podemos usar apply en otra hipótesis utilizando la palabra clave \blue{at}. Por ejemplo, supongamos que tenemos las hipótesis
 
 \begin{lstlisting}
@@ -446,7 +444,7 @@ Aplicar \code{\blue{apply} hPQ \blue{at} hP}, actualizaría las hipótesis a
   \item \textbf{\blue{by\_contra}}
 \end{itemize}
 
-Esta táctica es equivalente a utilizar el método de reducción al absurdo. Al utilizarla, añade una nueva hipótesis, resultante de negar la tesis, y la tesis pasa a ser \bluecode{False}.
+Esta táctica es equivalente a utilizar el método de reducción al absurdo. Al aplicarla, añade una nueva hipótesis, resultante de negar la tesis, y la tesis pasa a ser \code{False}.
 
 Por ejemplo, si tenemos en el infoview
 
@@ -461,15 +459,33 @@ y aplicamos \code{\blue{by\_contra} h}, ahora tendremos
   ⊢ False
 \end{lstlisting}
 
-Para llegar a demostrar False, necesitaremos tener dos hipótesis que sean contradictorias (lo que normalmente conocemos como "llegar a una contradicción"), utilizaremos entonces "exact h1 h2", donde h1 siempre debe ser la negación natural de h2 (y no al revés).
+Para poder demostrar la tesis \code{False}, necesitamos tener una hipótesis que sea igual o equivalente a \code{False}. También podemos tener dos hipótesis distintas que sean contradictorias (lo que normalmente conocemos como "llegar a una contradicción"). Si tenemos una hipótesis \code{h1}, y otra hipótesis \code{h2} es el resultado de contradecir \code{h1}, entonces podemos utilizar \code{\blue{exact} h2 h1} para demostrar \code{False}.
 
-% ejemplos by_contra
+Podemos demostrar \code{my\_obvious\_lemma} utilizando reducción al absurdo:
 
-Notar que si una de mis hipótesis es False (o igual a False por definición), entonces puedo demostrar cualquier cosa utilizando by\_contra. (último ejemplo)
+\begin{lstlisting}
+  lemma my_obvious_lemma (P : Prop) : P → P := by
+    intro hP
+    by_contra hNP       -- nueva hipotesis hNP : ¬P
+    exact hNP hP        -- No Goals
+\end{lstlisting}
 
-\subsubsection{Resumen de las tácticas básicas}
+Notar que si una de mis hipótesis es igual o equivalente a \code{False}, entonces puedo demostrar cualquier cosa. Por ejemplo:
 
-% TABLA CON LAS TÁCTICAS
+\begin{lstlisting}
+  example (h : x ∈ (∅ : Set X)) : 1 = 2 := by
+    by_contra         -- no necesitamos la hipotesis 1 ≠ 2
+    exact h           -- No Goals
+\end{lstlisting}
+
+En Lean, $x \in \emptyset$ está definido simplemente como \code{False}.
+
+
+
+\begin{itemize}
+  \item \textbf{Resumen de las tácticas básicas}
+\end{itemize}
+
 % poner bien el ancho de las filas :/
 
 [Esto igual debería ir en un anexo? no se]
@@ -489,7 +505,7 @@ Notar que si una de mis hipótesis es False (o igual a False por definición), e
   \hline
   $\vdash$ x = x & rfl & No goals\\ 
   \hline
-  $\vdash$ x $\leftrightarrow$ x & rfl & No goals\\ 
+  $\vdash$ P $\leftrightarrow$ P & rfl & No goals\\ 
   \hline
   $\vdash$ True & trivial & No goals \\ 
   \hline
@@ -501,9 +517,81 @@ Notar que si una de mis hipótesis es False (o igual a False por definición), e
 \end{tabular}
 \end{center}
 
-Pasamos a ver otras tácticas más avanzadas.
+\begin{itemize}
+  \item \textbf{Utilizar resultados anteriores}
+\end{itemize}
 
-\subsubsection{Simplificar expresiones}
+Como es habitual en matemáticas a menudo querremos escribir demostraciones que utilicen otros resultados que ya hayamos demostrado previamente. En este caso, podemos aplicar las tácticas anteriores, en particular \bluecode{exact} y \bluecode{apply}, utilizando resultados que ya hemos escrito.
+
+Por ejemplo:
+
+\begin{lstlisting}
+  lemma lemma_exact (n : ℕ) : 2^n > 0 := by sorry
+
+  example : 2^5 > 0 := by
+    exact lemma_exact 5
+\end{lstlisting}
+
+Utilizo \bluecode{exact}, seguido del nombre del resultado que quiero usar y los parámetros que requiere este resultado (en este caso, requiere un número natural). De la misma forma utilizamos apply:
+
+\begin{lstlisting}
+  lemma lemma_apply (n : ℕ) : n ≥ 2 → 2^n > n := by sorry
+
+  example : 2^5 > 5 := by
+    apply lemma_apply 5        -- la tesis ahora es ⊢ 5 ≥ 2
+    sorry
+\end{lstlisting}
+
+También podemos hacer referencia a definiciones que hayamos descrito antes
+
+\begin{lstlisting}
+  def es_par (n : ℕ) : Prop := ∃ m : ℕ, n = 2 * m
+
+  example : es_par 2 := by sorry
+\end{lstlisting}
+
+
+\begin{itemize}
+  \item \textbf{Utilizar los resultados de Mathlib}
+\end{itemize}
+
+Además de utilizar los resultados que nosotros hayamos probado antes, es especialmente interesante poder utilizar los resultados que ya están demostrados en la librería de matemáticas de Lean, Mathlib. Sin embargo, encontrar el nombre del resultado que necesitamos en cada momento puede ser complicado.
+
+Contamos con una serie de tácticas que nos facilitan esta tarea. La táctica que más utilizaremos es \bluecode{exact?}. Al escribir \bluecode{exact?} en una demostración, Lean buscará en la librería un resultado que, al aplicar \code{\blue{exact} ese\_resultado}, concluya la prueba. Nos devolverá en el infoview una o varias opciones que podemos probar.
+
+Por ejemplo,
+
+\begin{lstlisting}
+  lemma lemma_exact (n : ℕ) : 2^n > 0 := by
+    exact?
+\end{lstlisting}
+
+nos devuelve en el infoview el mensaje: \code{Try this: \blue{exact Nat.two\_pow\_pos n}}. Podemos simplemente pinchar en la sugerencia y la escribirá sustituyeno a \bluecode{exact?}. Esto completará la prueba, pues \code{Nat.two\_pow\_pos} es un resultado de Mathlib igual o equivalente a nuestro lema. En efecto, si escribimos
+
+\begin{lstlisting}
+  #check Nat.two_pow_pos
+\end{lstlisting}
+
+Obtenemos el mensaje
+
+\begin{lstlisting}
+  Nat.two_pow_pos (w : ℕ) : 0 < 2 ^ w
+\end{lstlisting}
+
+La táctica \bluecode{exact?} también busca resultados que nosotros hayamos probado, así que también podemos utilizarlo cuando sepamos que algo ya lo hemos demostrado.
+
+La táctica \bluecode{apply?} funciona de la misma forma, aunque suele sugerir una gran cantidad de resultados distintos y, a menudo, muchos no son realmente útiles.
+
+
+[No se si poner algo de que a veces no funciona exact? pero podemos intentar como escribir lo que estamos buscando asi generalmente en un ejemplo aparte y ya ver si lo puedes aplicar en tu demo (es como una cosa que hago todo el rato)]
+
+
+\begin{itemize}
+  \item \textbf{Simplificar expresiones}
+\end{itemize}
+
+
+Varias tácticas nos pueden servir para simplificar expresiones. La más básica es simplemente \bluecode{simp}
 
 rw y simp, dsimp
 

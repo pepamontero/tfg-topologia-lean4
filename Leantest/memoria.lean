@@ -130,6 +130,7 @@ example (P Q : Prop) (hP : P) (hPQ : P → Q) : Q := by
 
 example : P := by
   by_contra h
+  sorry
 
 example (P Q : Prop) (hPQ : P → Q) (hP : P) : Q := by
   by_contra hQ
@@ -139,6 +140,37 @@ example (P Q : Prop) (hPQ : P → Q) (hP : P) : Q := by
 example (h : False) (x y : X) (_: x ≠ y) : x = y := by
   by_contra
   exact h
+
+example (h : x ∈ (∅ : Set X)) : 1 = 2 := by
+  by_contra
+  exact h
+
+
+
+/-
+  EJEMPLO EXACT O APPLY UTILIZANDO OTROS RESULTADOS
+-/
+
+lemma lemma_exact (n : ℕ) : 2^n > 0 := by
+  exact Nat.two_pow_pos n
+
+#check Nat.two_pow_pos
+
+example : 2^5 > 0 := by
+  exact lemma_exact 5
+
+lemma lemma_apply (n : ℕ) : n ≥ 2 → 2^n > n := by sorry
+
+example : 2^5 > 5 := by
+  apply lemma_apply 5
+  sorry
+
+def es_par (n : ℕ) : Prop := ∃ m : ℕ, n = 2 * m
+
+example : es_par 2 := by sorry
+
+
+
 
 -- ejemplos left, right
 
