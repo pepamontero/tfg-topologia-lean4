@@ -336,6 +336,27 @@ def thissucc {X : Type} [T : TopologicalSpace X]
 -/
 
 
+/-
+    definiciones sobre infimos
+    [estaría bien cambiar a las de mathlib creo]
+-/
+
+def isMyLowerBound (x : ℝ) (A : Set ℚ) : Prop :=
+  ∀ y : A, x ≤ y
+
+def isMyInf (x : ℝ) (A : Set ℚ) : Prop :=
+  /-
+  x es infimo de A si cumple:
+  - x es cota inferior
+  - si y es cota inferior → y ≤ x
+  -/
+  isMyLowerBound x A ∧ (∀ y : ℝ, (isMyLowerBound y A → y ≤ x))
+
+def hasMyInf (A : Set ℚ) : Prop :=
+  ∃ x : ℝ, isMyInf x A
+
+noncomputable def MyInf (A : Set ℚ) (hA : hasMyInf A) : ℝ := Classical.choose hA
+
 
 /-
                  LEMA DE URYSOHN
