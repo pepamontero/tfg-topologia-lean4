@@ -6,12 +6,24 @@ import Leantest.BasicProp.subspaces
 import Leantest.BasicProp.closure
 
 set_option diagnostics true
+set_option diagnostics.threshold 1500
+
+
+/-
+      DEF: ESPACIO NORMAL
+-/
 
 def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
     ∀ C1 : Set X, ∀ C2 : Set X,
     IsClosed C1 → IsClosed C2 → C1 ∩ C2 = ∅ →
     ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
     C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅
+
+
+/-
+            RESULTADOS SOBRE ABIERTOS
+      [hay que moverlo a otro archivo]
+-/
 
 
 lemma left_empty_implies_disjoint_open_neighbourhoods
@@ -172,7 +184,15 @@ lemma ioc_open_in_Icc01 {Y : Set ℝ}
         · linarith
       · exact hx2
 
+/-
+    fin resultados sobre abiertos [necesario mover]
+-/
 
+
+
+/-
+          CARACTERIZACIÓN DE NORMAL
+-/
 
 lemma characterization_of_normal {X : Type}
     (T : TopologicalSpace X) :
@@ -251,6 +271,8 @@ lemma characterization_of_normal {X : Type}
             exact set_inside_closure V
 
 
+/-                    INTENTOS PARA LA SUCESIÓN
+
 example {X : Type} (T : TopologicalSpace X)
     (hT : NormalTopoSpace T) (Q : Set ℝ)
     (hQ : Q = {x | x ∈ Set.Icc (0 : ℝ) 1 ∧ ∃ q : ℚ, (q : ℝ) = x} ):
@@ -311,6 +333,13 @@ def thissucc {X : Type} [T : TopologicalSpace X]
 
     sorry
 
+-/
+
+
+
+/-
+                 LEMA DE URYSOHN
+-/
 
 
 
