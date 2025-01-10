@@ -369,6 +369,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     let Q : Set ℚ := {x : ℚ | 0 ≤ x ∧ x ≥ 1}
 
+    have H : ∃ G : ℚ → Set X, (∀ p : ℚ, IsOpen (G p)) ∧
+    (∀ p q : Q, p < q → Closure (G p) ⊆ G q)
+    sorry
+
+    /-
     have aux : IsOpen C2ᶜ
     exact IsClosed.isOpen_compl
 
@@ -381,12 +386,36 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       | ⟨0, trivial⟩ => Classical.choose (h C2ᶜ C1 aux hC1' aux')
       | q => ∅
 
-    let g_rec : ℚ → Set ℚ → Set X := fun q P =>
-      if Classical.propDecidable (q ∈ P) then g q
+
+    let a : Q × Set Q → Prop := fun (q, P) ↦ (Set.Mem P q)
 
 
-    have hf1 : ∀ q : Q, IsOpen (f q)
+    let g_rec : Q × Set Q → Set X := fun (q, P) =>
+      let D : Prop := ∃ p ∈ P, p = q
+      if D then g q
+
+
+    -/
+
+
+    -- setting up G
+    let G : ℚ → Set X := Classical.choose H
+    let hG := Classical.choose_spec H
+    cases' hG with hG1 hG2
+    have Gdef : G = Classical.choose H := by rfl
+    rw [← Gdef] at hG1 hG2
+
+    let F : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ G p}
+
+    have hF1 : ∀ x, F x ≠ ∅
     sorry
+
+    have hF2 : ∀ x, ∀ p ∈ F x, 0 ≤ p ∧ p ≤ 1
+    sorry
+
+    let f : X → ℝ := fun x ↦ Set.Inf (F x)
+
+
 
     sorry
 
