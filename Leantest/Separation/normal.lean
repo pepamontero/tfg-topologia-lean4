@@ -426,19 +426,43 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     have Gdef : G = Classical.choose H := by rfl
     rw [← Gdef] at hG1 hG2
 
+
+    -- setting up F
     let F : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ G p}
 
-    have hF1 : ∀ x, F x ≠ ∅
+    have hF1 : ∀ x : X, F x ≠ ∅
     sorry
 
-    have hF2 : ∀ x, ∀ p ∈ F x, 0 ≤ p ∧ p ≤ 1
+    have hF2 : ∀ x : X, ∀ p ∈ F x, 0 ≤ p ∧ p ≤ 1
     sorry
 
-    let f : X → ℝ := fun x ↦ Set.Inf (F x)
-
-
-
+    have hF3 : ∀ x : X, hasMyInf (F x)
     sorry
+
+    -- setting up f
+    let k : X → ℝ := fun x ↦ MyInf (F x) (hF3 x)
+    have hk : ∀ x : X, (k x) ∈ Y
+    sorry
+
+    let f : X → Y := fun x ↦ ⟨k x, hk x⟩
+    use f
+
+    constructor
+
+    -- CONTINUITY OF f
+    sorry
+
+    constructor
+
+    -- f(C1) = {0}
+    sorry
+
+
+
+    -- f(C2) = {1}
+    sorry
+
+
 
   · -- ←
 
