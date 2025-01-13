@@ -596,7 +596,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
         simp [hFC1] at hy
         exact hy
 
-
     have hFInf : ∀ x ∈ C1, hasMyInf (F x)
     · intro x hx
       use 0
@@ -608,39 +607,9 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       specialize hFInf x hx
       specialize hF0 x hx
 
-      have kdef : k x = MyInf (F x) (hFInf)
-      rfl
-
-      rw [kdef]
-      rw [MyInf]
-
       let hspec := Classical.choose_spec hFInf
-
       exact inf_is_unique (Classical.choose hFInf) 0 (F x) hspec hF0
 
-
-    -- creo que esto igual no lo necesito
-    have hkC1' : k '' C1 = {0}
-    · ext r
-      constructor
-      all_goals intro hr
-      · simp at hr
-        cases' hr with x hx
-        specialize hkC1 x hx.left
-        rw [hx.right] at hkC1
-        exact hkC1
-
-      · simp at hr
-        simp
-        have aux : ∃ x, x ∈ C1
-        exact nonempty_has_element C1 hC1
-        cases' aux with x hx
-        use x
-        constructor
-        · exact hx
-        · specialize hkC1 x hx
-          rw [hr]
-          exact hkC1
 
     -- DEMO `f(C1) = {0}`
 
