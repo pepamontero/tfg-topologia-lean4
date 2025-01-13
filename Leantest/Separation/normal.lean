@@ -342,7 +342,7 @@ def thissucc {X : Type} [T : TopologicalSpace X]
 -/
 
 def isMyLowerBound (x : ℝ) (A : Set ℚ) : Prop :=
-  ∀ y : A, x ≤ y
+  ∀ y : ℚ, y ∈ A → x ≤ y
 
 def isMyInf (x : ℝ) (A : Set ℚ) : Prop :=
   /-
@@ -356,6 +356,57 @@ def hasMyInf (A : Set ℚ) : Prop :=
   ∃ x : ℝ, isMyInf x A
 
 noncomputable def MyInf (A : Set ℚ) (hA : hasMyInf A) : ℝ := Classical.choose hA
+
+def hasMyMin (A : Set ℚ) : Prop :=
+  ∃ p ∈ A, ∀ q ∈ A, p ≤ q
+
+noncomputable def MyMin (A : Set ℚ) (hA : hasMyMin A) : ℚ := Classical.choose hA
+
+lemma min_implies_inf (A : Set ℚ) : hasMyMin A → hasMyInf A := by
+  intro h
+  cases' h with p hp
+  use p
+  constructor
+  · rw [isMyLowerBound]
+    simp
+    exact hp.right
+  · intro y
+    rw [isMyLowerBound]
+    intro ha
+    specialize ha p hp.left
+    exact ha
+
+lemma inf_is_unique (x y : ℝ) (A : Set ℚ)
+    (hx : isMyInf x A)
+    (hy : isMyInf y A) : x = y := by
+
+  rw [isMyInf] at *
+  cases' hx with hx1 hx2
+  cases' hy with hy1 hy2
+  specialize hx2 y hy1
+  specialize hy2 x hx1
+  linarith
+
+
+-- esto no se ni donde lo pondría
+-- pero no lo encuentro en mathlib
+
+lemma nonempty_has_element {X : Type} (A : Set X)
+    (hA : A ≠ ∅) : ∃ x : X, x ∈ A := by
+  by_contra hc
+
+  have aux : A = ∅
+  · ext x
+    constructor
+    · intro hx
+      apply hc
+      use x
+    · intro hx
+      by_contra
+      exact hx
+
+  exact hA aux
+
 
 
 /-
@@ -391,15 +442,17 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     let Q : Set ℚ := {x : ℚ | 0 ≤ x ∧ x ≥ 1}
 
     have H : ∃ G : ℚ → Set X, (∀ p : ℚ, IsOpen (G p)) ∧
-    (∀ p q : Q, p < q → Closure (G p) ⊆ G q)
+    (∀ p q : ℚ, p < q → Closure (G p) ⊆ G q)
     sorry
 
-    /-
     have aux : IsOpen C2ᶜ
     exact IsClosed.isOpen_compl
 
     have aux' : C1 ⊆ C2ᶜ
     exact ABdisjoint_iff_AsubsBc.mp hC1C2
+
+    /-
+
 
     let g : Q → Set X := fun p =>
       match p with
@@ -426,6 +479,23 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     have Gdef : G = Classical.choose H := by rfl
     rw [← Gdef] at hG1 hG2
 
+    -- COSAS QUE VOY NECESITANDO SOBRE G
+    -- (que deberían ser ciertas por construcción de G)
+    have hG3 : G 0 = Classical.choose (h C2ᶜ C1 aux hC1' aux')
+    sorry
+
+    let hG3' := Classical.choose_spec (h C2ᶜ C1 aux hC1' aux')
+    rw [← hG3] at hG3'
+
+    have hG4 : G 1 = C2ᶜ
+    sorry
+
+    have hG5 : ∀ y < 0, G y = ∅
+    sorry
+
+    have hG6 : ∀ y > 1, G y = Set.univ
+    sorry
+
 
     -- setting up F
     let F : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ G p}
@@ -444,22 +514,153 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     have hk : ∀ x : X, (k x) ∈ Y
     sorry
 
+        -- CLAIMS
+    have claim1 : ∀ p : ℚ, ∀ x : X, x ∈ Closure (G p) → (k x) ≤ p
+    sorry
+
+    have claim2 : ∀ p : ℚ, ∀ x : X, x ∉ (G p) → (k x) ≥ p
+    sorry
+
     let f : X → Y := fun x ↦ ⟨k x, hk x⟩
     use f
 
+
+
+
     constructor
 
-    -- CONTINUITY OF f
+    /-
+            1. CONTINUITY OF f
+    -/
     sorry
 
     constructor
 
-    -- f(C1) = {0}
-    sorry
+
+    /-
+            2. f(C1) = {0}
+    -/
+
+    -- paso 1. ver que, si x ∈ C1, entonces F x = {q : q ≥ 0}
+
+    have hFC1 : ∀ x ∈ C1, F x = {q : ℚ | q ≥ 0}
+    · intro x hx
+      ext q
+      constructor
+      all_goals intro hq
+
+      -- show `F x ⊆ {q : ℚ | q ≥ 0}`
+      -- use: if `q < 0` then `U q = ∅`
+      · simp
+        by_contra hq'
+        simp at hq'
+        apply hG5 at hq'
+        have hq' : x ∉ G q
+        · rw [hq']
+          simp
+        exact hq' hq
+
+      -- show `{q : ℚ | q ≥ 0} ⊆ F x`
+      · simp at hq
+        -- two possible cases: either `q > 0` or `q = 0`
+        -- in each case we want to see `x ∈ G q`
+
+        have h0 : x ∈ G 0
+        · apply hG3'.right.left -- apply `C1 ⊆ G 0`
+          exact hx
+
+        have hq : q = 0 ∨ q > 0  := by exact Or.symm (LE.le.gt_or_eq hq)
+        cases' hq with hq hq
+
+          -- case `q = 0`
+        · rw [hq] -- goal here is equivalent by def. to `⊢ x ∈ G 0`
+          exact h0
+
+          -- case `q > 0`
+        · specialize hG2 0 q hq
+          apply hG2
+          apply set_inside_closure
+          exact h0
+
+    -- paso 2. ver que 0 es ínfimo de F x
+    have hF0 :  ∀ x ∈ C1, isMyInf 0 (F x)
+    · intro x hx
+      specialize hFC1 x hx
+      constructor
+      · intro p hp
+        simp [hFC1] at hp
+        simp
+        exact hp
+      · intro y hy
+        specialize hy 0
+        simp [hFC1] at hy
+        exact hy
 
 
+    have hFInf : ∀ x ∈ C1, hasMyInf (F x)
+    · intro x hx
+      use 0
+      exact hF0 x hx
 
-    -- f(C2) = {1}
+    -- paso 3. ver que k x = 0
+    have hkC1 : ∀ x ∈ C1, k x = 0
+    · intro x hx
+      specialize hFInf x hx
+      specialize hF0 x hx
+
+      have kdef : k x = MyInf (F x) (hFInf)
+      rfl
+
+      rw [kdef]
+      rw [MyInf]
+
+      let hspec := Classical.choose_spec hFInf
+
+      exact inf_is_unique (Classical.choose hFInf) 0 (F x) hspec hF0
+
+
+    -- creo que esto igual no lo necesito
+    have hkC1' : k '' C1 = {0}
+    · ext r
+      constructor
+      all_goals intro hr
+      · simp at hr
+        cases' hr with x hx
+        specialize hkC1 x hx.left
+        rw [hx.right] at hkC1
+        exact hkC1
+
+      · simp at hr
+        simp
+        have aux : ∃ x, x ∈ C1
+        exact nonempty_has_element C1 hC1
+        cases' aux with x hx
+        use x
+        constructor
+        · exact hx
+        · specialize hkC1 x hx
+          rw [hr]
+          exact hkC1
+
+    -- DEMO `f(C1) = {0}`
+
+    ext r
+    constructor
+    · simp
+      intro x hx hkx
+      rw [← hkx]
+      exact hkC1 x hx
+    · simp
+      intro hr
+      rw [hr]
+      apply nonempty_has_element at hC1
+      cases' hC1 with x hx
+      use x
+      constructor
+      · exact hx
+      · exact hkC1 x hx
+
+    -- f(C2) = {1} -> hay que usar la definición de G específica en 1
     sorry
 
 
