@@ -189,7 +189,6 @@ lemma ioc_open_in_Icc01 {Y : Set ℝ}
 -/
 
 
-
 /-
           CARACTERIZACIÓN DE NORMAL
 -/
@@ -408,6 +407,10 @@ lemma nonempty_has_element {X : Type} (A : Set X)
   exact hA aux
 
 
+-- densidad de ℚ en ℝ
+example (x y : ℝ) (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by exact exists_rat_btwn h
+
+
 
 /-
                  LEMA DE URYSOHN
@@ -490,10 +493,10 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     have hG4 : G 1 = C2ᶜ
     sorry
 
-    have hG5 : ∀ y < 0, G y = ∅
+    have hG5 : ∀ p < 0, G p = ∅
     sorry
 
-    have hG6 : ∀ y > 1, G y = Set.univ
+    have hG6 : ∀ p > 1, G p = Set.univ
     sorry
 
 
@@ -532,6 +535,9 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     /-
             1. CONTINUITY OF f
     -/
+
+
+
     sorry
 
     constructor
@@ -541,7 +547,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             2. f(C1) = {0}
     -/
 
-    -- paso 1. ver que, si x ∈ C1, entonces F x = {q : q ≥ 0}
+    -- paso 1. ver que, si `x ∈ C1`, entonces `F x = {q : q ≥ 0}`
 
     have hFC1 : ∀ x ∈ C1, F x = {q : ℚ | q ≥ 0}
     · intro x hx
@@ -611,7 +617,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       exact inf_is_unique (Classical.choose hFInf) 0 (F x) hspec hF0
 
 
-    -- DEMO `f(C1) = {0}`
+    -- paso 4. DEMO `f(C1) = {0}`
 
     ext r
     constructor
@@ -629,8 +635,102 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       · exact hx
       · exact hkC1 x hx
 
-    -- f(C2) = {1} -> hay que usar la definición de G específica en 1
-    sorry
+    /-
+            3. f(C2) = {1}
+    -/
+
+    -- paso 1. ver que, si `x ∈ C1`, entonces `F x = {q : q ≥ 0}`
+
+    have hFC2 : ∀ x ∈ C2, F x = {q : ℚ | q > 1}
+    · intro x hx
+      ext q
+      simp
+      constructor
+      all_goals intro hq
+
+      · by_contra hc
+        simp at hc
+
+        -- let's show that if `q ≤ 1`, then `x ∈ G 1`
+        -- which is a contradiction since `G 1 = C2ᶜ`
+        have h1 : x ∈ G 1
+        · have hc : q = 1 ∨ q < 1 := by exact Or.symm (Decidable.lt_or_eq_of_le hc)
+          cases' hc with hc hc
+          · -- if `q = 1`, by definition of F
+            rw [hc] at hq
+            exact hq
+          · -- if `q < 1`, by property of G (hG2)
+            specialize hG2 q 1 hc
+            apply hG2
+            apply set_inside_closure
+            exact hq
+        rw [hG4] at h1
+        exact h1 hx
+
+      · specialize hG6 q hq
+        have aux : x ∈ G q
+        · rw [hG6]
+          trivial
+        exact aux
+
+    -- paso 2. ver que 1 es ínfimo de F x
+    have hF1 :  ∀ x ∈ C2, isMyInf 1 (F x)
+    · intro x hx
+      specialize hFC2 x hx
+      constructor
+      · intro p hp
+        rw [hFC2] at hp
+        simp at hp
+        have hp : 1 ≤ p
+        · exact le_of_lt hp
+        exact_mod_cast hp -- exact_mod_cast deals with coercions
+      · intro y hy
+        rw [isMyLowerBound] at hy
+        by_contra hc
+        simp at hc
+        have hq : ∃ q : ℚ, 1 < q ∧ q < y
+        · exact_mod_cast exists_rat_btwn hc
+        cases' hq with q hq
+        cases' hq with hq1 hq2
+        have hq' : q ∈ F x
+        · simp [hFC2]
+          exact hq1
+        specialize hy q hq'
+        linarith
+
+    have hFInf : ∀ x ∈ C2, hasMyInf (F x)
+    · intro x hx
+      use 1
+      exact hF1 x hx
+
+    -- paso 3. ver que k x = 1
+    have hkC1 : ∀ x ∈ C2, k x = 1
+    · intro x hx
+      specialize hFInf x hx
+      specialize hF1 x hx
+
+      let hspec := Classical.choose_spec hFInf
+      exact inf_is_unique (Classical.choose hFInf) 1 (F x) hspec hF1
+
+
+    -- paso 4. DEMO `f(C2) = {1}`
+
+    ext r
+    constructor
+    · simp
+      intro x hx hkx
+      rw [← hkx]
+      exact hkC1 x hx
+    · simp
+      intro hr
+      rw [hr]
+      apply nonempty_has_element at hC2
+      cases' hC2 with x hx
+      use x
+      constructor
+      · exact hx
+      · exact hkC1 x hx
+
 
 
 
