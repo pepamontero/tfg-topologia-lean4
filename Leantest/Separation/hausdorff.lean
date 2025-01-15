@@ -103,7 +103,7 @@ de comandos
 -/
 lemma is_open_open_interval [T : TopologicalSpace ℝ]
     (hT : T = UsualTopology)
-    (x y : ℝ) (h : x < y) :
+    (x y : ℝ) :
     IsOpen (Set.Ioo x y) := by
   rw [hT]
   intro z hz
@@ -244,7 +244,6 @@ example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
         · simp
           exact hδ'
         · apply is_open_open_interval hT (x1 - δ) (x1 + δ)
-          linarith
     · use Set.Ioo (x2 - δ) (x2 + δ)
       constructor
       · trivial
@@ -252,7 +251,6 @@ example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
         · simp
           exact hδ'
         · apply is_open_open_interval hT (x2 - δ) (x2 + δ)
-          linarith
 
 /-
 RESULTADO
