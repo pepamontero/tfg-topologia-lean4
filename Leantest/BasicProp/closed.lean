@@ -9,6 +9,7 @@ class IsClosed (s : Set X) : Prop where
 open TopologicalSpace
 
 lemma Set.compl_of_univ {X : Type} : (Set.univ : Set X)ᶜ = ∅ := by
+  -- exact compl_univ
   ext x
   constructor <;> intro h
   · simp at h
@@ -16,6 +17,7 @@ lemma Set.compl_of_univ {X : Type} : (Set.univ : Set X)ᶜ = ∅ := by
     trivial
 
 lemma Set.compl_of_empty {X : Type} : (∅ : Set X)ᶜ = Set.univ := by
+  --exact compl_empty
   rw [← compl_compl univ]
   rw [compl_inj_iff]
   exact Eq.symm Set.compl_of_univ
