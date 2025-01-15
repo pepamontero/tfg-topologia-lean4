@@ -8,7 +8,7 @@ import Leantest.BasicProp.interior
 
 
 set_option diagnostics true
-set_option diagnostics.threshold 1500
+set_option diagnostics.threshold 2000
 
 
 /-
@@ -544,7 +544,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             1. CONTINUITY OF f
     -/
 
-    · rw [continuousInSubspace_iff_trueForSpace]
+    · rw [@continuousInSubspace_iff_trueForSpace X ℝ Y T (UsualTopology) R hR f]
 
       intro W hW
       rw [characterization_of_open]
@@ -625,14 +625,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           apply set_inside_closure at hy
           specialize claim1 q y hy
           linarith
-
-      -- no entiendo muy bien por que, me pide
-      -- `R = TopoSubspace UniformSpace.toTopologicalSpace Y`
-      -- esto ocurre por aplicar mi lema
-      -- `continuousInSubspace_iff_trueForSpace`
-      -- pero yo no pido eso en el lema...
-      -- y además aparecen filtros noooooooooo
-      · sorry
 
     constructor
 
