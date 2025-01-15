@@ -5,10 +5,11 @@ import Leantest.TopoSpaces.usual
 import Leantest.BasicProp.subspaces
 import Leantest.BasicProp.closure
 import Leantest.BasicProp.interior
+import Leantest.Separation.lemmas
 
 
 set_option diagnostics true
-set_option diagnostics.threshold 2000
+set_option diagnostics.threshold 5000
 
 
 /-
@@ -425,11 +426,16 @@ U = V ∩ Y
 -/
 
 
+/-
+
 
 lemma Urysohn {X : Type} {Y : Set ℝ}
-    (T : TopologicalSpace X) {R : TopologicalSpace Y}
+    (T : TopologicalSpace X)
+    [T' : TopologicalSpace ℝ]
+    (hT' : T' = UsualTopology)
+    {R : TopologicalSpace Y}
     {hY : Y = Set.Icc 0 1}
-    {hR : R = TopoSubspace UsualTopology Y} :
+    {hR : R = TopoSubspace T' Y} :
     NormalTopoSpace T ↔ ∀ C1 : Set X, ∀ C2 : Set X,
     C1 ≠ ∅ → C2 ≠ ∅ →
     IsClosed C1 → IsClosed C2 →
@@ -544,7 +550,14 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             1. CONTINUITY OF f
     -/
 
-    · rw [@continuousInSubspace_iff_trueForSpace X ℝ Y T (UsualTopology) R hR f]
+    · let fB : ℝ × ℝ → Set ℝ := fun (a, b) ↦ Set.Ioo a b
+      have hfB : ∀ a b : ℝ, fB (a, b) = Set.Ioo a b
+      exact fun a b ↦ rfl
+      let B : (Set (Set ℝ)) := fB '' (Set.univ)
+      have B_def : B = fB '' (Set.univ) := by rfl
+      have hB : isTopoBase B := by exact BaseOfRealTopo hT' fB hfB
+
+      rw [@continuousInSubspace_iff_trueForBase X ℝ Y T T' R hR f B hB]
 
       intro W hW
       rw [characterization_of_open]
@@ -553,6 +566,12 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       simp at hx
 
       have basicW : ∃ a b : ℝ, W = {x : ℝ | a < x ∧ x < b}
+      rw [B_def] at hW
+      simp at hW
+      cases' hW with a hW
+      cases' hW with b hW
+      use a
+      use b
       /-
       esto no es para nada cierto
       pero quiero ver si lo puedo demostrar
@@ -949,3 +968,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     · by_contra
       exact hx
+
+
+-/
