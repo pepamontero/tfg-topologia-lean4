@@ -29,6 +29,7 @@ example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
 
 example (X Y Z : Type) [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : X → Y) (g : Y → Z) (hf : Continuous f) (hg : Continuous g) : Continuous (g ∘ f) := by
+  --exact Continuous.comp hg hf
 
   rw [continuous_def] at *
   intro s hs
@@ -45,6 +46,7 @@ Proposición: son equivalentes:
 
 example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ C : Set Y, IsClosed C → IsClosed (f ⁻¹' C) := by
+  --exact continuous_iff_isClosed
 
   constructor <;> intro h
   · rw [continuous_def] at h
