@@ -32,6 +32,7 @@ lemma preimage_of_univ {X Y : Type}
     [TopologicalSpace X]
     [TopologicalSpace Y]
     (f : X → Y) : f ⁻¹' (Set.univ) = Set.univ := by
+  --exact rfl
   ext x
   constructor
   <;> intro h
@@ -42,6 +43,7 @@ lemma preimage_of_empty {X Y : Type}
     [TopologicalSpace X]
     [TopologicalSpace Y]
     (f : X → Y) : f ⁻¹' (∅) = ∅ := by
+  --exact rfl
   ext x
   constructor
   <;> intro h
