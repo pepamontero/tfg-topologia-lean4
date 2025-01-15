@@ -1,5 +1,6 @@
 import Leantest.Continuous.basic
 import Leantest.TopoSpaces.usual
+import Leantest.BasicProp.subspaces
 
 #check Set.image_union
 
@@ -43,12 +44,14 @@ def isTopoBase {X : Type} [T : TopologicalSpace X]
   (∀ V : Set X, IsOpen V → ∃ UB ⊆ B, V = ⋃₀ UB)
 
 
+/-
 example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) :
     isTopoBase (⋃ a ∈ ℝ, {x : ℝ | a < x}) := by
   sorry
+-/
 
-lemma name {X Y : Type} [T : TopologicalSpace X]
-    [T : TopologicalSpace Y] (f : X → Y)
+lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
+    [T' : TopologicalSpace Y] (f : X → Y)
     (B : Set (Set Y)) (hB : isTopoBase B) :
     ContinuousPepa f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U) := by
 
@@ -66,19 +69,43 @@ lemma name {X Y : Type} [T : TopologicalSpace X]
     cases' hB with UB hUB
     rw [hUB.right]
     rw [Set.preimage_sUnion]
-    apply isOpen_sUnions
-    intro U hU
-
-    obtain ⟨S, hS, hU⟩ := Set.mem_sUnion.mp hU
-
-
     apply isOpen_sUnion
     intro U hU
-    simp at hU
-    cases' hU with S hS
-    rw [← hS]
-
-
-
 
     sorry
+
+example {X Y : Type} (f : X → Y) (x1 x2 : X) (h : x1 = x2) : f x1 = f x2 := by exact congrArg f h
+
+
+example {X Y : Type} (f : X → Y) (x1 x2 : Set X) (h : x1 = x2) : f '' x1 = f '' x2 := by
+  exact congrArg (Set.image f) h
+
+
+lemma continuousInSubspace_iff_trueForSpace' {X Y : Type} {Z : Set Y}
+    [TX : TopologicalSpace X] [TY : TopologicalSpace Y]
+    [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
+    (f : X → Z) :
+    ContinuousPepa f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
+
+  constructor
+  all_goals intro h U hU
+
+  · apply h
+    rw [hZ]
+    use U
+    constructor
+    · exact hU
+    · simp
+      exact Set.inter_comm Z U
+
+  · rw [hZ] at hU
+    cases' hU with V hV
+
+    have aux : Subtype.val ⁻¹' (Subtype.val '' U) = U
+    exact Set.preimage_val_image_val_eq_self
+
+    rw [← aux]
+    rw [hV.right]
+    simp
+    apply h
+    exact hV.left

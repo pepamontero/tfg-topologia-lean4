@@ -4,6 +4,8 @@ import Leantest.TopoSpaces.discrete
 import Leantest.TopoSpaces.usual
 import Leantest.BasicProp.subspaces
 import Leantest.BasicProp.closure
+import Leantest.BasicProp.interior
+
 
 set_option diagnostics true
 set_option diagnostics.threshold 1500
@@ -411,6 +413,12 @@ lemma nonempty_has_element {X : Type} (A : Set X)
 example (x y : ℝ) (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by exact exists_rat_btwn h
 
 
+/-
+`Def:` sea Y ⊆ X subespacio topológico,
+U ⊆ Y es abierto en Y si ∃ V ⊆ X abierto en X tal que
+U = V ∩ Y
+-/
+
 
 /-
                  LEMA DE URYSOHN
@@ -536,9 +544,95 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             1. CONTINUITY OF f
     -/
 
+    · rw [continuousInSubspace_iff_trueForSpace]
+
+      intro W hW
+      rw [characterization_of_open]
+      intro x hx
+
+      simp at hx
+
+      have basicW : ∃ a b : ℝ, W = {x : ℝ | a < x ∧ x < b}
+      /-
+      esto no es para nada cierto
+      pero quiero ver si lo puedo demostrar
+      solo para este tipo de abiertos
+      y si luego puedo generalizarlo
+      -/
+      sorry
+
+      cases' basicW with a basicW
+      cases' basicW with b basicW
+
+      simp [basicW] at hx
 
 
-    sorry
+      -- paso 1. encontrar p, q racionales con `a < p < f(x) < q < b`
+      have hp : ∃ p : ℚ, a < p ∧ p < k x
+      exact exists_rat_btwn hx.left
+      have hq : ∃ q : ℚ, k x < q ∧ q < b
+      exact exists_rat_btwn hx.right
+
+      cases' hp with p hp
+      cases' hq with q hq
+
+      -- paso 2.1. probar: `x ∉ Closure (G p)`
+      have yanose1 : x ∉ Closure (G p)
+      by_contra c
+      specialize claim1 p x c
+      apply not_lt.mpr claim1
+      exact hp.right
+
+      -- paso 2.1. probar: `x ∈ G q`
+      have yanose2 : x ∈ G q
+      by_contra c
+      specialize claim2 q x c
+      apply not_lt.mpr claim2
+      exact hq.left
+
+      -- paso 3. tomamos el abierto `V = U_q \ Adh(U_p)`
+      use (G q) ∩ (Closure (G p))ᶜ
+
+
+      constructor
+
+      -- paso 4. probar que `V` es entorno abierto de `x
+
+      · constructor
+        · -- probar que `x ∈ V`
+          constructor
+          · exact yanose2
+          · exact yanose1
+        · -- probar que `V` es abierto
+          apply IsOpen.inter
+          · exact hG1 q
+          · rw [isOpen_compl_iff]
+            exact closure_is_closed (G p) --exact? looks for my lemma
+
+      -- paso 5. probar que `f(V) ⊆ U`
+      · intro y hy
+        simp [basicW]
+        constructor
+        · cases' hy with _ hy
+          have hy : y ∉ G p
+          · by_contra c
+            apply set_inside_closure at c
+            exact hy c
+          specialize claim2 p y hy
+          linarith
+
+        · cases' hy with hy _
+          apply set_inside_closure at hy
+          specialize claim1 q y hy
+          linarith
+
+      -- no entiendo muy bien por que, me pide
+      -- `R = TopoSubspace UniformSpace.toTopologicalSpace Y`
+      -- esto ocurre por aplicar mi lema
+      -- `continuousInSubspace_iff_trueForSpace`
+      -- pero yo no pido eso en el lema...
+      -- y además aparecen filtros noooooooooo
+      · sorry
 
     constructor
 
