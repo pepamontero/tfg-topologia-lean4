@@ -426,7 +426,6 @@ U = V ∩ Y
 -/
 
 
-/-
 
 
 lemma Urysohn {X : Type} {Y : Set ℝ}
@@ -565,20 +564,16 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
       simp at hx
 
+
       have basicW : ∃ a b : ℝ, W = {x : ℝ | a < x ∧ x < b}
-      rw [B_def] at hW
-      simp at hW
-      cases' hW with a hW
-      cases' hW with b hW
-      use a
-      use b
-      /-
-      esto no es para nada cierto
-      pero quiero ver si lo puedo demostrar
-      solo para este tipo de abiertos
-      y si luego puedo generalizarlo
-      -/
-      sorry
+      · rw [B_def] at hW
+        simp at hW
+        cases' hW with a hW
+        cases' hW with b hW
+        use a
+        use b
+        rw [← hW]
+        exact hfB a b
 
       cases' basicW with a basicW
       cases' basicW with b basicW
@@ -898,7 +893,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     apply hf.left -- aplicar def. de f continua
     apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
-    · exact hR
+    · rw [hT'] at hR
+      exact hR
     · simp
       norm_num
 
@@ -908,7 +904,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     apply hf.left -- aplicar def. de f continua
     apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
-    · exact hR
+    · rw [hT'] at hR
+      exact hR
     · simp
       norm_num
 
@@ -968,6 +965,3 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     · by_contra
       exact hx
-
-
--/
