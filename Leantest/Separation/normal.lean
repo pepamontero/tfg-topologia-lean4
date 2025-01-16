@@ -446,9 +446,8 @@ lemma existence_of_opens_for_urysohn {X : Type}
   let P : Finset ℕ := {}
   let k : ℕ := Finset.card P
 
-
-
-  #check Finset.card
+  sorry
+  sorry
   sorry
 
 

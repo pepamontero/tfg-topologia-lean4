@@ -1,5 +1,6 @@
 import Mathlib.Tactic
 
+
 example {X : Type}
     (T : TopologicalSpace X)
     (hT : NormalTopoSpace T)
