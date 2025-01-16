@@ -199,13 +199,13 @@ lemma continuousInSubspace_iff_trueForBase {X Y : Type} {Z : Set Y}
   all_goals intro h
 
   · -- →
-    rw [continuousInSubspace_iff_trueForSpace' hZ] at h
+    rw [continuousInSubspace_iff_trueForSpace hZ] at h
     intro U hU
     apply h
     exact hB.left U hU
 
   · -- ←
-    rw [continuousInSubspace_iff_trueForSpace' hZ]
+    rw [continuousInSubspace_iff_trueForSpace hZ]
     intro U hU
 
     rw [isTopoBase] at hB
