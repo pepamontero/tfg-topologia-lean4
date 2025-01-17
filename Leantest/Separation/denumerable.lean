@@ -107,3 +107,36 @@ lemma injective_decodeRat : Function.Injective decodeRat := by
   apply some_eq_imp_eq at h
   rw [← hq, ← hp]
   rw [h]
+
+lemma surjective_encodeRat : Function.Surjective encodeRat := by
+  intro n
+  rcases decodeRatProp n with ⟨q, hq⟩
+  use q
+
+lemma surjective_decodeRat : Function.Surjective decodeRat := by
+
+  -- i think it may not be...
+  intro q
+
+  have h : q = none ∨ q ≠ none
+  exact eq_or_ne q none
+
+  cases' h with h h
+
+  · by_contra c
+    simp at c
+
+    sorry
+  · have h : ∃ p, p ∈ q
+    sorry
+    cases' h with p hp
+    use (encodeRat p)
+    rw [encodeRatProp]
+    ext a
+    constructor
+    all_goals intro ha
+    · rw [Option.mem_some_iff] at ha
+      rw [← ha]
+      exact hp
+    · rw [Option.mem_some_iff]
+      sorry
