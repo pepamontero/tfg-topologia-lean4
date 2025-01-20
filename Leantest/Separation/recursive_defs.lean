@@ -115,9 +115,14 @@ def G {X : Type} [T : TopologicalSpace X]
 
   (by
   · induction' n
+    · rw [r]
+      have h0 : G hT C1 C2 hC1 hC2 hC1C2 0 = C2ᶜ
+      sorry -- es que esto es por definición ...
+      rw [h0]
+      exact hC2
+
     ·
-      sorry
-    · sorry)
+      sorry)
 
   (by sorry)
 
@@ -130,7 +135,9 @@ def G {X : Type} [T : TopologicalSpace X]
   · sorry
   · sorry
   · sorry
-
+  · sorry
+  · sorry
+  · sorry -- no se por que se me crean mas goals
 
 
 #check decodeRat
