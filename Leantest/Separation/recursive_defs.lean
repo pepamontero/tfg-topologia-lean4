@@ -146,10 +146,9 @@ def G {X : Type} [T : TopologicalSpace X]
 
     fun n ↦
   let F : ℕ → Set X := fun n ↦
-  match n with
-  | 0 => C2ᶜ
-  | 1 => Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
-  | n => G hT C1 C2 hC1 hC2 hC1C2 n
+  if n = 0 then C2ᶜ
+  else if n = 1 then Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
+  else G hT C1 C2 hC1 hC2 hC1C2 n
 
   match n with
   | 0 => F 0
@@ -177,9 +176,14 @@ def G {X : Type} [T : TopologicalSpace X]
       exact h.left
 
     · -- r n > 1
-      have h' : F (r n) = G hT C1 C2 hC1 hC2 hC1C2 n
-
+      have hF : F (r n) = G hT C1 C2 hC1 hC2 hC1C2 n
       dsimp [F]
+      sorry
+
+      rw [hF]
+
+
+
 
 
 
