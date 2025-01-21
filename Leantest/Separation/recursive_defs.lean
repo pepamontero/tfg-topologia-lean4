@@ -1,6 +1,7 @@
 import Leantest.Separation.normal
 import Leantest.Separation.denumerable
 
+import Mathlib.Control.Fix -- no se si esto me podría ayudar
 
 #check Closure
 
@@ -21,6 +22,39 @@ def FibonacciSet : ℕ → Set ℕ := fun n ↦
   | 1 => {1}
   | n + 2 => FibonacciSet n ∪ FibonacciSet (n + 1)
 
+example (n : ℕ) (hn : n > 1) : FibonacciSet n = {0} ∪ {1} := by
+  ext x
+  constructor
+  all_goals intro hx
+  · rw [FibonacciSet.eq_def] at hx
+    simp
+
+
+    sorry
+  · simp at hx
+
+    induction' hn with n HI
+    · -- CB
+      simp
+      rw [FibonacciSet.eq_def]
+      cases' hx with hx hx
+      · right
+        rw [FibonacciSet.eq_def]
+        simp
+        exact hx
+      · left
+        rw [FibonacciSet.eq_def]
+        simp
+        exact hx
+
+    · -- CR
+
+      cases' hx with hx hx
+      · rw [hx]
+        simp
+
+        sorry
+      · sorry
 
 /- ejemplos
 
@@ -97,6 +131,9 @@ def G {X : Type} [T : TopologicalSpace X]
   · exact (rn_lt_n n)
 -/
 
+#check Fix
+
+
 --esta es la buena
 def G {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -108,13 +145,50 @@ def G {X : Type} [T : TopologicalSpace X]
     : ℕ → Set X :=
 
     fun n ↦
+  let F : ℕ → Set X := fun n ↦
   match n with
   | 0 => C2ᶜ
   | 1 => Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
-  | n => Classical.choose (hT (G hT C1 C2 hC1 hC2 hC1C2 (r n)) (Closure (G hT C1 C2 hC1 hC2 hC1C2 (s n)))
+  | n => G hT C1 C2 hC1 hC2 hC1C2 n
+
+  match n with
+  | 0 => F 0
+  | 1 => F 1
+  | n => Classical.choose (hT (F (r n)) (Closure (F (s n)))
 
   (by
-  · induction' n
+  · have cases : r n = 0 ∨ r n > 0
+    exact Nat.eq_zero_or_pos (r n)
+    cases' cases with h0 hn
+
+    · -- r n = 0
+      rw [h0]
+      dsimp [F]
+      exact hC2
+
+    have cases : r n = 1 ∨ r n > 1
+    exact LE.le.eq_or_gt hn
+    cases' cases with h1 hn
+
+    · -- r n = 1
+      rw [h1]
+      dsimp [F]
+      let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+      exact h.left
+
+    · -- r n > 1
+      have h' : F (r n) = G hT C1 C2 hC1 hC2 hC1C2 n
+
+      dsimp [F]
+
+
+
+    have h' : G hT C1 C2 hC1 hC2 hC1C2 0 = C2ᶜ
+    sorry
+    sorry
+
+
+    induction' n
     · rw [r]
       have h0 : G hT C1 C2 hC1 hC2 hC1C2 0 = C2ᶜ
       sorry -- es que esto es por definición ...
