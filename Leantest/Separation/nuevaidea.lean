@@ -229,7 +229,7 @@ Lo que he pensado ahora es:
   y luego debajo y encima del 0 ya pongo empty?? no se
 -/
 
-lemma loqueyoquiero' {X : Type} [T : TopologicalSpace X]
+lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
     (hT : NormalTopoSpace T)
 
     (C1 C2 : Set X)
@@ -252,29 +252,29 @@ lemma loqueyoquiero' {X : Type} [T : TopologicalSpace X]
   induction' hn with n HI
 
   rw [characterization_of_normal] at hT
+  let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
 
   · --caso base
     simp
     let G : ℕ → Set X := fun n ↦
       if n = 0 then C2ᶜ
       else if n = 1 then Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
-      else Classical.choose (hT (C2ᶜ) (Closure (Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)))
-
-        hC2
-
-        (by
-        apply closure_is_closed)
-
-        (by
-        let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
-        exact h.right.right)
+      else Classical.choose (
+        hT
+          (C2ᶜ)
+          (Closure (Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)))
+          hC2
+          (by apply closure_is_closed)
+          h.right.right
       )
+
+    have aux : ∀ p : ℕ, p ≤ 2 → p = 0 ∨ p = 1
+    sorry
 
     use G
     constructor
     · intro p hp
-      have aux : p = 0 ∨ p = 1
-      · sorry -- esto es tan trivial que me da pereza
+      specialize aux p hp
       cases' aux with h h
       all_goals rw [h]
       · simp [G]
@@ -283,8 +283,18 @@ lemma loqueyoquiero' {X : Type} [T : TopologicalSpace X]
         let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
         exact h.left
 
-    ·
-      sorry
+    · intro p q hp hq hpq
+      let hp := aux p hp
+      let hq := aux q hq
+
+      have aux : p = 1 ∧ q = 0
+      sorry -- esto es bastante trivial
+
+      rw [aux.left, aux.right]
+      simp [G]
+      exact h.right.right
+
+
 
   · -- caso recursivo
 
