@@ -112,6 +112,18 @@ noncomputable def r : ℕ → ℕ := fun n ↦
   if h : n > 1 then Classical.choose (exists_r n h)
   else 0
 
+lemma r_prop (n : ℕ) (hn : n > 1) : (
+  (r n ∈ Finset.range n) ∧
+  (f (r n) < f n) ∧
+  (∀ m ∈ Finset.range n, f m < f n → f m ≤ f (r n))
+) := by
+  let h := Classical.choose_spec (exists_r n hn)
+  simp [r]
+  simp [hn]
+  simp at h
+  exact h
+
+
 -- FINDING S
 example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
