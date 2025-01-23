@@ -604,6 +604,11 @@ lemma f_inv_prop : (∀ n : ℕ, f_inv (f n) = n) ∧
   let h := Classical.choose_spec f_has_inverse
   exact h
 
+
+/-
+DEFINICIÓN DE LA G FINAL
+-/
+
 def G {X : Type} [T : TopologicalSpace X]
     (hT : NormalTopoSpace T)
     (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -618,3 +623,63 @@ def G {X : Type} [T : TopologicalSpace X]
   if q < 0 then ∅
   else if h : (0 ≤ q ∧ q ≤ 1) then (G' hT hT' C1 C2 hC1 hC2 hC1C2 (f_inv ⟨q, h⟩))
   else Set.univ
+
+
+/-
+CUMPLE LAS PROPIEDADES???
+-/
+
+lemma prop1 {X : Type} [T : TopologicalSpace X]
+    (hT : NormalTopoSpace T)
+    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ p : ℚ, IsOpen (G hT hT' C1 C2 hC1 hC2 hC1C2 p) := by
+
+  intro p
+
+  have cases : p < 0 ∨ 0 ≤ p := by exact lt_or_le p 0
+  cases' cases with hp hp
+
+  · simp [G, hp]
+
+  · have cases : p ≤ 1 ∨ 1 < p := by exact le_or_lt p 1
+    cases' cases with hp' hp
+
+    · have aux : ¬ p < 0
+      · linarith
+      have hp : 0 ≤ p ∧ p ≤ 1
+      · constructor; exact hp; exact hp'
+
+      simp [G, aux, hp]
+
+      have aux : ¬ (f_inv ⟨p, hp⟩ = 0)
+      · sorry
+      have aux' : ¬ (f_inv ⟨p, hp⟩ = 1)
+      · sorry
+      simp [G']
+      have cases : 1 < f_inv ⟨p, hp⟩ ∨ ¬ ( 1 < f_inv ⟨p, hp⟩)
+      · exact Decidable.em (1 < f_inv ⟨p, hp⟩)
+
+      cases' cases with aux'' aux''
+
+      · simp [G', aux, aux', aux'']
+        simp [Gn]
+        let hGn := Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 (f_inv ⟨p, hp⟩) aux'')
+        let hGn := hGn.left
+        specialize hGn (f_inv ⟨p, hp⟩) (by exact Nat.le_refl (f_inv ⟨p, hp⟩))
+        exact hGn
+
+      · simp [G', aux, aux', aux'']
+
+
+    · have aux : ¬ p < 0
+      · sorry
+      have aux' : ¬ (0 ≤ p ∧ p ≤ 1)
+      · sorry
+
+      simp [G, hp, aux, aux']
