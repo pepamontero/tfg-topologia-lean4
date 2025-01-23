@@ -549,3 +549,41 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
           · exact Nat.le_of_lt_succ hp
           · exact Nat.le_of_lt_succ hq
           · exact hpq
+
+
+noncomputable def Gn {X : Type} [T : TopologicalSpace X]
+
+    (hT : NormalTopoSpace T)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (n : ℕ)
+    (hn : n > 1)
+
+    := fun m ↦ (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn)) m
+
+
+def G' {X : Type} [T : TopologicalSpace X]
+    (hT : NormalTopoSpace T)
+    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ℕ → Set X
+
+    := fun n ↦
+
+  if n = 0 then C2ᶜ
+  else if n = 1 then Classical.choose (hT' C2ᶜ C1 hC2 hC1 hC1C2)
+  else if h : n > 1 then ((Gn hT C1 C2 hC1 hC2 hC1C2 n h) n)
+  else ∅
+
+  /-
+  La verdad es que no estoy 100% segura de que esta definición vaya a funcionar
+  -/
