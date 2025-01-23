@@ -26,18 +26,14 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
 
 
 /-
-
+definición de las funciones r y s:
+dado n ∈ ℕ, r y s devuelven naturales tales que
+    f r < f n < f s
+y estas son las mejores elecciones de r y s
 -/
 
 
-example (a b : ℕ) (h1 : a ≤ b) (h2 : a ≠ b) : a < b := by exact Nat.lt_of_le_of_ne h1 h2
-
-
-example (a b : ℝ) (h1 : a ≤ b) (h2 : a ≠ b) : a < b := by exact lt_of_le_of_ne h1 h2
-
-
-
--- FINDING R
+-- existencia de tal r
 lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
     (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
@@ -113,6 +109,8 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     rw [hr.right]
     exact hfr' m aux
 
+-- definición de r y propiedades
+
 noncomputable def r : ℕ → ℕ := fun n ↦
   if h : n > 1 then Classical.choose (exists_r n h)
   else 0
@@ -130,7 +128,7 @@ lemma r_prop (n : ℕ) (hn : n > 1) : (
 
 
 
--- FINDING S
+-- existencia de tal s
 lemma exists_s (n : ℕ) (hn : n > 1) : ∃ s ∈ Finset.range n,
     ((f n < f s) ∧
     (∀ m ∈ Finset.range n, f n < f m → f s ≤ f m)) := by
@@ -206,6 +204,9 @@ lemma exists_s (n : ℕ) (hn : n > 1) : ∃ s ∈ Finset.range n,
     rw [hs.right]
     exact hfs' m aux
 
+
+-- definición de s y propiedades
+
 noncomputable def s : ℕ → ℕ := fun n ↦
   if h : n > 1 then Classical.choose (exists_s n h)
   else 0
@@ -220,6 +221,11 @@ lemma s_prop (n : ℕ) (hn : n > 1) : (
   simp [hn]
   simp at h
   exact h
+
+
+/-
+RESULTADO PRINCIPAL:
+-/
 
 
 lemma exists_G {X : Type} [T : TopologicalSpace X]
@@ -393,7 +399,7 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
           exact aux
 
     let G : ℕ → Set X := fun m ↦
-      if h : m < n + 1 then G' m
+      if m < n + 1 then G' m
       else Classical.choose (
         hT
         (G' s)
