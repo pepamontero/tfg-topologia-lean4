@@ -1,18 +1,32 @@
 import Leantest.Separation.normal
 
 
+def Q : Set ℚ := {q : ℚ | 0 ≤ q ∧ q ≤ 1} -- `ℚ ∩ [0, 1]`
 
-lemma HYPOTHESIS : ∃ f : ℕ → ℚ, f.Bijective ∧ f 0 = 1 ∧ f 1 = 0 := by sorry
+lemma Q1 : 1 ∈ Q := by simp [Q]
+lemma Q0 : 0 ∈ Q := by simp [Q]
 
+lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0, Q0⟩) := by
+  sorry
 
-noncomputable def f : ℕ → ℚ := Classical.choose HYPOTHESIS
+noncomputable def f : ℕ → Q := Classical.choose hf
 
-example (n : ℕ) : ∃ r ∈ Finset.range n,
+example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
     (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
-  induction' n with n HI
 
-  sorry
+  induction' hn with n HI
+
+  · --cb
+    simp
+
+    sorry
+
+  · --cr
+    sorry
+
+
+
 
 /-
 Lo que he pensado ahora es:
@@ -23,8 +37,6 @@ Lo que he pensado ahora es:
 2. a lo mejor solo tendría que hacerlo para todo n
   tal que cumpla f n ∈ [0, 1]
   y luego debajo y encima del 0 ya pongo empty?? no se
-
-en principio voy a tirar con lo primero a ver
 -/
 
 lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
@@ -61,9 +73,16 @@ lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
       simp at hp hq
       rw [hp, hq] at hpq
       by_contra
-      linarith
+      exact (lt_self_iff_false (f 0)).mp hpq
 
   · -- caso recursivo
+
+    /-
+    NOTA: igual aquí debería meter otro caso para n = 1,
+    porque si no como que no estoy definiendo G (1) = Classical.choose...
+
+    osea la movida es que aquí para la recursión necesito que haya al menos 2 elementos ya definidos
+    -/
     rw [characterization_of_normal] at hT
 
     cases' HI with G' hG'
