@@ -124,24 +124,97 @@ lemma r_prop (n : ℕ) (hn : n > 1) : (
   exact h
 
 
+
 -- FINDING S
-example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
-    ((f r < f n) ∧
-    (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
+lemma exists_s (n : ℕ) (hn : n > 1) : ∃ s ∈ Finset.range n,
+    ((f n < f s) ∧
+    (∀ m ∈ Finset.range n, f n < f m → f s ≤ f m)) := by
 
-  induction' hn with n HI
+  let S : Finset ℕ := (Finset.range n).filter (fun m ↦ f n < f m)
+  -- tomamos `S = {m ∈ {0, 1, ..., n-1} | f n < f m}`
 
-  · --cb
+  -- vemos que S no es vacío
+  have hS : S.Nonempty
+  · use 0
+    simp [S]
+    constructor
+    · linarith
+    · have aux : f n ≤ f 0
+      · rw [f_prop.right.left]
+        exact (f n).property.right
+      have aux' : f n ≠ f 0
+      · by_contra c
+        apply (f_prop.left).left at c
+        linarith
+      exact lt_of_le_of_ne aux aux'
+
+  let fS : Finset Q := S.image f
+  -- tomamos el conjunto de as imágenes de S
+
+  -- vemos que no es vacío
+  let hfS : fS.Nonempty
+  exact (Finset.image_nonempty).mpr hS
+
+  -- tomamos el mínimo de las imágenes
+  let fs := Finset.min' fS hfS
+  have hfs : fs ∈ fS
+  exact Finset.min'_mem fS hfS
+
+  -- condición de mínimo
+  have hfs' : ∀ fm ∈ fS, fs ≤ fm
+  exact fun fm a ↦ Finset.min'_le fS fm a
+  have hfs' : ∀ m ∈ S, fs ≤ f m
+  intro m hm
+  have aux : f m ∈ fS
+  exact Finset.mem_image_of_mem f hm
+  exact hfs' (f m) aux
+
+  -- tomamos el argumento de fs, fs = f s
+  have hfs'' : ∃ s ∈ S, f s = fs
+  exact Finset.mem_image.mp hfs
+  cases' hfs'' with s hs
+
+  use s -- probamos que este r nos vale
+  simp [S] at hs
+
+  constructor
+
+  · -- `s ∈ {0, 1, ..., n-1}`?
     simp
-    use 1
+    exact hs.left.left
 
+  constructor
 
-    sorry
+  · -- `f n < f s`?
+    exact hs.left.right
 
-  · --cr
-    sorry
+  · -- si `m ∈ {0, 1, ..., n-1}`, `f r ≤ f m`?
+    intro m hm hmn
 
+    have aux : m ∈ S
+    simp [S]
+    constructor
+    · simp at hm
+      exact hm
+    · exact hmn
 
+    rw [hs.right]
+    exact hfs' m aux
+
+noncomputable def s : ℕ → ℕ := fun n ↦
+  if h : n > 1 then Classical.choose (exists_s n h)
+  else 0
+
+lemma s_prop (n : ℕ) (hn : n > 1) : (
+  (s n ∈ Finset.range n) ∧
+  (f n < f (s n)) ∧
+  (∀ m ∈ Finset.range n, f n < f m → f (s n) ≤ f m)
+) := by
+  let h := Classical.choose_spec (exists_s n hn)
+  simp [s]
+  simp [hn]
+  simp at h
+  exact h
 
 
 
