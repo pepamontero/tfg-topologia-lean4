@@ -1,5 +1,8 @@
 import Leantest.Separation.normal
 
+/-
+función que numera los racionales en [0, 1]
+-/
 
 def Q : Set ℚ := {q : ℚ | 0 ≤ q ∧ q ≤ 1} -- `ℚ ∩ [0, 1]`
 
@@ -11,7 +14,7 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0
 
 noncomputable def f : ℕ → Q := Classical.choose hf
 
-lemma f.prop : (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0, Q0⟩) := by
+lemma f_prop : (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0, Q0⟩) := by
   let hf := Classical.choose_spec hf
   exact hf
 
@@ -22,51 +25,68 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
   · exact (f n).property.right
 
 
+/-
+
+-/
+
+
+example (a b : ℕ) (h1 : a ≤ b) (h2 : a ≠ b) : a < b := by exact Nat.lt_of_le_of_ne h1 h2
+
 -- FINDING R
 example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
     (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
 
-  induction' hn with n hn HI
+  let R : Finset ℕ := (Finset.range n).filter (fun m ↦ f m < f n)
+  -- tomamos `R = {m ∈ {0, 1, ..., n-1} | f m < f n}`
 
-  · --cb
+  have hR : R.Nonempty
+  · use 1
+    simp [R]
+    constructor
+    · exact hn
+    · have aux : f 1 ≤ f n
+      · rw [f_prop.right.right]
+        exact (f n).property.left
+      have aux' : f 1 ≠ f n
+      · by_contra c
+        apply (f_prop.left).left at c
+        linarith
+      exact lt_of_le_of_ne aux aux'
+
+  let r := Finset.max' R hR
+
+  use r -- tomamos `r` el máximo de `R`
+  -- (existe por ser `R ≠ ∅` por `hR`)
+
+  have hr : r ∈ R
+  exact Finset.max'_mem R hR
+  simp [R] at hr
+
+  constructor
+
+  · -- `r ∈ {0, 1, ..., n-1}`?
     simp
-    use 1 -- r = 1
-    constructor
-    · -- r < 2 ??
-      norm_num
+    exact hr.left
 
-    constructor
-    · -- f r < f 2 ??
-      rw [f.prop.right.right]
-      simp
+  constructor
 
-      sorry
+  · -- `f r < f n`?
+    exact hr.right
 
-    · -- es la mejor elección?
-      intro m hm hm2
-      have hm : m = 0 ∨ m = 1
-      · sorry
-
-      cases' hm with hm hm
-      all_goals rw [hm] at hm2
-      · simp [f.prop.right.left] at hm2
-        let aux := (f 2).property.right
-        exact le_imp_le_of_lt_imp_lt (fun a ↦ hm2) aux --exact?
-
-      · simp [f.prop.right.right] at hm2
-        let aux := (f 2).property.left
-        exact le_of_eq (congrArg f hm)
-
-  · --cr
-    simp at *
-    cases' HI with r' hr'
-
-    sorry
+  · -- si `m ∈ {0, 1, ..., n-1}`, `f m ≤ f r`?
+    intro m hm hmn
+    have aux : m = r ∨ m ≠ r := by exact eq_or_ne m r
+    cases' aux with h h
+    · rw [h]
+    · sorry
 
 /-
-creo que en verdad no hace falta utilizar inducción para probar esto jajajaja-/
-
+nuevo problema:
+yo estoy tomando r = max R, luego ∀ m ∈ R, m < r
+pero necesito ∀ m ∈ R, f m < f r !!
+luego necesito r = argmax {f m : m ∈ R} !!
+-/
 
 -- FINDING S
 example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
