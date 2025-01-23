@@ -229,7 +229,7 @@ Lo que he pensado ahora es:
   y luego debajo y encima del 0 ya pongo empty?? no se
 -/
 
-lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
+lemma loqueyoquiero' {X : Type} [T : TopologicalSpace X]
     (hT : NormalTopoSpace T)
 
     (C1 C2 : Set X)
@@ -237,33 +237,54 @@ lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    :
+    (n : ℕ)
+    (hn : n > 1)
 
-    ∀ n : ℕ, (
+    :
       ∃ G : ℕ → Set X, (
         (∀ p : ℕ, p ≤ n → IsOpen (G p))
         ∧
         (∀ p q : ℕ, p ≤ n → q ≤ n → f p < f q → Closure (G p) ⊆ G q)
         )
-    ) := by
+    := by
 
 
-  intro n
-  induction' n with n HI
+  induction' hn with n HI
+
+  rw [characterization_of_normal] at hT
 
   · --caso base
-    let G : ℕ → Set X := fun n ↦ C2ᶜ
+    simp
+    let G : ℕ → Set X := fun n ↦
+      if n = 0 then C2ᶜ
+      else if n = 1 then Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
+      else Classical.choose (hT (C2ᶜ) (Closure (Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)))
+
+        hC2
+
+        (by
+        apply closure_is_closed)
+
+        (by
+        let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+        exact h.right.right)
+      )
+
     use G
     constructor
     · intro p hp
-      simp [G]
-      exact { isOpen_compl := hC2 }
+      have aux : p = 0 ∨ p = 1
+      · sorry -- esto es tan trivial que me da pereza
+      cases' aux with h h
+      all_goals rw [h]
+      · simp [G]
+        exact { isOpen_compl := hC2 }
+      · simp [G]
+        let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+        exact h.left
 
-    · intro p q hp hq hpq
-      simp at hp hq
-      rw [hp, hq] at hpq
-      by_contra
-      exact (lt_self_iff_false (f 0)).mp hpq
+    ·
+      sorry
 
   · -- caso recursivo
 
