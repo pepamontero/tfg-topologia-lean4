@@ -268,32 +268,100 @@ lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
           h.right.right
       )
 
-    have aux : ∀ p : ℕ, p ≤ 2 → p = 0 ∨ p = 1
-    sorry
+    let h' := Classical.choose_spec (
+      hT
+        (C2ᶜ)
+        (Closure (Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)))
+        hC2
+        (by apply closure_is_closed)
+        h.right.right
+    )
 
     use G
     constructor
-    · intro p hp
-      specialize aux p hp
-      cases' aux with h h
-      all_goals rw [h]
-      · simp [G]
-        exact { isOpen_compl := hC2 }
-      · simp [G]
-        let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+
+    · -- PROP 1
+      intro p hp
+      cases' hp with _ hp
+      · -- caso p = 2
+        simp [G]
+        exact h'.left
+
+      cases' hp with _ hp
+      · -- caso p = 1
+        simp [G]
         exact h.left
 
-    · intro p q hp hq hpq
-      let hp := aux p hp
-      let hq := aux q hq
+      · simp at hp
+        simp [hp, G]
+        exact { isOpen_compl := hC2 }
 
-      have aux : p = 1 ∧ q = 0
-      sorry -- esto es bastante trivial
 
-      rw [aux.left, aux.right]
-      simp [G]
-      exact h.right.right
+    · -- PROP 2
+      intro p q hp hq hpq
 
+      /-
+      NOTA: como f p < f q, y se tiene f 1 ≤ f 2 ≤ f 0,
+      los únicos casos posibles son:
+      - p = 1, q = 2
+      - p = 1, q = 0
+      - p = 2, q = 0
+      -/
+
+      cases' hp with _ hp
+
+      · -- caso p = 2
+        cases' hq with _ hq
+
+        · -- caso q = 2
+          -- (no puede ser)
+          by_contra
+          exact (lt_self_iff_false (f 2)).mp hpq
+
+        cases' hq with _ hq
+
+        · -- caso q = 1
+          -- (no puede ser)
+          by_contra
+          simp at hpq
+          rw [f_prop.right.right] at hpq
+          exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hpq (f 2).property.left
+          -- wow.
+
+        · -- caso q = 0
+          simp at hq
+          simp [hq, G]
+          exact h'.right.right
+
+      cases' hp with _ hp
+
+      · -- caso p = 1
+
+        cases' hq with _ hq
+
+        · -- caso q = 2
+          simp [G]
+          exact h'.right.left
+
+        cases' hq with _ hq
+
+        · -- caso q = 1
+          -- (no puede ser)
+          by_contra
+          exact (lt_self_iff_false (f 1)).mp hpq
+
+        · -- caso q = 0
+          simp at hq
+          simp [hq, G]
+          exact h.right.right
+
+      · -- caso p = 0
+        -- (no puede ser)
+        by_contra
+        simp at hp
+        rw [hp] at hpq
+        rw [f_prop.right.left] at hpq
+        exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hpq (f q).property.right
 
 
   · -- caso recursivo
