@@ -248,10 +248,10 @@ lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
         )
     := by
 
-
-  induction' hn with n HI
-
   rw [characterization_of_normal] at hT
+
+  induction' hn with n hn HI
+
   let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
 
   · --caso base
@@ -366,21 +366,49 @@ lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
 
   · -- caso recursivo
 
-    /-
-    NOTA: igual aquí debería meter otro caso para n = 1,
-    porque si no como que no estoy definiendo G (1) = Classical.choose...
-
-    osea la movida es que aquí para la recursión necesito que haya al menos 2 elementos ya definidos
-    -/
-    rw [characterization_of_normal] at hT
-
+    simp
+    simp at hn
     cases' HI with G' hG'
 
+    let r := r (n + 1)
+    let s := s (n + 1)
+
+    have hr : r ≤ n
+    apply Nat.le_of_lt_succ
+    let aux := (r_prop (n+1) (by exact Nat.lt_add_right 1 hn)).left
+    simp at aux
+    exact aux
+
+    have hs : s ≤ n
+    apply Nat.le_of_lt_succ
+    let aux := (s_prop (n+1) (by exact Nat.lt_add_right 1 hn)).left
+    simp at aux
+    exact aux
+
+    have hGs : IsOpen (G' s)
+    · apply hG'.left
+      exact hs
+
+    have hGrs : Closure (G' r) ⊆ G' s
+    · apply hG'.right
+      · exact hr
+      · exact hs
+      · trans f (n + 1)
+        · let aux := (r_prop (n+1) (by exact Nat.lt_add_right 1 hn)).right.left
+          exact aux
+        · let aux := (s_prop (n+1) (by exact Nat.lt_add_right 1 hn)).right.left
+          exact aux
+
     let G : ℕ → Set X := fun m ↦
-      if h : f m < 0 then ∅
-      else if h : f m > 1 then Set.univ
-      else if h : m < n + 1 then G' m
-      else ∅
+      if h : m < n + 1 then G' m
+      else Classical.choose (
+        hT
+        (G' s)
+        (Closure (G' r))
+        hGs
+        (by apply closure_is_closed)
+        hGrs
+      )
 
     use G
 
