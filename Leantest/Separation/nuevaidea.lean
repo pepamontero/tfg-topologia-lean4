@@ -32,6 +32,11 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
 
 example (a b : ℕ) (h1 : a ≤ b) (h2 : a ≠ b) : a < b := by exact Nat.lt_of_le_of_ne h1 h2
 
+
+example (a b : ℝ) (h1 : a ≤ b) (h2 : a ≠ b) : a < b := by exact lt_of_le_of_ne h1 h2
+
+
+
 -- FINDING R
 lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
@@ -410,9 +415,143 @@ lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
         hGrs
       )
 
+    let h := Classical.choose_spec (
+        hT
+        (G' s)
+        (Closure (G' r))
+        hGs
+        (by apply closure_is_closed)
+        hGrs
+      )
+
     use G
 
     constructor
-    · sorry
 
-    · sorry
+    · -- PROP 1
+      intro p hp
+      cases' hp with _ hp
+
+      · -- caso p = n + 1
+        simp [G]
+        exact h.left
+
+      · -- caso p ≤ n
+        simp at hp
+        rw [← Order.lt_add_one_iff] at hp
+        simp [hp, G]
+        apply hG'.left
+        exact Nat.le_of_lt_succ hp
+
+    · -- PROP 2
+      intro p q hp hq hpq
+
+      cases' hp with _ hp
+
+      · -- caso p = n+1
+
+        cases' hq with _ hq
+
+        · -- caso q = n+1
+          -- (no puede ser)
+          by_contra
+          exact (lt_self_iff_false (f (n+1))).mp hpq
+
+        · -- caso q ≤ n
+          simp at hq
+          rw [← Order.lt_add_one_iff] at hq
+          simp [hq, G]
+
+          /-
+          voy a diferenciar dos casos:
+          - q = s
+          - q ≠ s
+          -/
+
+          have cases : q = s ∨ q ≠ s := by exact eq_or_ne q s
+          cases' cases with hqs hqs
+
+          · -- caso q = s
+            rw [hqs]
+            exact h.right.right
+
+          · -- caso q ≠ s
+
+            trans (G' s)
+
+            · exact h.right.right
+
+            · trans (Closure (G' s))
+
+              · apply set_inside_closure
+
+              · apply hG'.right
+                · exact hs
+                · exact Nat.le_of_lt_succ hq
+                · apply lt_of_le_of_ne
+
+                  · simp [s]
+                    apply (s_prop (n+1) (by exact Nat.lt_add_right 1 hn)).right.right
+                    · simp
+                      exact hq
+                    · exact hpq
+
+                  · by_contra c
+                    apply f_prop.left.left at c
+                    exact hqs (id (Eq.symm c))
+
+      · -- caso p ≤ n
+        simp at hp
+
+        cases' hq with _ hq
+
+        · -- caso q = n+1
+          rw [← Order.lt_add_one_iff] at hp
+          simp [hp, G]
+
+          /-
+          voy a diferenciar dos casos:
+          - q = s
+          - q ≠ s
+          -/
+
+          have cases : p = r ∨ p ≠ r := by exact eq_or_ne p r
+          cases' cases with hpr hpr
+
+          · -- caso p = r
+            rw [hpr]
+            exact h.right.left
+
+          · -- caso p ≠ r
+
+            trans (Closure (G' r))
+
+            · trans (G' r)
+
+              · apply hG'.right
+                · exact Nat.le_of_lt_succ hp
+                · exact hr
+                · apply lt_of_le_of_ne
+
+                  · simp [r]
+                    apply (r_prop (n+1) (by exact Nat.lt_add_right 1 hn)).right.right
+                    · simp
+                      exact hp
+                    · exact hpq
+
+                  · by_contra c
+                    apply f_prop.left.left at c
+                    exact hpr c
+
+              · apply set_inside_closure
+
+            · exact h.right.left
+
+        · -- caso q ≤ n
+          simp at hq
+          rw [← Order.lt_add_one_iff] at hp hq
+          simp [hp, hq, G]
+          apply hG'.right
+          · exact Nat.le_of_lt_succ hp
+          · exact Nat.le_of_lt_succ hq
+          · exact hpq
