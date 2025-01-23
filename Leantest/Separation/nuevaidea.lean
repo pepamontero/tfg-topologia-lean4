@@ -11,6 +11,64 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0
 
 noncomputable def f : ℕ → Q := Classical.choose hf
 
+lemma f.prop : (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0, Q0⟩) := by
+  let hf := Classical.choose_spec hf
+  exact hf
+
+lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := by
+  intro n
+  constructor
+  · exact (f n).property.left -- x.property handles membership, here f n is recognized as an element of Q
+  · exact (f n).property.right
+
+
+-- FINDING R
+example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
+    ((f r < f n) ∧
+    (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
+
+  induction' hn with n hn HI
+
+  · --cb
+    simp
+    use 1 -- r = 1
+    constructor
+    · -- r < 2 ??
+      norm_num
+
+    constructor
+    · -- f r < f 2 ??
+      rw [f.prop.right.right]
+      simp
+
+      sorry
+
+    · -- es la mejor elección?
+      intro m hm hm2
+      have hm : m = 0 ∨ m = 1
+      · sorry
+
+      cases' hm with hm hm
+      all_goals rw [hm] at hm2
+      · simp [f.prop.right.left] at hm2
+        let aux := (f 2).property.right
+        exact le_imp_le_of_lt_imp_lt (fun a ↦ hm2) aux --exact?
+
+      · simp [f.prop.right.right] at hm2
+        let aux := (f 2).property.left
+        exact le_of_eq (congrArg f hm)
+
+  · --cr
+    simp at *
+    cases' HI with r' hr'
+
+    sorry
+
+/-
+creo que en verdad no hace falta utilizar inducción para probar esto jajajaja-/
+
+
+-- FINDING S
 example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
     (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
@@ -19,11 +77,14 @@ example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
 
   · --cb
     simp
+    use 1
+
 
     sorry
 
   · --cr
     sorry
+
 
 
 
