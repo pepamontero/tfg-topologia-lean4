@@ -587,3 +587,34 @@ def G' {X : Type} [T : TopologicalSpace X]
   /-
   La verdad es que no estoy 100% segura de que esta definición vaya a funcionar
   -/
+
+/-
+como f es biyectiva, tiene inversa...
+-/
+
+lemma f_has_inverse : ∃ g : Q → ℕ, (
+    (∀ n : ℕ, g (f n) = n) ∧
+    (∀ q : Q, f (g q) = q)
+  ) := by sorry
+
+noncomputable def f_inv : Q → ℕ := Classical.choose f_has_inverse
+
+lemma f_inv_prop : (∀ n : ℕ, f_inv (f n) = n) ∧
+    (∀ q : Q, f (f_inv q) = q) := by
+  let h := Classical.choose_spec f_has_inverse
+  exact h
+
+def G {X : Type} [T : TopologicalSpace X]
+    (hT : NormalTopoSpace T)
+    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ℚ → Set X := fun q ↦
+
+  if q < 0 then ∅
+  else if h : (0 ≤ q ∧ q ≤ 1) then (G' hT hT' C1 C2 hC1 hC2 hC1C2 (f_inv ⟨q, h⟩))
+  else Set.univ
