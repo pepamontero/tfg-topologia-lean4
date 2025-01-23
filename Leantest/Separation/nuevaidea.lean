@@ -33,13 +33,14 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
 example (a b : ℕ) (h1 : a ≤ b) (h2 : a ≠ b) : a < b := by exact Nat.lt_of_le_of_ne h1 h2
 
 -- FINDING R
-example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
+lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
     (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
 
   let R : Finset ℕ := (Finset.range n).filter (fun m ↦ f m < f n)
   -- tomamos `R = {m ∈ {0, 1, ..., n-1} | f m < f n}`
 
+  -- vemos que R no es vacío
   have hR : R.Nonempty
   · use 1
     simp [R]
@@ -54,39 +55,62 @@ example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
         linarith
       exact lt_of_le_of_ne aux aux'
 
-  let r := Finset.max' R hR
+  let fR : Finset Q := R.image f
+  -- tomamos el conjunto de as imágenes de R
 
-  use r -- tomamos `r` el máximo de `R`
-  -- (existe por ser `R ≠ ∅` por `hR`)
+  -- vemos que no es vacío
+  let hfR : fR.Nonempty
+  exact (Finset.image_nonempty).mpr hR
 
-  have hr : r ∈ R
-  exact Finset.max'_mem R hR
+  -- tomamos el máximo de las imágenes
+  let fr := Finset.max' fR hfR
+  have hfr : fr ∈ fR
+  exact Finset.max'_mem fR hfR
+
+  -- condición de máximo
+  have hfr' : ∀ fm ∈ fR, fm ≤ fr
+  exact fun fm a ↦ Finset.le_max' fR fm a
+  have hfr' : ∀ m ∈ R, f m ≤ fr
+  intro m hm
+  have aux : f m ∈ fR
+  exact Finset.mem_image_of_mem f hm
+  exact hfr' (f m) aux
+
+  -- tomamos el argumento de fr, fr = f r
+  have hfr'' : ∃ r ∈ R, f r = fr
+  exact Finset.mem_image.mp hfr
+  cases' hfr'' with r hr
+
+  use r -- probamos que este r nos vale
   simp [R] at hr
 
   constructor
 
   · -- `r ∈ {0, 1, ..., n-1}`?
     simp
-    exact hr.left
+    exact hr.left.left
 
   constructor
 
   · -- `f r < f n`?
-    exact hr.right
+    exact hr.left.right
 
   · -- si `m ∈ {0, 1, ..., n-1}`, `f m ≤ f r`?
     intro m hm hmn
-    have aux : m = r ∨ m ≠ r := by exact eq_or_ne m r
-    cases' aux with h h
-    · rw [h]
-    · sorry
 
-/-
-nuevo problema:
-yo estoy tomando r = max R, luego ∀ m ∈ R, m < r
-pero necesito ∀ m ∈ R, f m < f r !!
-luego necesito r = argmax {f m : m ∈ R} !!
--/
+    have aux : m ∈ R
+    simp [R]
+    constructor
+    · simp at hm
+      exact hm
+    · exact hmn
+
+    rw [hr.right]
+    exact hfr' m aux
+
+noncomputable def r : ℕ → ℕ := fun n ↦
+  if h : n > 1 then Classical.choose (exists_r n h)
+  else 0
 
 -- FINDING S
 example (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
