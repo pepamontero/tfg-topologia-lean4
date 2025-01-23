@@ -222,19 +222,7 @@ lemma s_prop (n : ℕ) (hn : n > 1) : (
   exact h
 
 
-
-/-
-Lo que he pensado ahora es:
-1. realmente no necesito inducción completa??
-  porque me vale para cada m < n+1 el G(m) de la G obtenida en el paso n
-  (creo)
-
-2. a lo mejor solo tendría que hacerlo para todo n
-  tal que cumpla f n ∈ [0, 1]
-  y luego debajo y encima del 0 ya pongo empty?? no se
--/
-
-lemma loqueyoquiero {X : Type} [T : TopologicalSpace X]
+lemma exists_G {X : Type} [T : TopologicalSpace X]
     (hT : NormalTopoSpace T)
 
     (C1 C2 : Set X)
