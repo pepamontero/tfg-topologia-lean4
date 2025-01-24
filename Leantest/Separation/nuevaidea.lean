@@ -799,10 +799,17 @@ lemma prop2 {X : Type} [T : TopologicalSpace X]
           simp [hfp, hfq, auxq, auxq', G']
           simp [Gn]
           have h := (Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 (f_inv ⟨q, hq⟩) hfq))
-          have h := h.right
-          specialize (h 1 (f_inv ⟨q, hq⟩) (by linarith) (by linarith) (by sorry))
+          have H := h.right.left
+          have h0 := h.right.right
 
-          have h' :
+          have aux : f 0 < f (f_inv ⟨q, hq⟩)
+          simp [f_prop.right.left, f_inv_prop.right]
+
+          sorry
+
+          specialize (H 0 (f_inv ⟨q, hq⟩) (by linarith) (by linarith) (by ))
+          rw [h0] at H
+          exact H
 
 
 
