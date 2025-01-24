@@ -18,6 +18,8 @@ lemma f_prop : (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0, Q0⟩) := by
   let hf := Classical.choose_spec hf
   exact hf
 
+example (a b : ℕ) : a = b → f a = f b := by exact fun a_1 ↦ congrArg f a_1
+
 lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := by
   intro n
   constructor
@@ -684,10 +686,122 @@ lemma prop1 {X : Type} [T : TopologicalSpace X]
         exact hp
       simp [G, hp, aux, aux']
 
+lemma prop2 {X : Type} [T : TopologicalSpace X]
+    (hT : NormalTopoSpace T)
+    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
-    · have aux : ¬ p < 0
-      · sorry
-      have aux' : ¬ (0 ≤ p ∧ p ≤ 1)
-      · sorry
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
 
-      simp [G, hp, aux, aux']
+    : ∀ p q: ℚ, p < q → Closure (G hT hT' C1 C2 hC1 hC2 hC1C2 p) ⊆ G hT hT' C1 C2 hC1 hC2 hC1C2 q := by
+
+  intro p q hpq
+
+  /-
+  se divide en varios casos.
+
+  1. si `p, q < 0`, entonces el goal se traduce a `∅ ⊆ ∅`
+
+  2. si `p < 0, 0 ≤ q`, entonces el goal se traduce a `∅ ⊆ U`,
+    que es cierto para todo U
+
+  3. si `0 ≤ p, q ≤ 1`
+    - llamamos `n = f⁻¹(p)` y `m = f⁻¹(q)`
+    - dividimos en casos de valores de n y m...
+
+  4. si `q > 1`, entonces el goal se traduce a `U ⊆ Set.univ`,
+    que es cierto para todo U
+
+  Luego realmente hay que dividir por casos en q
+  -/
+
+  have cases : q < 0 ∨ 0 ≤ q := by exact lt_or_le q 0
+  cases' cases with hq0 hq0
+
+  · -- caso 1. q < 0
+    have hp : p < 0 := by linarith
+    simp [G, hp, hq0, closure_of_empty]
+
+  have cases : q ≤ 1 ∨ q > 1 := by exact le_or_lt q 1
+  cases' cases with hq1 hq1
+
+  · -- casos 2 y 3. 0 ≤ q ≤ 1
+    have cases : p < 0 ∨ 0 ≤ p := by exact lt_or_le p 0
+    cases' cases with hp0 hp0
+
+    · -- caso 2. p < 0, q ∈ [0, 1]
+      simp [G, hp0, closure_of_empty]
+
+    · -- caso 3. p, q ∈ [0, 1]
+      have auxq : ¬ q < 0 := by linarith
+      have auxp : ¬ p < 0 := by linarith
+      have hq : 0 ≤ q ∧ q ≤ 1 := by simp [hq0, hq1]
+      have hp : 0 ≤ p ∧ p ≤ 1 := by simp [hp0]; linarith
+
+      simp [G, auxq, auxp, hq, hp]
+
+      have h : p ≠ q := by linarith
+      have h' : f_inv ⟨p, hp⟩ ≠ f_inv ⟨q, hq⟩
+      · by_contra c
+        apply congrArg f at c
+        simp [f_inv_prop.right] at c
+        exact h c
+
+      have cases : f_inv ⟨p, hp⟩ = 0 ∨ f_inv ⟨p, hp⟩ > 0 := by exact Nat.eq_zero_or_pos (f_inv ⟨p, hp⟩)
+      cases' cases with hfp hfp
+
+      · -- caso 3.1. f⁻¹(p) = 0
+        have cases : f_inv ⟨q, hq⟩ = 0 ∨ f_inv ⟨q, hq⟩ > 0 := by exact Nat.eq_zero_or_pos (f_inv ⟨q, hq⟩)
+        cases' cases with hfq hfq
+
+        · -- caso 3.1.1. f⁻¹(q) = 0
+          -- imposible porque f⁻¹(p) ≠ f⁻¹(q)
+          simp [hfp, hfq] at h'
+
+        have cases : f_inv ⟨q, hq⟩ = 1 ∨ f_inv ⟨q, hq⟩ > 1 := by exact LE.le.eq_or_gt hfq
+        cases' cases with hfq hfq
+
+        · -- caso 3.1.2. f⁻¹(q) = 1
+          have auxp : p = 1
+          · apply congrArg f at hfp
+            simp [f_prop.right.left, f_inv_prop.right] at hfp
+            have h_proj := Subtype.mk.inj hfp
+            -- no entiendo muy bien esto
+            exact h_proj
+
+          have auxq : q = 0
+          · apply congrArg f at hfq
+            simp [f_prop.right.right, f_inv_prop.right] at hfq
+            have h_proj := Subtype.mk.inj hfq
+            exact h_proj
+
+          by_contra
+          simp [auxp, auxq] at hpq
+          linarith
+
+        · -- caso 2.1.3. f⁻¹(q) > 1
+          have auxq : ¬ f_inv ⟨q, hq⟩ = 0 := by linarith
+          have auxq' : ¬ f_inv ⟨q, hq⟩ = 1 := by linarith
+          simp [hfp, hfq, auxq, auxq', G']
+          simp [Gn]
+          have h := (Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 (f_inv ⟨q, hq⟩) hfq))
+          have h := h.right
+          specialize (h 1 (f_inv ⟨q, hq⟩) (by linarith) (by linarith) (by sorry))
+
+          have h' :
+
+
+
+
+
+
+
+
+
+
+
+
+
+  sorry
