@@ -246,6 +246,8 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
         (∀ p : ℕ, p ≤ n → IsOpen (G p))
         ∧
         (∀ p q : ℕ, p ≤ n → q ≤ n → f p < f q → Closure (G p) ⊆ G q)
+        ∧
+        (G 0 = C2ᶜ)
         )
     := by
 
@@ -297,6 +299,7 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
         simp [hp, G]
         exact { isOpen_compl := hC2 }
 
+    constructor
 
     · -- PROP 2
       intro p q hp hq hpq
@@ -364,6 +367,9 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
         rw [f_prop.right.left] at hpq
         exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hpq (f q).property.right
 
+    · -- PROP 3
+      simp [G]
+
 
   · -- caso recursivo
 
@@ -391,7 +397,7 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
       exact hs
 
     have hGrs : Closure (G' r) ⊆ G' s
-    · apply hG'.right
+    · apply hG'.right.left
       · exact hr
       · exact hs
       · trans f (n + 1)
@@ -439,6 +445,8 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
         apply hG'.left
         exact Nat.le_of_lt_succ hp
 
+    constructor
+
     · -- PROP 2
       intro p q hp hq hpq
 
@@ -481,7 +489,7 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
 
               · apply set_inside_closure
 
-              · apply hG'.right
+              · apply hG'.right.left
                 · exact hs
                 · exact Nat.le_of_lt_succ hq
                 · apply lt_of_le_of_ne
@@ -524,7 +532,7 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
 
             · trans (G' r)
 
-              · apply hG'.right
+              · apply hG'.right.left
                 · exact Nat.le_of_lt_succ hp
                 · exact hr
                 · apply lt_of_le_of_ne
@@ -547,10 +555,14 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
           simp at hq
           rw [← Order.lt_add_one_iff] at hp hq
           simp [hp, hq, G]
-          apply hG'.right
+          apply hG'.right.left
           · exact Nat.le_of_lt_succ hp
           · exact Nat.le_of_lt_succ hq
           · exact hpq
+
+    · -- PROP 3
+      simp [G]
+      exact hG'.right.right
 
 
 noncomputable def Gn {X : Type} [T : TopologicalSpace X]
