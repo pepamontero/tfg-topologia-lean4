@@ -645,36 +645,44 @@ lemma prop1 {X : Type} [T : TopologicalSpace X]
   have cases : p < 0 ∨ 0 ≤ p := by exact lt_or_le p 0
   cases' cases with hp hp
 
-  · simp [G, hp]
+  · -- caso p < 0
+    simp [G, hp]
 
-  · have cases : p ≤ 1 ∨ 1 < p := by exact le_or_lt p 1
+  · -- caso 0 ≤ p
+    have cases : p ≤ 1 ∨ 1 < p := by exact le_or_lt p 1
     cases' cases with hp' hp
 
-    · have aux : ¬ p < 0
+    · -- caso 0 ≤ p ≤ 1
+      have aux : ¬ p < 0
       · linarith
       have hp : 0 ≤ p ∧ p ≤ 1
       · constructor; exact hp; exact hp'
 
       simp [G, aux, hp]
 
-      have aux : ¬ (f_inv ⟨p, hp⟩ = 0)
-      · sorry
-      have aux' : ¬ (f_inv ⟨p, hp⟩ = 1)
-      · sorry
-      simp [G']
-      have cases : 1 < f_inv ⟨p, hp⟩ ∨ ¬ ( 1 < f_inv ⟨p, hp⟩)
-      · exact Decidable.em (1 < f_inv ⟨p, hp⟩)
+      cases' (f_inv ⟨p, hp⟩) with k
+      · simp [G']
+        exact { isOpen_compl := hC2 }
 
-      cases' cases with aux'' aux''
+      · cases' k with k
+        · simp [G']
+          let h := Classical.choose_spec (hT' C2ᶜ C1 hC2 hC1 hC1C2)
+          exact h.left
 
-      · simp [G', aux, aux', aux'']
-        simp [Gn]
-        let hGn := Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 (f_inv ⟨p, hp⟩) aux'')
-        let hGn := hGn.left
-        specialize hGn (f_inv ⟨p, hp⟩) (by exact Nat.le_refl (f_inv ⟨p, hp⟩))
-        exact hGn
+        · simp [G']
+          simp [Gn]
+          let h := Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 (k + 1 + 1) (by linarith))
+          let h := h.left
+          exact h (k + 1 + 1) (by linarith)
 
-      · simp [G', aux, aux', aux'']
+    · -- caso 1 < p
+      have aux : ¬ p < 0
+      · linarith
+      have aux' : ¬ (0 ≤ p ∧ p ≤ 1)
+      · simp
+        intro
+        exact hp
+      simp [G, hp, aux, aux']
 
 
     · have aux : ¬ p < 0
