@@ -96,6 +96,14 @@ lemma closure_is_closed {X : Type} [T : TopologicalSpace X] (A : Set X) :
   exact interior_is_open Aᶜ
 
 
+lemma closure_of_empty {X : Type} [T : TopologicalSpace X] : Closure (∅ : Set X) = ∅ := by
+  simp [Closure]
+  ext x
+  simp
+  use Set.univ
+  exact univ_is_Neighb x
+
+
 
 def Boundary {X : Type} [T : TopologicalSpace X] (A : Set X) : Set X :=
     {x : X | ∀ V : Set X, Neighbourhood V x → V ∩ A ≠ ∅ ∧ V ∩ Aᶜ ≠ ∅}
