@@ -580,7 +580,7 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
 
 noncomputable def Gn {X : Type} [T : TopologicalSpace X]
 
-    (hT : NormalTopoSpace T)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -596,7 +596,7 @@ noncomputable def Gn {X : Type} [T : TopologicalSpace X]
 
 lemma question {X : Type} [T : TopologicalSpace X]
 
-    (hT : NormalTopoSpace T)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -622,8 +622,7 @@ lemma question {X : Type} [T : TopologicalSpace X]
 
 
 def G' {X : Type} [T : TopologicalSpace X]
-    (hT : NormalTopoSpace T)
-    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -635,7 +634,7 @@ def G' {X : Type} [T : TopologicalSpace X]
     := fun n ↦
 
   if n = 0 then C2ᶜ
-  else if n = 1 then Classical.choose (hT' C2ᶜ C1 hC2 hC1 hC1C2)
+  else if n = 1 then Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
   else if h : n > 1 then ((Gn hT C1 C2 hC1 hC2 hC1C2 n h) n)
   else ∅
 
@@ -665,8 +664,7 @@ DEFINICIÓN DE LA G FINAL
 -/
 
 def G {X : Type} [T : TopologicalSpace X]
-    (hT : NormalTopoSpace T)
-    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -676,7 +674,7 @@ def G {X : Type} [T : TopologicalSpace X]
     : ℚ → Set X := fun q ↦
 
   if q < 0 then ∅
-  else if h : (0 ≤ q ∧ q ≤ 1) then (G' hT hT' C1 C2 hC1 hC2 hC1C2 (f_inv ⟨q, h⟩))
+  else if h : (0 ≤ q ∧ q ≤ 1) then (G' hT C1 C2 hC1 hC2 hC1C2 (f_inv ⟨q, h⟩))
   else Set.univ
 
 
@@ -685,15 +683,14 @@ CUMPLE LAS PROPIEDADES???
 -/
 
 lemma prop1 {X : Type} [T : TopologicalSpace X]
-    (hT : NormalTopoSpace T)
-    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    : ∀ p : ℚ, IsOpen (G hT hT' C1 C2 hC1 hC2 hC1C2 p) := by
+    : ∀ p : ℚ, IsOpen (G hT C1 C2 hC1 hC2 hC1C2 p) := by
 
   intro p
 
@@ -721,7 +718,7 @@ lemma prop1 {X : Type} [T : TopologicalSpace X]
 
       · cases' k with k
         · simp [G']
-          let h := Classical.choose_spec (hT' C2ᶜ C1 hC2 hC1 hC1C2)
+          let h := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
           exact h.left
 
         · simp [G']
@@ -740,15 +737,14 @@ lemma prop1 {X : Type} [T : TopologicalSpace X]
       simp [G, hp, aux, aux']
 
 lemma prop2 {X : Type} [T : TopologicalSpace X]
-    (hT : NormalTopoSpace T)
-    (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    : ∀ p q: ℚ, p < q → Closure (G hT hT' C1 C2 hC1 hC2 hC1C2 p) ⊆ G hT hT' C1 C2 hC1 hC2 hC1C2 q := by
+    : ∀ p q: ℚ, p < q → Closure (G hT C1 C2 hC1 hC2 hC1C2 p) ⊆ G hT C1 C2 hC1 hC2 hC1C2 q := by
 
   intro p q hpq
 
