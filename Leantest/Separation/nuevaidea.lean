@@ -231,7 +231,7 @@ RESULTADO PRINCIPAL:
 
 
 lemma exists_G {X : Type} [T : TopologicalSpace X]
-    (hT : NormalTopoSpace T)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -248,10 +248,10 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
         (∀ p q : ℕ, p ≤ n → q ≤ n → f p < f q → Closure (G p) ⊆ G q)
         ∧
         (G 0 = C2ᶜ)
+        ∧
+        (G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
         )
     := by
-
-  rw [characterization_of_normal] at hT
 
   induction' hn with n hn HI
 
@@ -367,7 +367,12 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
         rw [f_prop.right.left] at hpq
         exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hpq (f q).property.right
 
+    constructor
+
     · -- PROP 3
+      simp [G]
+
+    · -- PROP 4
       simp [G]
 
 
@@ -560,9 +565,17 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
           · exact Nat.le_of_lt_succ hq
           · exact hpq
 
+    constructor
+
     · -- PROP 3
       simp [G]
-      exact hG'.right.right
+      exact hG'.right.right.left
+
+    · -- PROP 4
+      have aux : n > 0 := by linarith
+      simp [G, aux]
+      exact hG'.right.right.right
+
 
 
 noncomputable def Gn {X : Type} [T : TopologicalSpace X]
