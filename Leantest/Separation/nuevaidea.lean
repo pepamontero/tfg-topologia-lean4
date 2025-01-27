@@ -580,6 +580,34 @@ noncomputable def Gn {X : Type} [T : TopologicalSpace X]
     := fun m ↦ (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn)) m
 
 
+
+lemma question {X : Type} [T : TopologicalSpace X]
+
+    (hT : NormalTopoSpace T)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (n m : ℕ)
+    (hn : n > 1)
+    (hm : m > 1)
+    (h : n ≤ m)
+
+    :
+
+    (Gn hT C1 C2 hC1 hC2 hC1C2 n hn) n = (Gn hT C1 C2 hC1 hC2 hC1C2 m hm) n := by
+
+  simp [Gn]
+
+  have h1 := Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn)
+  have h2 := Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 m hm)
+
+  sorry
+
+
+
 def G' {X : Type} [T : TopologicalSpace X]
     (hT : NormalTopoSpace T)
     (hT' : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -714,19 +742,15 @@ lemma prop2 {X : Type} [T : TopologicalSpace X]
   /-
   se divide en varios casos.
 
-  1. si `p, q < 0`, entonces el goal se traduce a `∅ ⊆ ∅`
-
-  2. si `p < 0, 0 ≤ q`, entonces el goal se traduce a `∅ ⊆ U`,
+  1. si `p < 0`, entonces el goal se traduce a `∅ ⊆ U`,
     que es cierto para todo U
 
-  3. si `0 ≤ p, q ≤ 1`
-    - llamamos `n = f⁻¹(p)` y `m = f⁻¹(q)`
-    - dividimos en casos de valores de n y m...
-
-  4. si `q > 1`, entonces el goal se traduce a `U ⊆ Set.univ`,
+  2.  si `q > 1`, entonces el goal se traduce a `U ⊆ Set.univ`,
     que es cierto para todo U
 
-  Luego realmente hay que dividir por casos en q
+  3. en caso contrario, si `0 ≤ p` y `q ≤ 1`, puesto que
+    `p < q` se tiene `p, q ∈ Q`, luego podemos aplicar
+    la inversa de `f` y la definición de `Gn`
   -/
 
   have cases : q < 0 ∨ 0 ≤ q := by exact lt_or_le q 0
