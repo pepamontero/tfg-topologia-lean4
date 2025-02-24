@@ -649,7 +649,89 @@ lemma somethingnew {X : Type} [T : TopologicalSpace X]
             cases' cases with hnm hnm
 
             · -- caso n < m
-              sorry
+
+              /-
+              Proceso :
+
+              * sabemos que n < m
+              * ya estoy haciendo inducción sobre n... tengo que hacer inducción sobre m??
+              * no se si quiero utilizar r n o r m? o s m jajaja
+
+              Por ejemplo si utilizo r m ¿ que haria???
+
+              1. f n ≤ f (r m) ????
+              -/
+
+              have fnrm : f n ≤ f (r m)
+              · apply (r_prop m hm1).right.right
+                simp
+                exact hnm
+                exact hn.right
+
+              have r_options := r_options m hm1
+              cases' r_options with hr1 hr1
+
+              · -- caso r(m) = 1
+                have aux : f n = f (r m)
+                · by_contra c
+                  apply lt_of_le_of_ne at fnrm
+                  specialize fnrm c
+                  rw [hr1, f_prop.right.right] at fnrm
+                  have hf := (f_in_icc01 n).left
+                  rw [← not_lt] at hf
+                  exact hf fnrm
+
+                have aux : n = r m
+                · apply f_prop.left.left
+                  exact aux
+
+                rw [aux]
+                exact (hG m hm1).left
+
+              · -- caso r(m) > 1
+                have cases : f n = f (r m) ∨ f n < f (r m)
+                exact Or.symm (Decidable.lt_or_eq_of_le fnrm)
+                cases' cases with fnrm fnrm
+
+                · -- caso f n = f (r m)
+                  have aux : n = r m
+                  · apply f_prop.left.left
+                    exact fnrm
+                  rw [aux]
+                  exact (hG m hm1).left
+
+                · -- caso f n < f (r m)
+                  -- `CREO QUE AQUÍ ESTÁ LO QUE ES DISTINTO`
+
+                  /-
+                  ¿cuál es el problema aquí?
+                  que para la inducción necesito < n no < m y r m < m...
+                  hago inducción sobre m?? pero claro entonces... necesito pedirle a m en P que `n < m` para mantener la propiedad
+
+                  tengo  r m < m y n < m
+                  casos:
+
+                    como n < m podemos aplicar q r m es la mejor elección fara f (r m) < f m
+                    y obtener
+                    f n ≤ f (r m)
+                    entonces
+                    * f n = f (r m) => n = r m -> r. abs
+                    * f n < f (r m)
+                      - si r m < n -> hi
+                      - else? r m > n?
+                  osea yo creo que aquí el problema es que tengo que inducir n y m
+
+                  -/
+
+                  have hrm := (r_prop m hm1).left
+                  simp at hrm
+
+                  specialize hi (r m)
+                  trans Closure (G (s n))
+                  · trans G (s n)
+                    · exact (hG n hn.left).right
+                    · exact set_inside_closure (G (s n))
+                  · exact hi
 
             · -- caso m < n
               have fsnm : f (s n) ≤ f m
