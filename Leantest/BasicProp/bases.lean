@@ -1,7 +1,6 @@
 import Leantest.Continuous.basic
 import Leantest.TopoSpaces.usual
-import Leantest.BasicProp.subspaces
-import Leantest.Separation.hausdorff
+set_option linter.unusedVariables false
 
 
 /-
