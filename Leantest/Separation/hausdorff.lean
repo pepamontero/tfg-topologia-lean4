@@ -17,6 +17,11 @@ def Hausdorff {X : Type} (_ : TopologicalSpace X) : Prop :=
     ∀ x1 x2 : X, x1 ≠ x2 → ∃ V1 : Set X, ∃ V2 : Set X,
     (V1 ∩ V2 = ∅ ∧ Neighbourhood V1 x1 ∧ Neighbourhood V2 x2)
 
+
+/-
+  Example: Every set with the discrete topology is Hausdorff
+-/
+
 example [T : TopologicalSpace X] (hT : T = DiscreteTopo X) : Hausdorff T := by
   intro x1 x2 h
   use {x1}
