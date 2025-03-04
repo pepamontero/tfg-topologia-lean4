@@ -12,7 +12,7 @@ open TopologicalSpace
       DEF: HAUSDORFF TOPOLOGICAL SPACE
 -/
 
-def Hausdorff {X : Type} (T : TopologicalSpace X) : Prop :=
+def Hausdorff {X : Type} (_ : TopologicalSpace X) : Prop :=
     --∀ x : X, ∃ U : Set X, Neighbourhood U x
     ∀ x1 x2 : X, x1 ≠ x2 → ∃ V1 : Set X, ∃ V2 : Set X,
     (V1 ∩ V2 = ∅ ∧ Neighbourhood V1 x1 ∧ Neighbourhood V2 x2)
