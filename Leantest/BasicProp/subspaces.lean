@@ -52,7 +52,6 @@ def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
       · simp at hx
         cases' hx with t ht
         cases' ht with ht ht'
-        let V := Classical.choose (hS t ht)
         let hV := Classical.choose_spec (hS t ht)
         rw [Set.iUnion_inter]
         use t
@@ -68,7 +67,6 @@ def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
         cases' hx with hx' hx
         cases' hx' with t ht
         cases' ht with ht hx'
-        let V := Classical.choose (hS t ht)
         let hV := Classical.choose_spec (hS t ht)
 
         have aux : x ∈ (t : Set X)
