@@ -1,18 +1,4 @@
-import Leantest.BasicProp.basic
-import Leantest.Continuous.basic
-import Leantest.TopoSpaces.discrete
-import Leantest.TopoSpaces.usual
-import Leantest.BasicProp.subspaces
 import Leantest.BasicProp.closure
-import Leantest.BasicProp.interior
-import Leantest.Separation.lemmas
-import Leantest.MyDefs.my_inf
-import Leantest.MyDefs.sets
-
-
-set_option diagnostics true
-set_option diagnostics.threshold 5000
-
 
 /-
       DEF: ESPACIO NORMAL
