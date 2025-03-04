@@ -50,28 +50,6 @@ example [T : TopologicalSpace X] (hT : T = DiscreteTopo X) : Hausdorff T := by
 #check Set.Ioo
 
 
-example {X : Type} [T : TopologicalSpace X]
-    (hT : T = DiscreteTopo X) (x : X):
-    IsOpen {x} := by
-  rw [hT]
-  trivial
-
-example (x y: ℝ) : min x y = x ∨ min x y = y := by
-  exact min_choice x y
-
-example (x y: ℝ) : x < y ∨ x = y ∨ x > y := by
-  exact lt_trichotomy x y
-
-example (x y : ℝ) : x < y → min x y = x := by
-  intro h
-  exact min_eq_left_of_lt h
-
-example (x y : ℝ) : x = y → min x y = x := by
-  intro h
-  simp
-  exact le_of_eq h
-
-
 /-
 esto habría que meterlo en otro sitio
 
