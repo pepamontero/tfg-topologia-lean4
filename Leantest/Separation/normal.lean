@@ -109,17 +109,6 @@ lemma characterization_of_normal {X : Type}
 
 
 
--- densidad de ℚ en ℝ
-example (x y : ℝ) (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by exact exists_rat_btwn h
-
-
-/-
-`Def:` sea Y ⊆ X subespacio topológico,
-U ⊆ Y es abierto en Y si ∃ V ⊆ X abierto en X tal que
-U = V ∩ Y
--/
-
-
 /-
                  LEMA DE URYSOHN
 -/
