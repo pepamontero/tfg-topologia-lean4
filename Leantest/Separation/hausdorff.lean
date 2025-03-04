@@ -120,9 +120,8 @@ example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
 
 
 /-
-RESULTADO
-Si X es un espacio topológico Hausdorff,
-entonces todo conjunto unipuntual {x} es cerrado
+      THEOREM:
+  If X is a Hausdorff Space, then all its singletons are closed sets.
 -/
 
 
@@ -167,12 +166,14 @@ theorem Hausdorff_imp_singletones_closed {X : Type} [T : TopologicalSpace X]
 
 
 /-
-Ejemplo de topología que no es Hausdorff
-La topología del punto para conjuntos de 2 o más elementos
+Example: The Point Topology is not Hausdorff
+We show it in two different ways:
+  1. Using the definition
+  2. Using the previous theorem
 -/
 
--- usando la definición
 
+-- previous lemma
 lemma and_or_not (P Q : Prop) : (P ∨ Q) ∧ ¬ Q → P := by
   intro hP
   cases' hP with h1 h2
@@ -181,6 +182,7 @@ lemma and_or_not (P Q : Prop) : (P ∨ Q) ∧ ¬ Q → P := by
   by_contra
   exact h2 h
 
+-- 1. Using the definition
 example [T : TopologicalSpace X] (a : X) (h : ∃ x : X, x ≠ a)
     (hT : T = PointTopology X a) : ¬ Hausdorff T := by
   cases' h with x hx
@@ -216,10 +218,9 @@ example [T : TopologicalSpace X] (a : X) (h : ∃ x : X, x ≠ a)
     exact c
   exact ha2 ha1
 
-#check isClosed_compl_iff
-#check compl_compl
 
--- usando el resultado anterior
+
+-- 2. Using the previous theorem
 example [T : TopologicalSpace X] (a : X) (hX : ∃ x : X, x ≠ a)
     (hT : T = PointTopology X a) : ¬ Hausdorff T := by
   by_contra h
