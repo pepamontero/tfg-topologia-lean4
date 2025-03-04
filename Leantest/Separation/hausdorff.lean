@@ -47,104 +47,10 @@ example [T : TopologicalSpace X] (hT : T = DiscreteTopo X) : Hausdorff T := by
       rw [hT]
       trivial
 
-#check Set.Ioo
-
 
 /-
-esto habría que meterlo en otro sitio
-
-además, se podría simplificar bastante porque hace dos veces
-exáctamente lo mismo y varias veces repite la misma secuencia
-de comandos
+  Example: ℝ with the usual topology is Hausdorff
 -/
-lemma is_open_open_interval [T : TopologicalSpace ℝ]
-    (hT : T = UsualTopology)
-    (x y : ℝ) :
-    IsOpen (Set.Ioo x y) := by
-  rw [hT]
-  intro z hz
-  let δ := min (z - x) (y - z) / 2
-  have hδ : δ = min (z - x) (y - z) / 2 := by rfl
-  use δ
-  constructor
-  · -- δ > 0
-    rw [hδ]
-    simp
-    simp at hz
-    exact hz
-  · -- let w ∈ (z - δ, z + δ)
-    intro w hw
-    simp
-    have hmin : min (z - x) (y - z) = (z - x) ∨ min (z - x) (y - z) = (y - z)
-    · exact min_choice (z - x) (y - z)
-
-    have auxi : z - x < y - z ∨ z - x = y - z ∨ z - x > y - z
-    · exact lt_trichotomy (z - x) (y - z)
-
-    constructor
-    · -- x < w
-      simp at hz
-      trans z - δ
-      · -- x < z - δ
-        cases' auxi with h1 h2
-        · -- case: z - x < y - z
-          have h' : min (z - x) (y - z) = (z - x)
-          · exact min_eq_left_of_lt h1
-          rw [h'] at hδ
-          rw [hδ]
-          linarith
-        · cases' h2 with h1 h2
-          · -- case z - x = y - z
-            have h' : min (z - x) (y - z) = (z - x)
-            · rw [h1]
-              simp
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-          · -- case z - x > y - z
-            have h' : min (z - x) (y - z) = (y - z)
-            · exact min_eq_right_of_lt h2
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-      · -- z - δ < w
-        exact hw.left
-    · -- w < y
-      trans z + δ
-      · -- w < z + δ
-        exact hw.right
-      · -- z + δ < y
-        cases' auxi with h1 h2
-        · -- case z - x < y - z
-          have h' : min (z - x) (y - z) = z - x
-          · exact min_eq_left_of_lt h1
-          rw [h'] at hδ
-          rw [hδ]
-          linarith
-        · cases' h2 with h1 h2
-          · -- case z - x = y - z
-            have h' : min (z - x) (y - z) = (z - x)
-            · rw [h1]
-              simp
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-          · -- case z - x > y - z
-            have h' : min (z - x) (y - z) = (y - z)
-            · exact min_eq_right_of_lt h2
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-
-example (x : ℝ) (h: x < 0) : |x| = - x := by
-  exact abs_of_neg h
-
-example (x y: ℝ) (h : x < y) : |x - y| = - (x - y) := by
-  apply abs_of_neg
-  linarith
-
-example (x y : ℝ) (h1 : x < y) (h2 : y < x) : False := by
-  linarith
 
 example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
   intro x1 x2 h
@@ -199,14 +105,18 @@ example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
       · constructor
         · simp
           exact hδ'
-        · apply is_open_open_interval hT (x1 - δ) (x1 + δ)
+        · rw [hT]
+          apply ioo_open_in_R (x1 - δ) (x1 + δ)
     · use Set.Ioo (x2 - δ) (x2 + δ)
       constructor
       · trivial
       · constructor
         · simp
           exact hδ'
-        · apply is_open_open_interval hT (x2 - δ) (x2 + δ)
+        · rw [hT]
+          apply ioo_open_in_R (x2 - δ) (x2 + δ)
+
+
 
 /-
 RESULTADO
@@ -214,10 +124,6 @@ Si X es un espacio topológico Hausdorff,
 entonces todo conjunto unipuntual {x} es cerrado
 -/
 
-#check IsClosed
-
-example {X : Type} (A : Set X) (hA : ¬ (∃ a, a ∈ A)) : A = ∅ := by
-  exact Set.not_nonempty_iff_eq_empty.mp hA
 
 
 lemma A_open_iff_is_heighbourhood_of_all
