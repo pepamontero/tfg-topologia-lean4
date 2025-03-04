@@ -3,14 +3,10 @@
 import Leantest.BasicProp.basic
 import Leantest.TopoSpaces.usual
 
-example (X : Type) (A B C : Set X) : (A ∪ B) ∩ C = (A ∩ C) ∪ (B ∩ C) := by
-  exact Set.union_inter_distrib_right A B C
-
-example (X : Type) (A : Set X) (S : Set (Set X)) :
-    (⋃ B : S, B) ∩ A = (⋃ B : S, (B ∩ A)) := by
-  exact Set.iUnion_inter A Subtype.val
-
-
+/-
+  DEF: Topological subspace
+Note: needs proof that it is actually a topological space
+-/
 
 def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
   TopologicalSpace Y where
@@ -84,8 +80,8 @@ def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
 
 
 /-
-Example of use: prove that [0, b) is open for b < 1
-in [0, 1] seen as a topological subspace of ℝ with the usual topology
+Example: [0, b) is open for b < 1 in [0, 1]
+seen as a topological subspace of ℝ with the usual topology
 -/
 
 lemma ico_open_in_Icc01 {Y : Set ℝ}
