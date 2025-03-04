@@ -3,35 +3,6 @@ import Leantest.TopoSpaces.usual
 import Leantest.BasicProp.subspaces
 import Leantest.Separation.hausdorff
 
-#check Set.image_union
-
-lemma image_of_sUnion {X Y : Type} (S : Set (Set X)) (f : X → Y) :
-    f '' (⋃₀ S) = ⋃ s ∈ S, f '' s := by
-  ext y
-  constructor
-  all_goals intro hy
-  · simp at *
-    cases' hy with x hx
-    cases' hx with hx1 hx2
-    cases' hx1 with s hs
-    use s
-    constructor
-    exact hs.left
-    use x
-    constructor
-    exact hs.right
-    exact hx2
-  · simp at *
-    cases' hy with s hs
-    cases' hs.right with x hx
-    use x
-    constructor
-    use s
-    constructor
-    exact hs.left
-    exact hx.left
-    exact hx.right
-
 
 example {X Y : Type} (S : Set (Set Y)) (f : X → Y) :
     f ⁻¹' (⋃₀ S) = ⋃ s ∈ S, f ⁻¹' s := by
