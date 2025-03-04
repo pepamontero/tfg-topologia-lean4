@@ -4,14 +4,9 @@ import Leantest.BasicProp.subspaces
 import Leantest.Separation.hausdorff
 
 
-example {X Y : Type} (S : Set (Set Y)) (f : X → Y) :
-    f ⁻¹' (⋃₀ S) = ⋃ s ∈ S, f ⁻¹' s := by
-  exact Set.preimage_sUnion
-
-example {X Y : Type} (S : Set (Set Y)) (f : X → Y) :
-    f ⁻¹' (⋃ s ∈ S, s) = ⋃ s ∈ S, f ⁻¹' s := by
-  exact Set.preimage_iUnion₂
-
+/-
+    DEF: Given B ⊆ P(X), is B a Base for X?
+-/
 
 def isTopoBase {X : Type} [T : TopologicalSpace X]
     (B : Set (Set X)) : Prop :=
@@ -19,6 +14,10 @@ def isTopoBase {X : Type} [T : TopologicalSpace X]
   (∀ V : Set X, IsOpen V → ∃ UB ⊆ B, V = ⋃₀ UB)
 
 
+/-
+Example:
+  B = {(a, b) : a, b ∈ ℝ} is a Base for ℝ with the Usual Topology
+-/
 
 lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology)
     (f : ℝ × ℝ → Set ℝ) (hf : ∀ a b : ℝ, f (a, b) = Set.Ioo a b) :
@@ -32,7 +31,8 @@ lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology)
     cases' hU with b hU
     rw [hf a b] at hU
     rw [← hU]
-    exact is_open_open_interval hT a b
+    rw [hT]
+    apply ioo_open_in_R a b
 
   · intro V hV
     rw [hT] at hV
@@ -92,6 +92,13 @@ lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology)
         exact hx
 
 
+
+/-
+  Result:
+    f : X → Y is continuous iff
+      the condition of continuity is true for Basic sets
+-/
+
 lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
     [T' : TopologicalSpace Y] (f : X → Y)
     (B : Set (Set Y)) (hB : isTopoBase B) :
@@ -119,12 +126,6 @@ lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
     exact hA
 
 
-
-example {X Y : Type} (f : X → Y) (x1 x2 : X) (h : x1 = x2) : f x1 = f x2 := by exact congrArg f h
-
-
-example {X Y : Type} (f : X → Y) (x1 x2 : Set X) (h : x1 = x2) : f '' x1 = f '' x2 := by
-  exact congrArg (Set.image f) h
 
 
 lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
