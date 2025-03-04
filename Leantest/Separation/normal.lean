@@ -114,32 +114,6 @@ lemma characterization_of_normal {X : Type}
                  LEMA DE URYSOHN
 -/
 
-
-lemma existence_of_opens_for_urysohn {X : Type}
-    (T : TopologicalSpace X)
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsClosed C2) :
-    ∃ G : ℚ → Set X, (∀ p : ℚ, IsOpen (G p)) ∧
-    (∀ p q : ℚ, p < q → Closure (G p) ⊆ G q) := by
-
-  let Gneg : ℚ → Set X := fun q : ℚ ↦ (∅ : Set X)
-  let Gpos : ℚ → Set X := fun q : ℚ ↦ Set.univ
-
-  let G0 : ℚ → Set X := fun q : ℚ ↦ Set.univ
-
-  let f : ℕ → ℚ
-
-  let G : ℚ → Set X
-
-  let P : Finset ℕ := {}
-  let k : ℕ := Finset.card P
-
-  sorry
-  sorry
-  sorry
-
-
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X)
     [T' : TopologicalSpace ℝ]
