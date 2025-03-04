@@ -1,5 +1,5 @@
 import Leantest.Separation.normal
-import Leantest.Separation.my_induction
+import Leantest.MyDefs.my_induction
 
 /-
 función que numera los racionales en [0, 1]
