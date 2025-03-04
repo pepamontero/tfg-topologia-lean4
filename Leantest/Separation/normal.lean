@@ -7,6 +7,7 @@ import Leantest.BasicProp.closure
 import Leantest.BasicProp.interior
 import Leantest.Separation.lemmas
 import Leantest.MyDefs.my_inf
+import Leantest.MyDefs.sets
 
 
 set_option diagnostics true
