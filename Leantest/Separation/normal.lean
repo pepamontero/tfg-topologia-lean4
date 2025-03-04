@@ -109,26 +109,6 @@ lemma characterization_of_normal {X : Type}
 
 
 
--- esto no se ni donde lo pondría
--- pero no lo encuentro en mathlib
-
-lemma nonempty_has_element {X : Type} (A : Set X)
-    (hA : A ≠ ∅) : ∃ x : X, x ∈ A := by
-  by_contra hc
-
-  have aux : A = ∅
-  · ext x
-    constructor
-    · intro hx
-      apply hc
-      use x
-    · intro hx
-      by_contra
-      exact hx
-
-  exact hA aux
-
-
 -- densidad de ℚ en ℝ
 example (x y : ℝ) (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by exact exists_rat_btwn h
 
