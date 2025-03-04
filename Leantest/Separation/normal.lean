@@ -24,7 +24,10 @@ def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
 
 
 /-
-          CARACTERIZACIÓN DE NORMAL
+      CHARACTERIZATION OF NORMAL
+  `(X, T)` is a Normal topological space iff
+    `∀ U ⊆ X` open, `∀ C ⊆ X` closed with `C ⊆ U`,
+    `∃ V ⊆ X` open,, `C ⊆ V ⊆ Closure(V) ⊆ U`
 -/
 
 lemma characterization_of_normal {X : Type}
