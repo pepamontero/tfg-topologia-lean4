@@ -8,41 +8,14 @@ import Leantest.TopoSpaces.point
 
 open TopologicalSpace
 
-example [TopologicalSpace ℝ] : Neighbourhood (Set.Icc 1 3) 2 := by
-  rw [Neighbourhood]
-  use Set.Icc 1 3
-  constructor
-  simp
-  rw [OpenNeighbourhood]
-  constructor
-  trivial
-  trivial
+/-
+      DEF: HAUSDORFF TOPOLOGICAL SPACE
+-/
 
 def Hausdorff {X : Type} (T : TopologicalSpace X) : Prop :=
     --∀ x : X, ∃ U : Set X, Neighbourhood U x
     ∀ x1 x2 : X, x1 ≠ x2 → ∃ V1 : Set X, ∃ V2 : Set X,
     (V1 ∩ V2 = ∅ ∧ Neighbourhood V1 x1 ∧ Neighbourhood V2 x2)
-
-
-example (X : Type) (x a : X) (h : a ∈ Set.singleton x) : a = x := by
-  exact h
-
-#check Set.singleton_inter_eq_empty.mpr
-example (X : Type ) (x y : X) (h : x ≠ y) : Set.singleton x ∩ Set.singleton y = ∅ := by
-  ext a
-  constructor <;> intro h'
-  simp at h'
-  have h1 : a = x
-  exact h'.left
-  have h2 : a = y
-  exact h'.right
-  rw [← h1, ← h2] at h
-  dsimp at h
-  apply h
-  trivial
-  by_contra
-  exact h'
-
 
 example [T : TopologicalSpace X] (hT : T = DiscreteTopo X) : Hausdorff T := by
   intro x1 x2 h
