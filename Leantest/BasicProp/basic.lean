@@ -47,3 +47,41 @@ lemma univ_is_Neighb {X : Type} [TopologicalSpace X]
   constructor
   trivial
   exact isOpen_univ
+
+
+
+-- basic set theory results
+
+
+lemma left_empty_implies_disjoint_open_neighbourhoods
+    {X : Type} {T : TopologicalSpace X} (C1 : Set X) (C2 : Set X) (hempty : C1 = ∅) : ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
+    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅ := by
+
+  use ∅
+  use Set.univ
+  constructor
+  exact isOpen_empty
+  constructor
+  exact isOpen_univ
+  constructor
+  exact Set.subset_empty_iff.mpr hempty
+  constructor
+  exact fun ⦃a⦄ a ↦ trivial
+  exact Set.empty_inter Set.univ
+
+
+lemma right_empty_implies_disjoint_open_neighbourhoods
+    {X : Type} {T : TopologicalSpace X} (C1 : Set X) (C2 : Set X) (hempty : C2 = ∅) : ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
+    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅ := by
+
+  use Set.univ
+  use ∅
+  constructor
+  exact isOpen_univ
+  constructor
+  exact isOpen_empty
+  constructor
+  exact fun ⦃a⦄ a ↦ trivial
+  constructor
+  exact Set.subset_empty_iff.mpr hempty
+  exact Set.inter_empty Set.univ

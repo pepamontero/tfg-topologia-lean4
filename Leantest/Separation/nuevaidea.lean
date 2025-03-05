@@ -230,6 +230,8 @@ RESULTADO PRINCIPAL:
 -/
 
 
+
+
 lemma exists_G {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
@@ -836,24 +838,34 @@ lemma prop2 {X : Type} [T : TopologicalSpace X]
           have h0 := h.right.right
 
           have aux : f 0 < f (f_inv ⟨q, hq⟩)
-          simp [f_prop.right.left, f_inv_prop.right]
-
+          · simp [f_prop.right.left, f_inv_prop.right]
+            sorry
           sorry
 
-          specialize (H 0 (f_inv ⟨q, hq⟩) (by linarith) (by linarith) (by ))
-          rw [h0] at H
-          exact H
-
-
-
-
-
-
-
-
-
-
-
-
-
+      · sorry
   sorry
+
+
+def propG {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (n : ℕ)
+    (hn : n > 1)
+    (G : ℕ → Set X) : Prop :=
+
+    (
+      (G 0 = C2ᶜ) ∧
+      (G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)) ∧
+      (∀ p ≤ n, IsOpen (G p)) ∧
+      (∀ p ≤ n, ∀ q ≤ n, f p < f q → Closure (G p) ⊆ G q) ∧
+      ((h : n - 1 > 1) →
+        (∀ G' : ℕ → Set X, (propG hT C1 C2 hC1 hC2 hC1C2 (n-1) h G') →
+          (∀ m < n, G m = G' m)
+        )
+      )
+    )

@@ -1,4 +1,5 @@
 import Leantest.BasicProp.basic
+import Leantest.BasicProp.open
 import Leantest.TopoSpaces.discrete
 import Leantest.TopoSpaces.trivial
 import Leantest.TopoSpaces.usual
@@ -8,41 +9,19 @@ import Leantest.TopoSpaces.point
 
 open TopologicalSpace
 
-example [TopologicalSpace ℝ] : Neighbourhood (Set.Icc 1 3) 2 := by
-  rw [Neighbourhood]
-  use Set.Icc 1 3
-  constructor
-  simp
-  rw [OpenNeighbourhood]
-  constructor
-  trivial
-  trivial
+/-
+      DEF: HAUSDORFF TOPOLOGICAL SPACE
+-/
 
-def Hausdorff {X : Type} (T : TopologicalSpace X) : Prop :=
+def Hausdorff {X : Type} (_ : TopologicalSpace X) : Prop :=
     --∀ x : X, ∃ U : Set X, Neighbourhood U x
     ∀ x1 x2 : X, x1 ≠ x2 → ∃ V1 : Set X, ∃ V2 : Set X,
     (V1 ∩ V2 = ∅ ∧ Neighbourhood V1 x1 ∧ Neighbourhood V2 x2)
 
 
-example (X : Type) (x a : X) (h : a ∈ Set.singleton x) : a = x := by
-  exact h
-
-#check Set.singleton_inter_eq_empty.mpr
-example (X : Type ) (x y : X) (h : x ≠ y) : Set.singleton x ∩ Set.singleton y = ∅ := by
-  ext a
-  constructor <;> intro h'
-  simp at h'
-  have h1 : a = x
-  exact h'.left
-  have h2 : a = y
-  exact h'.right
-  rw [← h1, ← h2] at h
-  dsimp at h
-  apply h
-  trivial
-  by_contra
-  exact h'
-
+/-
+  Example: Every set with the discrete topology is Hausdorff
+-/
 
 example [T : TopologicalSpace X] (hT : T = DiscreteTopo X) : Hausdorff T := by
   intro x1 x2 h
@@ -69,126 +48,10 @@ example [T : TopologicalSpace X] (hT : T = DiscreteTopo X) : Hausdorff T := by
       rw [hT]
       trivial
 
-#check Set.Ioo
-
-
-example {X : Type} [T : TopologicalSpace X]
-    (hT : T = DiscreteTopo X) (x : X):
-    IsOpen {x} := by
-  rw [hT]
-  trivial
-
-example (x y: ℝ) : min x y = x ∨ min x y = y := by
-  exact min_choice x y
-
-example (x y: ℝ) : x < y ∨ x = y ∨ x > y := by
-  exact lt_trichotomy x y
-
-example (x y : ℝ) : x < y → min x y = x := by
-  intro h
-  exact min_eq_left_of_lt h
-
-example (x y : ℝ) : x = y → min x y = x := by
-  intro h
-  simp
-  exact le_of_eq h
-
 
 /-
-esto habría que meterlo en otro sitio
-
-además, se podría simplificar bastante porque hace dos veces
-exáctamente lo mismo y varias veces repite la misma secuencia
-de comandos
+  Example: ℝ with the usual topology is Hausdorff
 -/
-lemma is_open_open_interval [T : TopologicalSpace ℝ]
-    (hT : T = UsualTopology)
-    (x y : ℝ) :
-    IsOpen (Set.Ioo x y) := by
-  rw [hT]
-  intro z hz
-  let δ := min (z - x) (y - z) / 2
-  have hδ : δ = min (z - x) (y - z) / 2 := by rfl
-  use δ
-  constructor
-  · -- δ > 0
-    rw [hδ]
-    simp
-    simp at hz
-    exact hz
-  · -- let w ∈ (z - δ, z + δ)
-    intro w hw
-    simp
-    have hmin : min (z - x) (y - z) = (z - x) ∨ min (z - x) (y - z) = (y - z)
-    · exact min_choice (z - x) (y - z)
-
-    have auxi : z - x < y - z ∨ z - x = y - z ∨ z - x > y - z
-    · exact lt_trichotomy (z - x) (y - z)
-
-    constructor
-    · -- x < w
-      simp at hz
-      trans z - δ
-      · -- x < z - δ
-        cases' auxi with h1 h2
-        · -- case: z - x < y - z
-          have h' : min (z - x) (y - z) = (z - x)
-          · exact min_eq_left_of_lt h1
-          rw [h'] at hδ
-          rw [hδ]
-          linarith
-        · cases' h2 with h1 h2
-          · -- case z - x = y - z
-            have h' : min (z - x) (y - z) = (z - x)
-            · rw [h1]
-              simp
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-          · -- case z - x > y - z
-            have h' : min (z - x) (y - z) = (y - z)
-            · exact min_eq_right_of_lt h2
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-      · -- z - δ < w
-        exact hw.left
-    · -- w < y
-      trans z + δ
-      · -- w < z + δ
-        exact hw.right
-      · -- z + δ < y
-        cases' auxi with h1 h2
-        · -- case z - x < y - z
-          have h' : min (z - x) (y - z) = z - x
-          · exact min_eq_left_of_lt h1
-          rw [h'] at hδ
-          rw [hδ]
-          linarith
-        · cases' h2 with h1 h2
-          · -- case z - x = y - z
-            have h' : min (z - x) (y - z) = (z - x)
-            · rw [h1]
-              simp
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-          · -- case z - x > y - z
-            have h' : min (z - x) (y - z) = (y - z)
-            · exact min_eq_right_of_lt h2
-            rw [h'] at hδ
-            rw [hδ]
-            linarith
-
-example (x : ℝ) (h: x < 0) : |x| = - x := by
-  exact abs_of_neg h
-
-example (x y: ℝ) (h : x < y) : |x - y| = - (x - y) := by
-  apply abs_of_neg
-  linarith
-
-example (x y : ℝ) (h1 : x < y) (h2 : y < x) : False := by
-  linarith
 
 example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
   intro x1 x2 h
@@ -243,88 +106,23 @@ example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
       · constructor
         · simp
           exact hδ'
-        · apply is_open_open_interval hT (x1 - δ) (x1 + δ)
+        · rw [hT]
+          apply ioo_open_in_R (x1 - δ) (x1 + δ)
     · use Set.Ioo (x2 - δ) (x2 + δ)
       constructor
       · trivial
       · constructor
         · simp
           exact hδ'
-        · apply is_open_open_interval hT (x2 - δ) (x2 + δ)
+        · rw [hT]
+          apply ioo_open_in_R (x2 - δ) (x2 + δ)
+
+
 
 /-
-RESULTADO
-Si X es un espacio topológico Hausdorff,
-entonces todo conjunto unipuntual {x} es cerrado
+      THEOREM:
+  If X is a Hausdorff Space, then all its singletons are closed sets.
 -/
-
-#check IsClosed
-
-example {X : Type} (A : Set X) (hA : ¬ (∃ a, a ∈ A)) : A = ∅ := by
-  exact Set.not_nonempty_iff_eq_empty.mp hA
-
-
-lemma A_open_iff_is_heighbourhood_of_all
-    {X : Type} [T : TopologicalSpace X]
-    (A : Set X) : IsOpen A ↔
-    ∀ x ∈ A, Neighbourhood A x := by
-  constructor
-  all_goals intro h
-  · -- →
-    intro x hx
-    use A
-    constructor
-    trivial
-    constructor
-    exact hx
-    exact h
-
-  · -- ←
-    -- classeical choose?
-    have h : ∀ a : X, a ∈ A → ∃ Ua : Set X, (Ua ⊆ A ∧ OpenNeighbourhood Ua a)
-    · exact h
-
-    have aux : A = ∅ ∨ ¬ (A = ∅)
-    exact Classical.em (A = ∅)
-
-    cases' aux with h1 h2
-
-    · -- A is empty
-      rw [h1]
-      exact isOpen_empty
-
-    · -- A is not empty
-      have hA : ∃ a, a ∈ A
-      · rw [← Set.not_nonempty_iff_eq_empty] at h2
-        simp at h2
-        exact h2
-
-      --let g : A → Set X := fun a : A ↦ Classical.choose (h a a.property)
-
-      have hUnion : A = ⋃ a : A, Classical.choose (h a a.property)
-      · ext x ; constructor <;> intro hx
-        · let hx' := Classical.choose_spec (h x hx)
-          simp
-          use x
-          use hx
-          exact hx'.right.left
-        · simp at hx
-          cases' hx with y hy
-          cases' hy with hy hx
-          let m := Classical.choose_spec (h y hy)
-          apply m.left
-          exact hx
-
-      rw [hUnion]
-
-      have hOpen : ∀ a : A, IsOpen (Classical.choose (h a a.property))
-      · intro a
-        let ha := Classical.choose_spec (h a a.property)
-        exact ha.right.right
-
-      exact isOpen_iUnion hOpen
-
-
 
 
 theorem Hausdorff_imp_singletones_closed {X : Type} [T : TopologicalSpace X]
@@ -368,12 +166,14 @@ theorem Hausdorff_imp_singletones_closed {X : Type} [T : TopologicalSpace X]
 
 
 /-
-Ejemplo de topología que no es Hausdorff
-La topología del punto para conjuntos de 2 o más elementos
+Example: The Point Topology is not Hausdorff
+We show it in two different ways:
+  1. Using the definition
+  2. Using the previous theorem
 -/
 
--- usando la definición
 
+-- previous lemma
 lemma and_or_not (P Q : Prop) : (P ∨ Q) ∧ ¬ Q → P := by
   intro hP
   cases' hP with h1 h2
@@ -382,6 +182,7 @@ lemma and_or_not (P Q : Prop) : (P ∨ Q) ∧ ¬ Q → P := by
   by_contra
   exact h2 h
 
+-- 1. Using the definition
 example [T : TopologicalSpace X] (a : X) (h : ∃ x : X, x ≠ a)
     (hT : T = PointTopology X a) : ¬ Hausdorff T := by
   cases' h with x hx
@@ -417,10 +218,9 @@ example [T : TopologicalSpace X] (a : X) (h : ∃ x : X, x ≠ a)
     exact c
   exact ha2 ha1
 
-#check isClosed_compl_iff
-#check compl_compl
 
--- usando el resultado anterior
+
+-- 2. Using the previous theorem
 example [T : TopologicalSpace X] (a : X) (hX : ∃ x : X, x ≠ a)
     (hT : T = PointTopology X a) : ¬ Hausdorff T := by
   by_contra h
