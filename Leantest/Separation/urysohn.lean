@@ -1,9 +1,7 @@
 import Leantest.Separation.normal
 import Leantest.MyDefs.my_inf
 import Leantest.MyDefs.sets
-import Leantest.BasicProp.subspaces
-import Leantest.Continuous.basic
-import Leantest.Separation.lemmas
+import Leantest.Continuous.bases
 
 /-
       LEMA DE URYSOHN

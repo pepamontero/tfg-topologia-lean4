@@ -1,4 +1,3 @@
-import Leantest.Continuous.basic
 import Leantest.TopoSpaces.usual
 set_option linter.unusedVariables false
 

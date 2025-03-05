@@ -1,4 +1,4 @@
-import Leantest.Separation.lemmas
+import Leantest.BasicProp.bases
 import Leantest.Continuous.subspaces
 
 
