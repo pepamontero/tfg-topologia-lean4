@@ -4,9 +4,12 @@
 \usepackage{graphicx} % Imágenes
 \usepackage{amsmath} % Algunos símbolos matemáticos
 \usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{array} % Matrices, tablas
 \usepackage{xcolor} % Colores de texto
 \usepackage{enumitem} % Listas con letras
+\usepackage[spanish]{babel}
 %LEAN
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -55,6 +58,13 @@
 
 % Spell checker settings
 % spell-checker: disable
+
+% Math commands
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\rat}{\mathbb{Q}}
+
+% Other commands
+\newcommand{\refpep}[1]{(\ref{#1})}
 
 
 \begin{document}
@@ -716,6 +726,229 @@ Podemos utilizar costructor cuando tengamos tesis que se puedan separar en dos p
   
 \end{tabular}
 \end{center}
+
+\section{Espacios topológicos en Lean}
+
+
+\section{El Lema de Urysohn}
+
+Definición: espacio normal
+
+Lema (de Urysohn):
+
+Demostración
+
+
+\subsection{Numerar los racionales}
+
+Los racionales son denumerables, es decir existe una biyección entre $\nat$ y $\rat$.
+
+En particular, existe una función $f : \nat \to Q$ donde $Q = \rat \cap [0, 1]$, de forma que
+
+\begin{enumerate}
+  \item $f$ es biyectiva
+  \item $f(0) = 1$
+  \item $f(1) = 0$
+\end{enumerate}
+
+A partir de ahora llamarmeos $f$ a esta función.
+
+Demostración:
+
+Demostración en Lean: [poner solo las partes importantes?]
+
+\subsection{Una parte}
+
+Sea $n \in \nat$ con $n > 1$. Como $$P_n = \{1, 2, \dots, n-1\}$$ es un conjunto finito y $f$ es sobreyectiva, existen $r$ y $s$ en $P_n$ (es decir, $r < n$ y $s < n$) tales que
+
+\begin{equation} \label{cond_rs}
+  f(r) < f(n) < f(s)
+\end{equation}
+
+y, además, estas son las mejores elecciones, es decir
+
+\begin{enumerate}
+  \item Si $m < n$ es tal que $f(m) < f(n)$, entonces $f(m) \leq f(r)$
+  \item Si $m < n$ es tal que $f(n) < f(m)$, entonces $f(s) \leq f(m)$
+\end{enumerate}
+
+Además, como $f$ es inyectiva, estas elecciones son únicas.
+
+Para cada $n > 1$, consideramos las funciones $r : \nat \to \nat$ y $s : \nat \to \nat$ que nos dan precisamente estos números $r$ y $n$.
+
+--
+
+Supongamos que hemos encontrado una función $G : \nat \to \mathcal{P}(X)$ que satisface las siguientes propiedades
+
+\begin{enumerate}
+  \item $G(0) = X \backslash C_2$
+  \item $G(1) = V$ tal que $C_1 \subseteq V \subseteq \overline{V} \subseteq X \backslash C_2$
+  \item Para cada $n \in \nat $, $G(n)$ es abierto en $X$
+  \item Para cada $n \in \nat$, si $n>1$ entonces \begin{equation} \label{cond_Grs} \overline{G(r(n))} \subseteq G(n) \subseteq \overline{G(n)} \subseteq G(s(n)) \end{equation}
+\end{enumerate}
+
+Queremos probar que, en este caso, $G$ también cumple la siguiente propiedad:
+
+\begin{equation} \label{cond_G}
+  \forall n, m \in \nat, f(n) < f(m) \implies \overline{G(n)} \subseteq G(m)
+\end{equation}
+
+
+\begin{proof}
+
+Sean $n, m \in \nat$ con $f(n) < f(m)$
+
+Para empezar, como $f(n) < f(m)$, no puede ser $n=0$ ni $m=1$:
+
+\begin{itemize}
+  \item Si fuera $n = 0$, entonces $f(n) = 1$ y tendríamos $1 < f(m)$, pero $f$ toma valores en $[0, 1]$.
+  \item Si fuera $m = 1$, entonces $f(m) = 0$ y tendríamos $f(n) < 0$, pero $f$ toma valores en $[0, 1]$.
+\end{itemize}
+
+Además, $n \neq m$ por ser $f$ inyectiva. Dividimos en los siguientes casos.
+
+\textit{Caso 1.} $n = 1, m = 0$
+
+Trivialmente por hipótesis (prop. 2 de G)
+
+\textit{Caso 2.} $n > 1, m = 0$, por inducción completa sobre $n$
+
+Sea $n>1$ arbitrario y supongamos, por inducción, que para cada $k < n$ con $k > 1$ se tiene $\overline{G(k)} \subseteq G(m)$.
+
+Hay dos posibilidades: o bien $s(n)=0$ o bien $s(n)>1$. En el caso de que $s(n)=0$ es sencillo: tenemos $m=0=s(n)$, por tanto el objetivo pasa a ser $\overline{G(n)} \subseteq G(s(n))$, que es cierto por las propiedades de G.
+
+Supongamos por tanto que $s(n)>1$. Entonces podemos aplicar la hipótesis de inducción a $k=s(n)>1$, y obtenemos que $\overline{G(s(n))} \subseteq G(m)$. Pero, por las propiedades de G,  $\overline{G(n)} \subseteq G(s(n))$. Obtenemos, por las propiedades de la adherencia,
+
+$$\overline{G(n)} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(m)$$
+
+\textit{Caso 3.} $n = 1, m > 1$, por inducción completa sobre $m$
+
+Es simétrico al anterior. Sea $m>1$ arbitrario y supongamos, por inducción, que para cada $l < m$ con $l > 1$ se tiene $\overline{G(n)} \subseteq G(l)$.
+
+Hay dos posibilidades: o bien $r(m)=1$ o bien $r(m)>1$. En el caso de que $r(m)=1$ es sencillo: tenemos $n=1=r(m)$, por tanto el objetivo pasa a ser $\overline{G(r(m))} \subseteq G(m)$, que es cierto por las propiedades de G.
+
+Supongamos por tanto que $r(m)>1$. Entonces podemos aplicar la hipótesis de inducción a $l=r(m)>1$, y obtenemos que $\overline{G(n)} \subseteq G(r(m))$. Pero, por las propiedades de G,  $\overline{G(r(m))} \subseteq G(m)$. Obtenemos, por las propiedades de la adherencia,
+
+$$ \overline{G(n)} \subseteq G(r(m)) \subseteq \overline{G(r(m))} \subseteq G(m) $$
+
+\textit{Caso 4.} $n > 1, m > 1$. Dividimos en dos casos adiccionales:
+
+\textit{Caso 4.1.} $m < n$
+
+Por inducción sobre $n$. Sea $n>m>1$ tal que $f(n) < f(m)$ y supongamos, por inducción, que para cada $k < n$ con $k>m$ y $f(k) < f(m)$ se tiene 
+
+Sabemos que $m < n$ y que $f(n) < f(m)$. Por tanto, podemos aplicar las propiedades de $s$ sobre $n$ ($f(n) < f(s(n))$ es la mejor elección) y obtenemos que $f(s(n)) \leq f(m)$.
+
+Si $f(s(n)) = f(m)$, como $f$ es inyectiva, $s(n)=m$. Luego es trivial porque el objetivo pasa a ser $\overline{G(n)} \subseteq G(s(n))$.
+
+Supongamos que $f(s(n)) < f(m)$.
+
+\textit{Caso 4.2.} $m < n$
+
+
+Supongamos primero que $n = 1$ y $m = 0$. Entonces conocemos los valores de $G(n)$ y $G(m)$, y la expresión \refpep{cond_G} que queremos probar pasa a ser
+
+$$
+  \overline{V} \subseteq X \backslash C_2
+$$
+
+que es cierto por hipótesis.
+
+Supongamos ahora que $n, m >1$. Entonces ambas satisfacen \refpep{cond_Grs}. Vamos a probar
+
+\begin{equation} \label{cond_G_inductive}
+  \forall n, m > 1, f(n) < f(m) \implies \overline{G(n)} \subseteq G(m)
+\end{equation}
+
+Nota:
+En un caso extremadamente explicativo (pero para que fuera consistente en cierta manera con la demostración en Lean) quizás podría escribir que esta condición es equivalente a esta otra, sobre la que se puede aplicar inducción completa "normal":
+
+$$
+  \forall n, m \in \nat, f(n+2) < f(m+2) \implies \overline{G(n+2)} \subseteq G(m+2)
+$$
+
+
+Por inducción completa sobre $n$ y $m$.
+
+Inducción sobre $n$.
+
+\begin{itemize}
+  \item \textit{Caso base} ($n = 2$).
+\end{itemize}
+  
+Como $n=2$, y se tiene $r(n) < n$ y $s(n) < n$, podemos asegurar que $r(n), r(s) \in \{0, 1\}$.
+
+En particular, para que se cumpla \refpep{cond_rs}, necesariamente tiene que ser $$0 = f(1) < f(2) < f(0) = 1$$ y por tanto $r(n) = 1$ y $s(n) = 0.$
+
+Sea entonces un $m > 1$ fijo pero arbitrario. Sabemos que $m \neq 2$ por ser $f$ inyectiva.
+
+Inducción sobre $m$
+
+\begin{itemize}
+  \setlength{\itemindent}{2em}
+  \item[$\circ$] \textit{Caso base} ($n = 2, m= 3$)
+\end{itemize}
+
+Como $f(n) < f(m)$, se tiene $$0 < f(1) < f(2) < f(3) < f(0) = 1.$$ Por tanto, $r(m) = 2 = n$ y $s(m) = 0$. De \refpep{cond_Grs}, se obtiene:
+
+$$
+\overline{G(n)} = \overline{G(r(m))} \subseteq G(m),
+$$
+
+como queríamos.
+
+\begin{itemize}
+  \setlength{\itemindent}{2em}
+  \item[$\circ$] \textit{Caso recursivo} ($n = 2, m>3$)
+\end{itemize}
+
+Hipótesis de inducción:
+
+\begin{equation} \label{cond_G_ind_m}
+  \forall l < m \text{ con } l > 1, f(2) < f(l) \implies \overline{G(2)} \subseteq G(l)
+\end{equation}
+
+Veamos primero que se tiene que dar $r(m) > 1$.
+
+\begin{itemize}
+  \item $r(m) \neq 0$. Si fuera $r(m) = 0$ tendríamos $1 = f(0) < f(m)$, que es imposible.
+  \item $r(m) \neq 1$. Si fuera $r(m) = 1$, como $f(n) < f(m)$ y $r(m)$ es la mejor elección, tendríamos $f(n) \leq f(r(m)) = f(1) = 0$. Como $n=2\neq 1$, entonces $f(n) < 0$, que es imposible.
+\end{itemize}
+
+
+Luego $r(m)> 1$ y podemos aplicar \refpep{cond_G_ind_m} a $l=r(m)<m$, obteniendo $$\overline{G(2)} \subseteq G(r(m)).$$
+
+Por otro lado, por \refpep{cond_Grs}, sabemos que $$\overline{G(r(m))} \subseteq G(m).$$ Mediante las propiedades de la adherencia, unimos las expresiones
+
+$$
+\overline{G(2)} \subseteq G(r(m)) \subseteq \overline{G(r(m))} \subseteq G(m),
+$$
+
+finalizando por tanto la inducción sobre $m$.
+
+\begin{itemize}
+  \item \textit{Caso recursivo} ($n > 2$, $m>1$ es fijo pero arbitrario)
+\end{itemize}
+
+Hipótesis de inducción:
+\begin{equation} \label{cond_G_ind_n}
+  \forall k < n \text{ con } k > 1, f(k) < f(m) \implies \overline{G(k)} \subseteq G(m)
+\end{equation}
+
+Tenemos que diferenciar dos casos: $s(n) = 0$ y $s(n) > 1$ (no puede ser $s(n) = 1$ porque en ese caso tendríamos $f(n) < f(s(n)) = f(1) = 0$, que es imposible).
+
+Supongamos primero que $s(n) = 0$. Entonces, como $f(n) < f(m)$ y $s(n)$ es la mejor elección, tenemos que $f(s(n)) \leq f(m)$. Sin embargo, en realidad no puede darse $f(s(n)) < f(m)$, porque tendríamos $1 = f(0) = f(s(n)) < f(m)$, que es imposible. Luego en caso de que $s(n)=0$, necesariamente se tiene $f(s(n)) = f(m)$, y por inyectividad de $f$, $s(n) = m$. Entonces el resultado se sigue trivialmente de \refpep{cond_Grs} aplicado a $n>1$:
+
+$$
+  \overline{G(n)} \subseteq G(s(n)) = G(m).
+$$
+
+Si suponemos ahora que $s(n)>1$, podemos aplicar \refpep{cond_G_ind_n} a $k = s(n) < n$, obteniendo $$\overline{G(s(n))} \subseteq G(m).$$
+
+Además, por \refpep{cond_Grs}, como $n > 1$, se tiene $$\overline{G(n)} \subseteq G(s(n)),$$ y, por las propiedades de la adherencia, podemos unir ambas expresiones $$\overline{G(n)} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(m)$$ obteniendo el resultado que buscábamos.
+
+
+\end{proof}
 
 % Bibliografía
 
