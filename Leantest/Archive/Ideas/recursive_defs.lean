@@ -1,9 +1,5 @@
 import Leantest.Separation.normal
-import Leantest.Separation.denumerable
-
-import Mathlib.Control.Fix -- no se si esto me podría ayudar
-
-#check Closure
+import Leantest.MyDefs.denumerable
 
 /-
 Practice on recursive definitions
@@ -14,7 +10,6 @@ def Fibonacci : ℕ → ℕ := fun n ↦
   | 0 => 0
   | 1 => 1
   | n + 2 => Fibonacci n + Fibonacci (n + 1)
-
 
 def FibonacciSet : ℕ → Set ℕ := fun n ↦
   match n with
@@ -28,8 +23,6 @@ example (n : ℕ) (hn : n > 1) : FibonacciSet n = {0} ∪ {1} := by
   all_goals intro hx
   · rw [FibonacciSet.eq_def] at hx
     simp
-
-
     sorry
   · simp at hx
 
@@ -78,7 +71,7 @@ def G (Y : Type) (TY : TopologicalSpace Y)
 
 -/
 
-#check characterization_of_normal
+
 
 def f := decodeRat
 
@@ -131,7 +124,7 @@ def G {X : Type} [T : TopologicalSpace X]
   · exact (rn_lt_n n)
 -/
 
-#check Fix
+
 
 
 --esta es la buena
