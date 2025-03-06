@@ -4,6 +4,17 @@ import Leantest.MyDefs.my_rs_functions
 
 /-
 RESULTADO PRINCIPAL:
+
+Sean
+  - (X, T) un espacio topológico normal
+  - C1, C2 cerrados de X disjuntos
+
+Entonces para cada n > 1, existe una función G_n : ℕ → P(X)
+de manera que cumple:
+  1. ∀ p ≤ n, G_n(p) es un conjunto abierto
+  2. ∀ p, q ≤ n, f p < f q → Closure(G_n(p)) ⊆ G_n(q)
+  2. G_n(0) = X \ C2
+  3. G_n(1) = V,, C1 ⊆ V ⊆ Closure(V) ⊆ X \ C2
 -/
 
 
@@ -354,6 +365,11 @@ lemma exists_G {X : Type} [T : TopologicalSpace X]
       exact hG'.right.right.right
 
 
+/-
+Def:
+  para cada n > 1, definimos G(n) como una elección
+  del resultado anterior
+-/
 
 noncomputable def Gn {X : Type} [T : TopologicalSpace X]
 
@@ -370,6 +386,10 @@ noncomputable def Gn {X : Type} [T : TopologicalSpace X]
     := fun m ↦ (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn)) m
 
 
+/-
+Problema: esta elección no me asegura que
+  G_n(n) = G_m(n) para n < m
+-/
 
 lemma question {X : Type} [T : TopologicalSpace X]
 
@@ -397,6 +417,12 @@ lemma question {X : Type} [T : TopologicalSpace X]
   sorry
 
 
+/-
+Def: definimos G' : ℕ → P(X) como
+  G'(0) = X \ C2
+  G'(1) = V,, C1 ⊆ V ⊆ Closure(V) ⊆ X \ C2
+  G'(n) = G_n(n)
+-/
 
 def G' {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -423,21 +449,12 @@ def G' {X : Type} [T : TopologicalSpace X]
 como f es biyectiva, tiene inversa...
 -/
 
-lemma f_has_inverse : ∃ g : Q → ℕ, (
-    (∀ n : ℕ, g (f n) = n) ∧
-    (∀ q : Q, f (g q) = q)
-  ) := by sorry
-
-noncomputable def f_inv : Q → ℕ := Classical.choose f_has_inverse
-
-lemma f_inv_prop : (∀ n : ℕ, f_inv (f n) = n) ∧
-    (∀ q : Q, f (f_inv q) = q) := by
-  let h := Classical.choose_spec f_has_inverse
-  exact h
-
 
 /-
-DEFINICIÓN DE LA G FINAL
+Def: definimos la función final que necesitamos, G : ℚ → P(X), como
+  G(q) = ∅, si q < 0
+  G(q) = G'(f⁻¹(q)), si 0 ≤ q ≤ 1
+  G(q) = X, si q > 1
 -/
 
 def G {X : Type} [T : TopologicalSpace X]

@@ -19,3 +19,16 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
   constructor
   · exact (f n).property.left -- x.property handles membership, here f n is recognized as an element of Q
   · exact (f n).property.right
+
+
+lemma f_has_inverse : ∃ g : Q → ℕ, (
+    (∀ n : ℕ, g (f n) = n) ∧
+    (∀ q : Q, f (g q) = q)
+  ) := by sorry
+
+noncomputable def f_inv : Q → ℕ := Classical.choose f_has_inverse
+
+lemma f_inv_prop : (∀ n : ℕ, f_inv (f n) = n) ∧
+    (∀ q : Q, f (f_inv q) = q) := by
+  let h := Classical.choose_spec f_has_inverse
+  exact h
