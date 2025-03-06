@@ -44,3 +44,35 @@ Contenidos:
 
 * comprobar las propiedades: la propiedad 2 no se cumple globalmente
 
+
+## 2. recursive_defs.lean
+
+Idea: definir G recursivamente utilizando la propiedad de la caracterización de la normalidad. La definición de G sería constructiva
+
+Problema: para utilizar la caracterización de la normalidad necesitamos ver que los conjuntos que utilizamos cumplen las condiciones, pero no le estamos pidiendo esas propiedades en la recursión (la recursión en solo sobre n, sin propiedades sobre G(m) para m < n).
+
+Contenidos:
+
+* ejemplos de utilización de definiciones recursivas de funciones
+
+* intento de escribir G recursivamente
+
+
+## 3. inductionUrysohn.lean
+
+Primeras ideas de utilización de inducción para probar el resultado. Caos.
+
+## 4. propG_for_rs.lean
+
+Idea: proceder de la siguiente forma
+
+1. Probar que existe una función G que cumple la condición
+    ∀ n > 1, (Closure (G (r n)) ⊆ G n ∧ Closure (G n) ⊆ G (s n))
+
+2. Probar que, que cumpla la condición anterior, implica que cumple
+    ∀ n m, f(n) < f(m) => Closure(G(n)) ⊆ G(m)
+
+Problema: no consigo probar que 1 implique 2 en el caso n, m > 1, n < m. Es menos trivial de lo que parece.
+
+Ideas a desarrollar:
+* Probar primero que existe una colección finita de naturales que van de n a m mediante saltos de r y s.
