@@ -136,6 +136,55 @@ theorem my_strong_double_induction (n m : ℕ) (P : ℕ → ℕ → Prop)
         intro l hl
         exact hi' k hk l (by linarith)
 
+
+theorem my_strong_double_induction' (n m : ℕ) (P : ℕ → ℕ → Prop)
+    (hi : ∀ n m, ((∀ i < n, ∀ j < m, P i j) → P n m)) : P n m := by
+
+  let Q : ℕ → ℕ → Prop := fun n ↦ fun m ↦ ∀ k ≤ n, ∀ l ≤ m, P k l
+  have hQ : Q n m → P n m
+  · intro hQ
+    simp [Q] at hQ
+    exact hQ n (by linarith) m (by linarith)
+
+  apply hQ
+  apply my_double_induction
+
+  · -- caso base
+    intro n hn m hm
+    specialize hi 0 0
+    simp at hn hm
+    rw [hn, hm]
+    apply hi
+    simp
+
+  · -- caso recursivo
+    intro n m
+    simp [Q] at *
+    constructor
+
+    · intro hi' k hk l hl
+      have cases : k < n + 1 ∨ k = n + 1 := by exact Or.symm (Nat.eq_or_lt_of_le hk)
+      cases' cases with hk hk
+
+      · exact hi' k (by linarith) l hl
+      · rw [hk]
+        specialize hi (n+1) l
+        apply hi
+        intro i hin j hj
+        exact hi' i (by linarith) j (by linarith)
+
+    · intro hi' k hk l hl
+      have cases : l < m + 1 ∨ l = m + 1 := by exact Or.symm (Nat.eq_or_lt_of_le hl)
+      cases' cases with hl hl
+
+      · exact hi' k hk l (by linarith)
+      · rw [hl]
+        specialize hi k (m+1)
+        apply hi
+        intro i hik j hj
+        exact hi' i (by linarith) j (by linarith)
+
+
 -- repito este resultado solo por tenerlo aquí visible
 theorem my_stronger_induction' (n : ℕ) (P Q : ℕ → Prop)
     (hn : P n)
@@ -207,3 +256,35 @@ theorem my_stronger_double_induction (n m : ℕ) (P Q : ℕ → ℕ → Prop)
     cases' h with _ h
     apply h
     exact hi
+
+
+theorem my_stronger_double_induction' (n m : ℕ) (P Q : ℕ → ℕ → Prop)
+    (hnm : P n m)
+    (h : ∀ n m, P n m →
+      (∀ i < n, ∀ j < m, P i j → Q i j) → Q n m)
+    :
+    Q n m := by
+
+
+  have aux : ∀ k l, P k l → ((P k l → Q k l) ↔ Q k l)
+  · intro k l hkl
+    constructor
+    · exact fun a ↦ a hkl
+    · exact fun a _ ↦ a
+
+  rw [← aux n m hnm]
+
+  let H : ℕ → ℕ → Prop := fun k ↦ fun l ↦ (P k l → Q k l)
+  have H_def : ∀ k l : ℕ, H k l = (P k l → Q k l) := by intro k l; rfl
+
+  rw [← H_def n m]
+
+  apply my_strong_double_induction'
+  intro k l
+
+  simp [H]
+
+  intro HI hkl
+  apply h
+  exact hkl
+  exact HI
