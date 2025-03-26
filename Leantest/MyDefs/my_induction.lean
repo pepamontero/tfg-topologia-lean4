@@ -53,6 +53,44 @@ theorem my_double_induction (n m : ℕ) (P : ℕ → ℕ → Prop)
   · apply (hi n m).left
     exact hn
 
+theorem my_double_induction' (n m : ℕ) (P : ℕ → ℕ → Prop)
+    (h0 : P 0 0)
+    (hi : ∀ n m, (P n m → (P (n+1) m  ∧ P n (m+1)))) : P n m := by
+  induction' n with n hn
+  · induction' m with m hm
+    · exact h0
+    · specialize hi 0 m hm
+      exact hi.right
+  · specialize hi n m hn
+    exact hi.left
+
+theorem my_double_induction'' (n m : ℕ) (P : ℕ → ℕ → Prop)
+    (h0 : P 0 0)
+    (hn0 : ∀ n, (P n 0 → P (n+1) 0))
+    (hm0 : ∀ m, (P 0 m → P 0 (m+1)))
+    (hi : ∀ n m, (n > 0 → (m > 0 → (P (n-1) m ∧ P n (m-1)))) → P n m) : P n m := by
+
+  induction' n with n hn
+  · induction' m with m hm
+    · exact h0
+    · apply hm0
+      exact hm
+
+  · induction' m with m hm
+    · apply hn0
+      exact hn
+
+    · apply hi (n+1) (m+1)
+      intro hn1 hm1
+      simp
+      constructor
+      · exact hn
+      · apply hm
+        apply hi n m
+        intro hn0 hm0
+        sorry
+
+
 theorem my_strong_induction (n : ℕ) (P : ℕ → Prop)
     (hi : ∀ n, (∀ k < n, P k) → P n) : P n := by
 
@@ -185,6 +223,80 @@ theorem my_strong_double_induction' (n m : ℕ) (P : ℕ → ℕ → Prop)
         exact hi' i (by linarith) j (by linarith)
 
 
+/-
+theorem my_strong_double_induction'' (n m : ℕ) (P : ℕ → ℕ → Prop)
+    (hi : ∀ n m,
+      (
+        (
+          (∀ k < n, P k m) ∧
+          (∀ l < m, P n l)
+        )
+        → P n m
+      )
+    ) :
+    P n m := by
+
+  apply my_strong_double_induction'
+  intro n m hi'
+  apply hi
+  constructor
+  intro k hk
+  specialize hi' k hk
+
+  intro h
+  apply hi
+
+  let Q : ℕ → ℕ → Prop := fun n ↦ fun m ↦ ∀ k ≤ n, ∀ l ≤ m, P k l
+  have hQ : Q n m → P n m
+  · intro hQ
+    simp [Q] at hQ
+    exact hQ n (by linarith) m (by linarith)
+
+  apply hQ
+  apply my_double_induction'
+
+  · intro n hn m hm
+    specialize hi 0
+    simp at hn hm
+    rw [hn, hm]
+    apply hi
+    simp
+
+  · intro n m hi'
+    simp [Q] at *
+    constructor
+
+    · intro k hk l hl
+
+      have cases : k < n + 1 ∨ k = n + 1 := by exact Or.symm (Nat.eq_or_lt_of_le hk)
+      cases' cases with hk hk
+
+      · exact hi' k (by linarith) l hl
+
+      · rw [hk]
+
+
+
+        specialize hi (n+1) l
+        apply hi
+
+        · intro i hin
+          exact hi' i (by linarith) l hl
+
+        · intro j hj
+
+          have aux : ∀ k < n + 1, P k l
+          · intro k' hk'
+            exact hi' k' (by linarith) l hl
+
+          specialize hi aux
+
+
+          sorry
+
+    · sorry
+-/
+
 -- repito este resultado solo por tenerlo aquí visible
 theorem my_stronger_induction' (n : ℕ) (P Q : ℕ → Prop)
     (hn : P n)
@@ -288,3 +400,36 @@ theorem my_stronger_double_induction' (n m : ℕ) (P Q : ℕ → ℕ → Prop)
   apply h
   exact hkl
   exact HI
+
+
+theorem my_stronger_double_induction'' (n m : ℕ) (P Q : ℕ → ℕ → Prop)
+    (hnm : P n m)
+    (h : ∀ n m, P n m →
+      (
+        (
+          (∀ k < n, P k m → Q k m) ∧
+          (∀ l < m, P n l → Q n l)
+        )
+        → Q n m
+      )
+    ) :
+    Q n m := by
+
+  have aux : ∀ k l, P k l → ((P k l → Q k l) ↔ Q k l)
+  · intro k l hkl
+    constructor
+    · exact fun a ↦ a hkl
+    · exact fun a _ ↦ a
+
+  rw [← aux n m hnm]
+
+  let H : ℕ → ℕ → Prop := fun k ↦ fun l ↦ (P k l → Q k l)
+  have H_def : ∀ k l : ℕ, H k l = (P k l → Q k l) := by intro k l; rfl
+
+  rw [← H_def n m]
+
+  apply my_strong_double_induction
+  intro k l
+
+  simp [H]
+  sorry

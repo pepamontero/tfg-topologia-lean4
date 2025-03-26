@@ -238,3 +238,147 @@ lemma s_options (n : ℕ) (hn : n > 1) : s n = 0 ∨ s n > 1 := by
   have hs := s_is_not_1 n hn
   exact hs c1
   exact c2
+
+
+/-
+  some other properties
+-/
+
+
+
+lemma f_sr_prop (n : ℕ) (hn : n > 1) (hrn : r n > 1)
+    : f n < f (s (r n)) := by
+
+  have hs := (s_prop (r n) hrn).left
+  have hr := (r_prop n hn).left
+  simp at hs hr
+
+  apply lt_of_le_of_ne
+
+  · -- f n ≤ f (s (r n))
+    by_contra c
+    simp at c
+    apply (r_prop n hn).right.right at c
+    · have s_prop := (s_prop (r n) hrn).right.left
+      exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false s_prop c
+    · -- ver s(r n) < n
+      simp
+      trans (r n)
+      · exact hs
+      · exact hr
+
+  · -- f n ≠ f (s (r n))
+    by_contra c
+    apply f_prop.left.left at c
+    linarith
+
+lemma f_rs_prop (n : ℕ) (hn : n > 1) (hsn : s n > 1)
+    : f (r (s n)) < f n := by
+
+  have hr := (r_prop (s n) hsn).left
+  have hs := (s_prop n hn).left
+  simp at hs hr
+
+  apply lt_of_le_of_ne
+
+  · -- f (r (s n)) ≤ f n
+    by_contra c
+    simp at c
+    apply (s_prop n hn).right.right at c
+    · have r_prop := (r_prop (s n) hsn).right.left
+      exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false r_prop c
+    · -- ver s(r n) < n
+      simp
+      trans (s n)
+      · exact hr
+      · exact hs
+
+  · -- f n ≠ f (s (r n))
+    by_contra c
+    apply f_prop.left.left at c
+    linarith
+
+lemma rs_diff (n : ℕ) (hn : n > 1) :
+    r n ≠ s n := by
+
+  by_contra c
+  have aux1 := (r_prop n hn).right.left
+  have aux2 := (s_prop n hn).right.left
+  rw [c] at aux1
+  apply le_of_lt at aux2
+  exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false aux1 aux2
+
+
+example (a b : ℝ) : a ≤ b → a ≠ b → a < b := by exact fun a_1 a_2 ↦ lt_of_le_of_ne a_1 a_2
+
+lemma rs_options (n : ℕ) (hn : n > 1) :
+    r n < s n ∨ s n < r n := by
+  have aux : r n < s n ∨ s n ≤ r n
+  exact Nat.lt_or_ge (r n) (s n)
+  cases' aux with h1 h2
+  left
+  exact h1
+  right
+  apply lt_of_le_of_ne
+  exact h2
+  exact (rs_diff n hn).symm
+
+
+#check ge_antisymm
+
+lemma rn_eq_rsn (n : ℕ) (hn : n > 1)
+    (hsn : s n > 1)
+    (h : r n < s n)
+    : r n = r (s n) := by
+
+  apply f_prop.left.left
+  apply ge_antisymm
+
+  · -- f (r (s n)) ≤ f (r n)
+    apply (r_prop n hn).right.right
+    · simp
+      trans s n
+      · have aux := (r_prop (s n) hsn).left
+        simp at aux
+        exact aux
+      · have aux := (s_prop n hn).left
+        simp at aux
+        exact aux
+    · exact f_rs_prop n hn hsn
+
+  · -- f (r n) ≤ f (r (s n))
+    apply (r_prop (s n) hsn).right.right
+    · simp
+      exact h
+    · trans f n
+      · exact (r_prop n hn).right.left
+      · exact (s_prop n hn).right.left
+
+
+lemma sn_eq_srn (n : ℕ) (hn : n > 1)
+    (hrn : r n > 1)
+    (h : s n < r n)
+    : s n = s (r n) := by
+
+  apply f_prop.left.left
+  apply ge_antisymm
+
+  · -- f (s (r n)) ≤ f (s n)
+    apply (s_prop (r n) hrn).right.right
+    · simp
+      exact h
+    · trans f n
+      · exact (r_prop n hn).right.left
+      · exact (s_prop n hn).right.left
+
+  · -- f (r n) ≤ f (r (s n))
+    apply (s_prop n hn).right.right
+    · simp
+      trans r n
+      · have aux := (s_prop (r n) hrn).left
+        simp at aux
+        exact aux
+      · have aux := (r_prop n hn).left
+        simp at aux
+        exact aux
+    · exact f_sr_prop n hn hrn
