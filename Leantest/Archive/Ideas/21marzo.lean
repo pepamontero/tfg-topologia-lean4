@@ -370,3 +370,78 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
       simp [from_normality, some'] at some
       rw [← U_def] at some
       exact some
+
+
+/-
+resumen
+-/
+
+example {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    :
+
+    ∃ G : ℕ → Set X,
+      (
+        (G 0 = C2ᶜ) ∧
+        (G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)) ∧
+        (∀ n, IsOpen (G n)) ∧
+        (∀ n > 1, Closure (G (r n)) ⊆ G n
+          ∧ Closure (G n) ⊆ G (s n))
+      )
+
+    := by
+
+  use (G hT C1 C2)
+  constructor
+  · simp [G]
+
+  constructor
+  · have h : normal_pair (C2ᶜ, C1)
+    · constructor; exact hC2
+      constructor; exact hC1
+      exact hC1C2
+    simp [G, from_normality, h]
+
+  constructor
+  · exact fun n ↦ G_Prop1 hT C1 C2 hC1 hC2 hC1C2 n
+  · exact fun n a ↦ G_Prop2 hT C1 C2 hC1 hC2 hC1C2 n a
+
+
+/-
+ahora quiero ver que la propiedad se extiende...
+-/
+
+lemma G_Prop2' {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    :
+
+    ∀ n m, f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by
+
+  sorry
+
+/-
+Después podría definir F : ℚ → Set X
+-/
+
+def F {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+
+    : ℚ → Set X := fun q ↦
+
+  if q < 0 then ∅
+  else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
+  else Set.univ
