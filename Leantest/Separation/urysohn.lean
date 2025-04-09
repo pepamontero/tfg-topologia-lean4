@@ -2,6 +2,7 @@ import Leantest.Separation.normal
 import Leantest.MyDefs.my_inf
 import Leantest.MyDefs.sets
 import Leantest.Continuous.bases
+import Leantest.Separation.def_G
 
 /-
       LEMA DE URYSOHN
@@ -36,73 +37,72 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     let Q : Set ℚ := {x : ℚ | 0 ≤ x ∧ x ≥ 1}
 
-    have H : ∃ G : ℚ → Set X, (∀ p : ℚ, IsOpen (G p)) ∧
-    (∀ p q : ℚ, p < q → Closure (G p) ⊆ G q)
-    sorry
-
     have aux : IsOpen C2ᶜ
     exact IsClosed.isOpen_compl
 
     have aux' : C1 ⊆ C2ᶜ
     exact ABdisjoint_iff_AsubsBc.mp hC1C2
 
-    /-
+    let G := H h C1 C2
+    have G_def : G = H h C1 C2 := by rfl
 
+    -- PROPIEDADES DE G
+    have hG := H_Prop h C1 C2 hC1' aux aux'
+    rw [← G_def] at hG
+    cases' hG with hG1 hG
+    cases' hG with hG0 hG
+    cases' hG with hG_open hG_pq
 
-    let g : Q → Set X := fun p =>
-      match p with
-      | ⟨1, trivial⟩ => C2ᶜ
-      | ⟨0, trivial⟩ => Classical.choose (h C2ᶜ C1 aux hC1' aux')
-      | q => ∅
+    have hG_empty : ∀ p < 0, G p = ∅
+    · intro p hp
+      simp [G, H, hp]
 
+    have hG_univ : ∀ p > 1, G p = Set.univ
+    · intro p hp
+      have aux : ¬ p < 0 := by linarith
+      have aux' : ¬ (0 ≤ p ∧ p ≤ 1)
+      · simp at aux
+        simp [aux]
+        linarith
+      simp [G, H, aux, aux']
 
-    let a : Q × Set Q → Prop := fun (q, P) ↦ (Set.Mem P q)
-
-
-    let g_rec : Q × Set Q → Set X := fun (q, P) =>
-      let D : Prop := ∃ p ∈ P, p = q
-      if D then g q
-
-
-    -/
-
-
-    -- setting up G
-    let G : ℚ → Set X := Classical.choose H
-    let hG := Classical.choose_spec H
-    cases' hG with hG1 hG2
-    have Gdef : G = Classical.choose H := by rfl
-    rw [← Gdef] at hG1 hG2
-
-    -- COSAS QUE VOY NECESITANDO SOBRE G
-    -- (que deberían ser ciertas por construcción de G)
-    have hG3 : G 0 = Classical.choose (h C2ᶜ C1 aux hC1' aux')
-    sorry
-
-    let hG3' := Classical.choose_spec (h C2ᶜ C1 aux hC1' aux')
-    rw [← hG3] at hG3'
-
-    have hG4 : G 1 = C2ᶜ
-    sorry
-
-    have hG5 : ∀ p < 0, G p = ∅
-    sorry
-
-    have hG6 : ∀ p > 1, G p = Set.univ
-    sorry
+    have aux'' : C1 ⊆ G 0
+    · rw [hG0]
+      have hG0' := Classical.choose_spec (h C2ᶜ C1 aux hC1' aux')
+      exact hG0'.right.left
 
 
     -- setting up F
     let F : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ G p}
 
     have hF1 : ∀ x : X, F x ≠ ∅
-    sorry
+    · intro x
+      have aux : ∃ p : ℚ, x ∈ G p
+      · use 2
+        simp [G, H]
+      exact Set.nonempty_iff_ne_empty.mp aux
 
-    have hF2 : ∀ x : X, ∀ p ∈ F x, 0 ≤ p ∧ p ≤ 1
-    sorry
+    have hF2 : ∀ x : X, ∀ p : ℚ, p < 0 → p ∉ F x
+    · intro x p hp
+      by_contra hpF
+      simp [F] at hpF
+      rw [hG_empty p hp] at hpF
+      exact hpF
 
     have hF3 : ∀ x : X, hasMyInf (F x)
-    sorry
+    · intro x
+
+      use 0
+
+      constructor
+      · intro p hp
+        by_contra c
+        simp at c
+        apply hF2 x at c
+        exact c hp
+      · intro y hy
+        simp [isMyLowerBound] at hy
+      sorry
 
     -- setting up f
     let k : X → ℝ := fun x ↦ MyInf (F x) (hF3 x)
@@ -198,7 +198,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           · exact yanose1
         · -- probar que `V` es abierto
           apply IsOpen.inter
-          · exact hG1 q
+          · exact hG_open q
           · rw [isOpen_compl_iff]
             exact closure_is_closed (G p) --exact? looks for my lemma
 
@@ -239,7 +239,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       · simp
         by_contra hq'
         simp at hq'
-        apply hG5 at hq'
+        apply hG_empty at hq'
         have hq' : x ∉ G q
         · rw [hq']
           simp
@@ -251,7 +251,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
         -- in each case we want to see `x ∈ G q`
 
         have h0 : x ∈ G 0
-        · apply hG3'.right.left -- apply `C1 ⊆ G 0`
+        · apply aux'' -- apply `C1 ⊆ G 0`
           exact hx
 
         have hq : q = 0 ∨ q > 0  := by exact Or.symm (LE.le.gt_or_eq hq)
@@ -262,8 +262,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           exact h0
 
           -- case `q > 0`
-        · specialize hG2 0 q hq
-          apply hG2
+        · apply hG_pq 0 q hq
           apply set_inside_closure
           exact h0
 
@@ -339,16 +338,14 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             rw [hc] at hq
             exact hq
           · -- if `q < 1`, by property of G (hG2)
-            specialize hG2 q 1 hc
-            apply hG2
+            apply hG_pq q 1 hc
             apply set_inside_closure
             exact hq
-        rw [hG4] at h1
+        rw [hG1] at h1
         exact h1 hx
 
-      · specialize hG6 q hq
-        have aux : x ∈ G q
-        · rw [hG6]
+      · have aux : x ∈ G q
+        · rw [hG_univ q hq]
           trivial
         exact aux
 
@@ -409,7 +406,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       constructor
       · exact hx
       · exact hkC1 x hx
-
 
 
 
