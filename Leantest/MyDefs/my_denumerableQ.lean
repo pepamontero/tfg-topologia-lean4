@@ -21,10 +21,10 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
   · exact (f n).property.right
 
 
-lemma f_has_inverse : ∃ g : Q → ℕ, (
-    (∀ n : ℕ, g (f n) = n) ∧
-    (∀ q : Q, f (g q) = q)
-  ) := by sorry
+lemma f_has_inverse :  ∃ g, Function.LeftInverse g f ∧ Function.RightInverse g f
+  := by
+  rw [← Function.bijective_iff_has_inverse]
+  exact f_prop.left
 
 noncomputable def f_inv : Q → ℕ := Classical.choose f_has_inverse
 
@@ -32,3 +32,13 @@ lemma f_inv_prop : (∀ n : ℕ, f_inv (f n) = n) ∧
     (∀ q : Q, f (f_inv q) = q) := by
   let h := Classical.choose_spec f_has_inverse
   exact h
+
+lemma f_inv_0 : f_inv ⟨0, Q0⟩ = 1 := by
+  apply f_prop.left.left
+  rw [f_inv_prop.right ⟨0, Q0⟩]
+  exact f_prop.right.right.symm
+
+lemma f_inv_1 : f_inv ⟨1, Q1⟩ = 0 := by
+  apply f_prop.left.left
+  rw [f_inv_prop.right ⟨1, Q1⟩]
+  exact f_prop.right.left.symm
