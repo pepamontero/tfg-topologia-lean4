@@ -5,10 +5,10 @@ import Leantest.BasicProp.closure
 -/
 
 def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
-    ∀ C1 : Set X, ∀ C2 : Set X,
-    IsClosed C1 → IsClosed C2 → C1 ∩ C2 = ∅ →
-    ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
-    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅
+    ∀ C : Set X, ∀ D : Set X,
+    IsClosed C → IsClosed D → C ∩ D = ∅ →
+    ∃ U : Set X, ∃ V : Set X, IsOpen U ∧ IsOpen V ∧
+    C ⊆ U ∧ D ⊆ V ∧ U ∩ V = ∅
 
 
 /-
@@ -17,6 +17,17 @@ def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
     `∀ U ⊆ X` open, `∀ C ⊆ X` closed with `C ⊆ U`,
     `∃ V ⊆ X` open,, `C ⊆ V ⊆ Closure(V) ⊆ U`
 -/
+
+example {X : Type} :  ¬ (Set.Nonempty (∅ : Set X))  := by refine Set.not_nonempty_empty
+
+example {X : Type} (A : Set X) : A.Nonempty ↔ A ≠ ∅ := by exact Set.nonempty_iff_ne_empty
+example {X : Type} (A : Set X) : ¬ A.Nonempty ↔ A = ∅ := by exact Set.not_nonempty_iff_eq_empty
+#check Set.disjoint_iff_inter_eq_empty
+example {X : Type} (A B : Set X) : Disjoint A B ↔ Disjoint B A := by exact disjoint_comm
+
+example {X : Type} (A B : Set X) : A ⊆ Bᶜ ↔ B ⊆ Aᶜ := by exact Set.subset_compl_comm
+example {X : Type} (A B : Set X) : A ∩ B = B ∩ A := by exact Set.inter_comm A B
+
 
 lemma characterization_of_normal {X : Type}
     (T : TopologicalSpace X) :
@@ -29,50 +40,29 @@ lemma characterization_of_normal {X : Type}
   constructor
   · intro hT U C hU hC hCU
 
-    have hUc : IsClosed Uᶜ
-    exact isClosed_compl_iff.mpr hU
+    obtain ⟨V1, V2, V1_open, V2_open, hCV, hUV, hV⟩ :=
+      hT C Uᶜ
+      hC
+      (by exact isClosed_compl_iff.mpr hU)
+      (by rw [ABdisjoint_iff_AsubsBc, compl_compl]; exact hCU)
 
-    have hCUc : C ∩ Uᶜ = ∅
-    rw [ABdisjoint_iff_AsubsBc]
-    simp
-    exact hCU
-
-    specialize hT C Uᶜ hC hUc hCUc
-    cases' hT with V1 h
-    cases' h with V2 h
     use V1
     constructor
-    · exact h.left
-    · constructor
-      · exact h.right.right.left
-      · rw [← compl_compl U]
-        rw [← ABdisjoint_iff_AsubsBc]
+    · exact V1_open
+    constructor
+    · exact hCV
+    · apply disjointU_V_then_disjointClosureU_V V2_open at hV
+      apply Set.disjoint_iff_inter_eq_empty.mpr at hV -- usamos la propiedad Disjoint de Lean
+      apply Set.disjoint_compl_right_iff_subset.mp
+      exact Set.disjoint_of_subset_right hUV hV
 
-        have aux : Closure V1 ∩ V2 = ∅
-        exact disjointU_V_then_disjointClosureU_V h.right.left h.right.right.right.right
+  · intro h C1 C2 C1_closed C2_closed hC
 
-        ext x
-        constructor
-        · intro hx
-          cases' hx with hA hC
-          apply h.right.right.right.left at hC
-          rw [← aux]
-          constructor
-          exact hA
-          exact hC
-        · intro hx
-          by_contra
-          exact hx
-
-  · intro h C1 C2 hC1 hC2 hC
-
-    have hC' : C2 ⊆ C1ᶜ
-    rw [← ABdisjoint_iff_AsubsBc]
-    rw [Set.inter_comm C2 C1]
-    exact hC
-
-    specialize h C1ᶜ C2 (by exact IsClosed.isOpen_compl) hC2 hC'
-    cases' h with V hV
+    obtain ⟨V, V_open, hV⟩ :=
+      h C1ᶜ C2
+      (by exact IsClosed.isOpen_compl)
+      C2_closed
+      (by rw [← ABdisjoint_iff_AsubsBc, Set.inter_comm C2 C1]; exact hC)
 
     use (Closure V)ᶜ
     use V
@@ -80,16 +70,14 @@ lemma characterization_of_normal {X : Type}
     constructor
     · simp
       exact closure_is_closed V
-    · constructor
-      · exact hV.left
-      · constructor
-        · rw [← ABdisjoint_iff_AsubsBc]
-          rw [Set.inter_comm C1 (Closure V)]
-          rw [ABdisjoint_iff_AsubsBc]
-          exact hV.right.right
-        · constructor
-          · exact hV.right.left
-          · rw [Set.inter_comm (Closure V)ᶜ V]
-            rw [ABdisjoint_iff_AsubsBc]
-            simp
-            exact set_inside_closure V
+    constructor
+    · exact V_open
+    constructor
+    · apply Set.subset_compl_comm.mp
+      exact hV.right
+    constructor
+    · exact hV.left
+    · rw [Set.inter_comm]
+      rw [ABdisjoint_iff_AsubsBc]
+      simp
+      exact set_inside_closure V
