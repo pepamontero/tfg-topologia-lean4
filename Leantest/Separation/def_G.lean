@@ -1,6 +1,7 @@
 import Leantest.Separation.normal
 import Leantest.MyDefs.my_rs_functions
 import Leantest.MyDefs.my_induction
+import Leantest.MyDefs.my_lex_order
 
 
 #check characterization_of_normal
@@ -131,7 +132,6 @@ def G {X : Type} [T : TopologicalSpace X]
 `G_prop1`
 Para cada n ∈ ℕ, G n es Abierto.
 -/
-
 
 lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -413,11 +413,18 @@ example {X : Type} [T : TopologicalSpace X]
   · exact fun n a ↦ G_Prop2 hT C1 C2 hC1 hC2 hC1C2 n a
 
 
+
+
+
+
 /-
-ahora quiero ver que la propiedad se extiende...
+Ahora quiero ver que la propiedad se extiende, es decir:
+`G_Prop2_ext`
+Para cada n, m ∈ ℕ con `f n < f m`
+se tiene `Closure (G n) ⊆ G m`
 -/
 
-lemma G_Prop2' {X : Type} [T : TopologicalSpace X]
+lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
@@ -429,130 +436,199 @@ lemma G_Prop2' {X : Type} [T : TopologicalSpace X]
 
     ∀ n m, f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by
 
-  sorry
+  intro n m
+  let P : ℕ × ℕ → Prop := fun (n, m) ↦ (f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m)
+  have P_def : P (n, m) = (f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m) := by rfl
+  rw [← P_def]
+  apply WellFounded.induction lt_pair_wf
+  simp [P]
 
-/-
-Después podría definir F : ℚ → Set X
--/
+  intro n m
+  intro hi hnm
+  simp [lt_pair] at hi
 
-def H {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+  have n_neq_m : n ≠ m
+  · by_contra c
+    simp [c] at hnm
 
-    (C1 C2 : Set X)
+  have lema1 : n ≠ 0
+  · by_contra c
+    apply congrArg f at c
+    rw [f_prop.right.left] at c
+    rw [c] at hnm
+    have f_prop := (f_in_icc01 m).right
+    exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hnm f_prop
 
-    : ℚ → Set X := fun q ↦
+  have lema2 : m ≠ 1
+  · by_contra c
+    apply congrArg f at c
+    rw [f_prop.right.right] at c
+    rw [c] at hnm
+    have f_prop := (f_in_icc01 n).left
+    exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hnm f_prop
 
-  if q < 0 then ∅
-  else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
-  else Set.univ
+  have C_normal_pair : normal_pair (C2ᶜ, C1)
+  · exact ⟨hC2, hC1, hC1C2⟩
+
+  have G_Prop2 := G_Prop2 hT C1 C2 hC1 hC2 hC1C2
+
+  have cases : n = 0 ∨ n > 0 := by exact Nat.eq_zero_or_pos n
+  cases' cases with hn0 hn0
+
+  · -- caso n = 0 (imposible)
+    simp [hn0] at lema1
+
+  · -- caso n > 0
+    have cases : m = 0 ∨ m > 0 := by exact Nat.eq_zero_or_pos m
+    cases' cases with hm0 hm0
+
+    · -- caso n > 0, m = 0
+      have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn0
+      cases' cases with hn1 hn1
+
+      · -- caso n = 1, m = 0
+        simp [hn1, hm0, G, from_normality, C_normal_pair]
+        exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.right
+
+      · -- caso n > 1, m = 0
+        -- inducción completa sobre n
+
+        revert hnm hn1
+        rw [hm0]
+
+        apply my_strong_induction n
+
+        intro n hi _ hn1
+
+        have s_options := s_options n hn1
+        cases' s_options with hs0 hs1
+
+        · -- caso s(n) = 0
+          rw [← hs0]
+          exact (G_Prop2 n hn1).right
+
+        · -- caso s(n) > 1
+          trans Closure (G hT C1 C2 (s n))
+          · trans G hT C1 C2 (s n)
+            · exact (G_Prop2 n hn1).right
+            · exact set_inside_closure (G hT C1 C2 (s n))
+
+          · have s_prop := (s_prop n hn1).left
+            simp at s_prop
+            have aux : f (s n) < f 0
+            · simp [f_prop]
+              apply lt_of_le_of_ne (f_in_icc01 (s n)).right
+              rw [← f_prop.right.left]
+              by_contra c
+              apply f_prop.left.left at c
+              simp [c] at hs1
+            exact hi (s n) s_prop aux hs1
 
 
-lemma H_Prop {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    · -- caso n > 0, m > 0
+      have cases : m = 1 ∨ m > 1 := by exact LE.le.eq_or_gt hm0
+      cases' cases with hm1 hm1
 
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
+      · -- caso n > 0, m = 1 (imposible)
+        simp [hm1] at lema2
 
-    :
+      · -- caso n > 0, m > 1
+        have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn0
+        cases' cases with hn1 hn1
 
-    H hT C1 C2 1 = C2ᶜ ∧
-    H hT C1 C2 0 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2) ∧
-    (∀ q, IsOpen (H hT C1 C2 q)) ∧
-    (∀ p q : ℚ, p < q → Closure (H hT C1 C2 p) ⊆ H hT C1 C2 q)
-    := by
+        · -- caso n = 1, m > 1
+          -- inducción sobre m
 
-  constructor
+          revert hnm hm1
+          rw [hn1]
 
-  · have c : ¬ (1 : ℚ) < (0 : ℚ) := by linarith
-    simp [H, c]
-    have aux := f_inv_1
-    simp at aux
-    rw [aux]
-    simp [G]
+          apply my_strong_induction m
 
-  constructor
+          intro m hi _ hm1
 
-  · simp [H]
-    have aux := f_inv_0
-    simp at aux
-    rw [aux]
-    have aux : normal_pair (C2ᶜ, C1)
-    · constructor; exact hC2
-      constructor; exact hC1
-      exact hC1C2
-    simp [G, from_normality, aux]
+          have r_options := r_options m hm1
+          cases' r_options with hr1 hr1
 
-  constructor
+          · -- caso r(m) = 1
+            rw [← hr1]
+            exact (G_Prop2 m hm1).left
 
-  · intro q
-    have cases : q < 0 ∨ q ≥ 0 := by exact lt_or_le q 0
-    cases' cases with hq hq
+          · -- caso r(m) > 1
+            trans G hT C1 C2 (r m)
+            · have r_prop := (r_prop m hm1).left
+              simp at r_prop
+              have aux : f 1 < f (r m)
+              · simp [f_prop]
+                apply lt_of_le_of_ne (f_in_icc01 (r m)).left
+                rw [← f_prop.right.right]
+                by_contra c
+                apply f_prop.left.left at c
+                simp [c] at hr1
+              exact hi (r m) r_prop aux hr1
 
-    · -- q < 0 -> H q = ∅ (trivial)
-      simp [H, hq]
+            · trans Closure (G hT C1 C2 (r m))
+              · exact set_inside_closure (G hT C1 C2 (r m))
+              · exact (G_Prop2 m hm1).left
 
-    have cases : q ≤ 1 ∨ q > 1 := by exact le_or_lt q 1
-    have aux : ¬ q < 0 := by linarith
-    cases' cases with hq' hq'
 
-    · -- 0 ≤ q ≤ 1 -> usando la prop. de G
-      simp [H, aux, hq, hq']
-      apply G_Prop1 hT C1 C2 hC1 hC2 hC1C2
+        · -- caso n > 1, m > 1
 
-    · -- q > 1 -> H q = X (trivial)
-      simp [H]
-      have aux' : ¬ (0 ≤ q ∧ q ≤ 1)
-      · simp at aux
-        simp [aux]
-        exact hq'
-      simp [H, aux, aux']
+          have s_prop := s_prop n hn1
+          have r_prop := r_prop m hm1
+          simp at s_prop r_prop
 
-  · intro p q hpq
+          have cases : f (s n) < f m ∨ f m ≤ f (s n) := by exact lt_or_le (f (s n)) (f m)
+          cases' cases with h h
 
-    have cases : q < 0 ∨ q ≥ 0 := by exact lt_or_le q 0
-    cases' cases with hq hq
+          · -- si f (s n) < f m
+            trans Closure (G hT C1 C2 (s n))
+            · trans G hT C1 C2 (s n)
+              · exact (G_Prop2 n hn1).right
+              · exact set_inside_closure (G hT C1 C2 (s n))
+            · exact hi (s n) m (by left; exact s_prop.left) h
 
-    · -- q < 0 -> p < q < 0 -> H p = H q = ∅
-      have aux : p < 0 := by linarith
-      simp [H, aux, hq]
-      exact closure_of_empty
+          have cases : f m = f (s n) ∨ f m < f (s n)  := by exact (lt_or_eq_of_le h).symm
+          cases' cases with h h
 
-    have cases : q ≤ 1 ∨ q > 1 := by exact le_or_lt q 1
-    have aux : ¬ q < 0 := by linarith
-    cases' cases with hq' hq'
+          · -- si f (s n) = f m
+            apply f_prop.left.left at h
+            rw [h]
+            exact (G_Prop2 n hn1).right
 
-    · -- 0 ≤ q ≤ 1
+          · -- si f m < f (s n)
 
-      have cases : p < 0 ∨ p ≥ 0 := by exact lt_or_le p 0
-      cases' cases with hp hp
+            have cases : f n < f (r m) ∨ f (r m) ≤ f n := by exact lt_or_le (f n) (f (r m))
+            cases' cases with h' h'
 
-      · -- p < 0 -> H p = ∅ (trivial)
-        simp [H, hp, closure_of_empty]
+            · -- si f n < f (r m)
+              trans G hT C1 C2 (r m)
+              · exact hi n (r m) (by right; simp; exact r_prop.left) h'
+              · trans Closure (G hT C1 C2 (r m))
+                · exact set_inside_closure (G hT C1 C2 (r m))
+                · exact (G_Prop2 m hm1).left
 
-      have cases : p ≤ 1 ∨ p > 1 := by exact le_or_lt p 1
-      have aux' : ¬ p < 0 := by linarith
-      cases' cases with hp' hp'
 
-      · -- 0 ≤ p < q ≤ 1
-        simp [H, aux, aux', hp, hp', hq, hq']
-        apply G_Prop2' hT C1 C2 hC1 hC2 hC1C2
-        have hfp := f_inv_prop.right ⟨p, by
-          constructor
-          exact hp
-          exact hp'⟩
-        have hfq := f_inv_prop.right ⟨q, by
-          constructor
-          exact hq
-          exact hq'⟩
-        rw [hfp, hfq]
-        simp
-        exact hpq
+            have cases : f (r m) = f n ∨ f (r m) < f n := by exact (lt_or_eq_of_le h').symm
+            cases' cases with h' h'
 
-      · -- p > 1 (imposible)
-        linarith
+            · -- si f n = f (r m)
+              apply f_prop.left.left at h'
+              rw [← h']
+              exact (G_Prop2 m hm1).left
 
-    · -- q > 1 -> H q = X (trivial)
-      have aux' : ¬ q ≤ 1 := by linarith
-      simp [H, aux, aux', hq, hq']
+            · -- si f (r m) < f n (imposible!)
+              have aux : n < m
+              · by_contra c
+                simp at c
+                apply lt_of_le_of_ne at c
+                specialize c n_neq_m.symm
+                have aux := s_prop.right.right
+                specialize aux m c hnm
+                apply not_lt.mpr at aux
+                exact aux h
+
+              by_contra
+              have aux' := r_prop.right.right
+              specialize aux' n aux hnm
+              apply not_lt.mpr at aux'
+              exact aux' h'
