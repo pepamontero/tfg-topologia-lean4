@@ -26,6 +26,8 @@ class Denumerable (α : Type*) extends Encodable α where
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 -/
 
+#check Option
+
 
 lemma EncodableRat : ∃ f : ℚ → ℕ, ∃ g : ℕ → Option ℚ, ∀ q : ℚ, g (f q) = q := by
 
