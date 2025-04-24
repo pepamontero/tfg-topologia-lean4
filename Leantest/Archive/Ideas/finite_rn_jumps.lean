@@ -56,8 +56,21 @@ lemma apply_k_times_prop'' (F : ℕ → ℕ) (k : ℕ) (hk : k > 1) (n : ℕ) :
     rw [← aux]
 
 
+#check r_is_not_0
 
+lemma rk_is_maybe_0 : ∀ n > 1, ∀ k > 0,
+    apply_k_times r (k+1) n = 0 ↔
+    (apply_k_times r k n = 1 ∨ apply_k_times r k n = 0) := by
 
+  intro n hn k hk
+  constructor
+
+  · sorry
+
+  · intro h
+    cases' h with h1 h0
+    · sorry
+    sorry
 
 
 
@@ -70,7 +83,6 @@ lemma lesser_r_finite_steps (n m : ℕ) (hn : n > 1) (hm : m > 1) :
   have hP : P m := by exact hm
 
   let Q : ℕ → Prop := fun l ↦ ∃ k > 0, rk k l < n
-  have hQ : Q m = (∃ k >0, rk k m < n) := by rfl
 
   apply my_stronger_induction m P Q hP
 
@@ -143,6 +155,14 @@ lemma finite_r_jumps : ∀ n > 1, ∀ m > 1,n < m →
 
   apply my_stronger_double_induction n m P Q hP
 
+  simp [P, Q]
+  intro n m hn hm hnm
+  constructor
+
+  · intro hin
+    sorry
+
+
 
 
   let P : ℕ → Prop := fun k ↦ k > 1 ∧ n < k
@@ -159,6 +179,8 @@ lemma finite_r_jumps : ∀ n > 1, ∀ m > 1,n < m →
       (∀ k < R, F k < F (k+1)) ∧
       (∀ k < R, F k = r (F (k+1)))) := by rfl
 
+  sorry
+/-
   apply my_stronger_induction m P Q hP
 
   simp [P, Q]
@@ -194,10 +216,7 @@ lemma finite_r_jumps : ∀ n > 1, ∀ m > 1,n < m →
     cases' hR with R hR
 
     let F : ℕ → ℕ := fun k ↦
-      if k = 0
-
-
-    sorry
+      sorry
 
   have cases : r m < n ∨ n < r m := by exact Nat.lt_or_gt_of_ne h2
   cases' cases with h1 h2
@@ -252,3 +271,4 @@ lemma finite_r_jumps : ∀ n > 1, ∀ m > 1,n < m →
         exact hF.right.right.right k hkR
       · simp [hkR]
         rw [hF.right.left]
+-/

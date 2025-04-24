@@ -661,3 +661,97 @@ def propG {X : Type} [T : TopologicalSpace X]
         )
       )
     )
+
+#check G'
+lemma propGrn {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ n : ℕ, n > 1 →
+        (Closure (G' hT C1 C2 hC1 hC2 hC1C2 (r n)) ⊆ G' hT C1 C2 hC1 hC2 hC1C2 n) ∧
+        (Closure (G' hT C1 C2 hC1 hC2 hC1C2 n) ⊆ G' hT C1 C2 hC1 hC2 hC1C2 (s n))
+    := by
+
+  intro n hn1
+  constructor
+
+  · simp [G']
+
+    have aux : n ≠ 0
+    · by_contra c
+      simp [c] at hn1
+    have aux' : n ≠ 1
+    · by_contra c
+      simp [c] at hn1
+
+    simp [aux, aux', hn1]
+    simp [Gn]
+
+    let Gn := (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn1))
+    have Gn_def : Gn = (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn1)) := by rfl
+    have Gn_prop := (Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 n hn1))
+    rw [← Gn_def] at Gn_prop
+    rw [← Gn_def]
+
+    have hr := r_options n hn1
+    cases' hr with hr1 hr1
+
+    · -- caso r n = 1
+      simp [hr1]
+
+      let V := Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
+      have V_def : V = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2) := by rfl
+      have V_prop := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+      rw [← V_def]
+      rw [← V_def] at V_prop
+      rw [← V_def] at Gn_prop
+
+      cases' Gn_prop with Gn_open Gn_prop
+      cases' Gn_prop with Gn_prop Gn01
+      cases' Gn01 with Gn0 Gn1
+
+      rw [← Gn1]
+      apply Gn_prop
+      · linarith
+      · linarith
+      · have r_prop := (r_prop n hn1).right.left
+        rw [hr1] at r_prop
+        exact r_prop
+
+
+    · -- caso r n > 1
+      have aux : r n ≠ 0
+      · by_contra c
+        simp [c] at hr1
+      have aux' : r n ≠ 1
+      · by_contra c
+        simp [c] at hr1
+
+      simp [aux, aux', hr1]
+
+      let Grn := (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 (r n) hr1))
+      have Grn_def : Grn = (Classical.choose (exists_G hT C1 C2 hC1 hC2 hC1C2 (r n) hr1)) := by rfl
+      have Grn_prop := (Classical.choose_spec (exists_G hT C1 C2 hC1 hC2 hC1C2 (r n) hr1))
+      rw [← Grn_def] at Grn_prop
+      rw [← Grn_def]
+
+
+
+
+      sorry
+
+  · sorry
+
+
+/-
+ una posible opción podría ser:
+ modificar exists G para que considere que
+ existsG n-1 m = existsG n m para todo m <= n-1
+
+ pero no se si se podría
+
+-/

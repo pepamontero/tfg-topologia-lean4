@@ -1,11 +1,37 @@
 import Leantest.Separation.normal
 import Leantest.MyDefs.my_induction
 import Leantest.MyDefs.my_rs_functions
+import Leantest.Archive.Ideas.finite_rn_jumps
 
+lemma relnm1 (n m : ℕ) (hm1 : m > 1)
+    (hfnm : f n < f m) (hnm : n < m) :
+    f n ≤ f (r m) := by
 
----- LO QUE MOLARÍA TENER
+  by_contra c
 
-lemma would_be_cool {X : Type} [T : TopologicalSpace X]
+  have aux : f n ≤ f (r m)
+  · apply (r_prop m hm1).right.right -- mejor elección
+    simp
+    exact hnm
+    exact hfnm
+
+  exact c aux
+
+lemma relnm2 (n m : ℕ) (hn1 : n > 1)
+    (hfnm : f n < f m) (hnm : m < n) :
+    f (s n) ≤ f m := by
+
+  by_contra c
+
+  have aux : f (s n) ≤ f m
+  · apply (s_prop n hn1).right.right -- mejor elección
+    simp
+    exact hnm
+    exact hfnm
+
+  exact c aux
+
+lemma something_previous1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
     (C1 C2 : Set X)
@@ -13,117 +39,452 @@ lemma would_be_cool {X : Type} [T : TopologicalSpace X]
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    :
-      ∃ G : ℕ → Set X, (
-        (G 0 = C2ᶜ)
-        ∧
-        (G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
-        ∧
-        (∀ n, IsOpen (G n))
-        ∧
-        (∀ n > 1, (Closure (G (r n)) ⊆ G n ∧ Closure (G n) ⊆ G (s n)))
-        )
-    := by
-  sorry
-
-noncomputable def G_cool {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
-
-    : ℕ → Set X := Classical.choose (would_be_cool hT C1 C2 hC1 hC2 hC1C2)
-
-lemma cool_prop1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
-
-    :
-
-    ∀ n : ℕ, IsOpen (G_cool hT C1 C2 hC1 hC2 hC1C2 n) := by
-
-  intro n
-  simp [G_cool]
-  exact (Classical.choose_spec (would_be_cool hT C1 C2 hC1 hC2 hC1C2)).right.right.left n
-
-lemma cool_prop2a {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
+    (G : ℕ → Set X)
+    (hG0 : G 0 = C2ᶜ)
+    (hG1 : G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
+    (hGOpen : ∀ n, IsOpen (G n))
+    (hG: ∀ n > 1,
+        (Closure (G (r n)) ⊆ G n) ∧
+        (Closure (G n) ⊆ G (s n))
+    )
 
     :
 
-    let G := G_cool hT C1 C2 hC1 hC2 hC1C2
+    ∀ m > 1, ∀ k > 0, Closure (G ((apply_k_times r k) m)) ⊆ G m
+     := by
 
-    ∀ n > 1, Closure (G (r n)) ⊆ G n:= by
+  intro m hm1 k hk
+  induction' hk with k hk hi
 
-  intro G n hn
-  simp [G, G_cool]
-  exact ((Classical.choose_spec (would_be_cool hT C1 C2 hC1 hC2 hC1C2)).right.right.right n hn).left
+  · -- caso base
+    simp [apply_k_times]
+    exact (hG m hm1).left
 
-lemma cool_prop2b {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+  · -- caso recursivo
+    simp at hk
+    simp
 
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
+    trans G (apply_k_times r k m)
+    · rw [← apply_k_times_prop']
 
-    :
-
-    let G := G_cool hT C1 C2 hC1 hC2 hC1C2
-
-    ∀ n > 1, Closure (G n) ⊆ G (s n):= by
-
-  intro G n hn
-  simp [G, G_cool]
-  exact ((Classical.choose_spec (would_be_cool hT C1 C2 hC1 hC2 hC1C2)).right.right.right n hn).right
-
-lemma cool_inference {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-
-    (C1 C2 : Set X)
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
-
-    :
-
-    let G := G_cool hT C1 C2 hC1 hC2 hC1C2
-
-    ∀ n m : ℕ, f n < f m → Closure (G n) ⊆ G m := by
-
-  intro G n m hmn
-
-  cases' n with n
-
-  · -- n = 0
-    cases' m with m
-    · -- m = 0
-      by_contra
-      exact (lt_self_iff_false (f 0)).mp hmn
-
-    cases' m with m
-    · -- m = 1
-      by_contra
-      simp [f_prop.right.left, f_prop.right.right] at hmn
-      exact (Bool.eq_not_self ((1).blt ↑0)).mp hmn
-
-    · -- m > 1
-      simp [G, G_cool]
+      have cases : apply_k_times r k m = 1 ∨ apply_k_times r k m > 1
       sorry
 
+      cases' cases with case1 case2
 
-  · sorry
+      · simp [case1]
+        simp [r, hG0, hG1]
+        have aux := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+
+
+      simp [apply_k_times]
+      sorry
+    · trans Closure (G (apply_k_times r k m))
+      · exact set_inside_closure (G (apply_k_times r k m))
+      · exact hi
+
+#check gt_of_ge_of_gt
+#check lt_of_le_of_lt
+
+lemma somethingnew1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (G : ℕ → Set X)
+    (hG0 : G 0 = C2ᶜ)
+    (hG1 : G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
+    (hGOpen : ∀ n, IsOpen (G n))
+    (hG: ∀ n > 1,
+        (Closure (G (r n)) ⊆ G n) ∧
+        (Closure (G n) ⊆ G (s n))
+    )
+
+    :
+
+    ∀ n > 1, ∀ m > 1, (n < m ∧ f n < f m) → Closure (G n) ⊆ G m
+     := by
+
+  intro n hn1 m hm1 hnm
+
+  let P : ℕ → Prop := fun j ↦ (j > 1) ∧ (n < j) ∧ (f n < f j)
+  have hP : P m := by constructor; exact hm1; constructor; exact hnm.left; exact hnm.right
+
+  let Q : ℕ → Prop := fun j ↦ Closure (G n) ⊆ G j
+
+  apply my_stronger_induction m P Q hP
+  simp [P, Q]
+
+  intro m hm1 hnm hfnm him
+
+  have aux := relnm1 n m hm1 hfnm hnm
+  have cases := Or.symm (Decidable.lt_or_eq_of_le aux)
+  cases' cases with hfnrm hfnrm
+
+  · -- caso f n = f (r m) -> trivial
+    apply f_prop.left.left at hfnrm
+    rw [hfnrm]
+    exact (hG m hm1).left
+
+
+  · -- caso f n < f (r m)
+    have cases := r_options m hm1
+    cases' cases with hr1 hr1
+
+    · -- caso r(m) = 1 -> trivial
+      have aux : f n = f (r m)
+      · by_contra c
+        rw [hr1, f_prop.right.right] at hfnrm
+        have hf := (f_in_icc01 n).left
+        rw [← not_lt] at hf
+        exact hf hfnrm
+
+      have aux : n = r m
+      · apply f_prop.left.left
+        exact aux
+
+      rw [aux]
+      exact (hG m hm1).left
+
+    · -- caso r(m) > 1
+
+      have cases := Nat.lt_or_ge n (r m)
+      cases' cases with hnrm hnrm
+
+      · -- caso n < r(m) -> aplicamos la HI
+        have r_prop := (r_prop m hm1).left
+        simp at r_prop
+        specialize him (r m) r_prop hr1 hnrm hfnrm
+
+        trans G (r m)
+        · exact him
+        · trans Closure (G (r m))
+          · exact set_inside_closure (G (r m))
+          · exact (hG m hm1).left
+
+      have cases := Nat.eq_or_lt_of_le hnrm
+      cases' cases with hnrm hnrm
+
+      · -- caso n = r(m) -> trivial
+        rw [← hnrm]
+        exact (hG m hm1).left
+
+      · -- caso r(m) < n
+        /-
+        volvemos a aplicar inducción, ahora sobre n
+        -/
+
+        let P : ℕ → Prop := fun i ↦ (i > 1) ∧ (i < m) ∧ (f i < f m) ∧ (r m < i) ∧ (f i < f (r m))
+        have hP : P n
+        · constructor
+          exact hn1
+          constructor
+          exact hnm
+          constructor
+          exact hfnm
+          constructor
+          exact hnrm
+          exact hfnrm
+
+        let Q : ℕ → Prop := fun i ↦ Closure (G i) ⊆ G m
+
+        apply my_stronger_induction n P Q hP
+        simp [P, Q]
+
+        intro n hn1 hnm hfnm hnrm hfnrm hin
+
+        have aux : f (s n) ≤ f (r m)
+        · apply (s_prop n hn1).right.right
+          simp
+          exact hnrm
+          exact hfnrm
+
+        have aux' : f (s n) < f m
+        · have h := (r_prop m hm1).right.left
+          exact lt_of_le_of_lt aux h
+
+
+        have s_cases := s_options n hn1
+        cases' s_cases with hs0 hs1
+
+        · -- caso s(n) = 0
+          have aux : f (s n) = f m
+          · by_contra c
+            rw [hs0, f_prop.right.left] at aux'
+            have hf := (f_in_icc01 m).right
+            rw [← not_lt] at hf
+            exact hf aux'
+
+          have aux : s n = m
+          · apply f_prop.left.left
+            exact aux
+
+          rw [← aux]
+          exact (hG n hn1).right
+
+        · -- caso s(n) > 1
+
+          have hsn := (s_prop n hn1).left
+          simp at hsn
+
+
+          specialize hin (s n) hsn hs1 (by linarith) aux'
+
+
+
+        sorry
+
+
+lemma somethingnew2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (G : ℕ → Set X)
+    (hG0 : G 0 = C2ᶜ)
+    (hG1 : G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
+    (hGOpen : ∀ n, IsOpen (G n))
+    (hG: ∀ n > 1,
+        (Closure (G (r n)) ⊆ G n) ∧
+        (Closure (G n) ⊆ G (s n))
+    )
+
+    :
+
+    ∀ n > 1, ∀ m > 1, (m < n ∧ f n < f m) → Closure (G n) ⊆ G m
+     := by
+
+  intro n hn1 m hm1 hnm
+
+  let P : ℕ → Prop := fun k ↦ (k > 1) ∧ (m < k) ∧ (f k < f m)
+  have hP : P n
+  · constructor
+    exact hn1
+    exact hnm
+
+  let Q : ℕ → Prop := fun k ↦ Closure (G k) ⊆ G m
+  have hQ : Q n = (Closure (G n) ⊆ G m) := by rfl
+
+  apply my_stronger_induction n P Q hP
+
+  simp [P, Q]
+
+  intro n hn1 hnm hfnm hi
+
+  have fsnm : f (s n) ≤ f m
+  · apply (s_prop n hn1).right.right
+    simp
+    exact hnm
+    exact hfnm
+
+  have s_options := s_options n hn1
+  cases' s_options with hs0 hs1
+
+  · -- caso s(n) = 0
+
+    have aux : f (s n) = f m
+    · by_contra c
+      apply lt_of_le_of_ne at fsnm
+      specialize fsnm c
+      rw [hs0, f_prop.right.left] at fsnm
+      have hf := (f_in_icc01 m).right
+      rw [← not_lt] at hf
+      exact hf fsnm
+
+    have aux : s n = m
+    · apply f_prop.left.left
+      exact aux
+
+    rw [← aux]
+    exact (hG n hn1).right
+
+  · -- caso s(n) > 1 -> HI
+    have hsn := (s_prop n hn1).left
+    simp at hsn
+    specialize hi (s n) hsn hs1
+    sorry
+
+
+lemma somethingnew' {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (G : ℕ → Set X)
+    (hG0 : G 0 = C2ᶜ)
+    (hG1 : G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
+    (hGOpen : ∀ n, IsOpen (G n))
+    (hG: ∀ n > 1,
+        (Closure (G (r n)) ⊆ G n) ∧
+        (Closure (G n) ⊆ G (s n))
+    )
+
+    :
+
+    ∀ n, ∀ m, f n < f m → Closure (G n) ⊆ G m
+     := by
+
+  intro n m hnm
+
+  have lema1 : n ≠ 0
+  · by_contra c
+    apply congrArg f at c
+    rw [f_prop.right.left] at c
+    rw [c] at hnm
+    have f_prop := (f_in_icc01 m).right
+    exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hnm f_prop
+
+  have lema2 : m ≠ 1
+  · by_contra c
+    apply congrArg f at c
+    rw [f_prop.right.right] at c
+    rw [c] at hnm
+    have f_prop := (f_in_icc01 n).left
+    exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hnm f_prop
+
+  have cases : n = 0 ∨ n > 0 := by exact Nat.eq_zero_or_pos n
+  cases' cases with hn0 hn0
+
+  · -- caso n = 0 (imposible)
+    simp [hn0] at lema1
+
+  · -- caso n > 0
+    have cases : m = 0 ∨ m > 0 := by exact Nat.eq_zero_or_pos m
+    cases' cases with hm0 hm0
+
+    · -- caso n > 0, m = 0
+      have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn0
+      cases' cases with hn1 hn1
+
+      · -- caso n = 1, m = 0
+        simp [hn1, hm0, hG0, hG1]
+        exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.right
+
+      · -- caso n > 1, m = 0
+        -- inducción sobre n
+
+        let P : ℕ → Prop := fun k ↦ k > 1
+        have hPn : P n
+        · simp [P]
+          exact hn1
+
+        let Q : ℕ → Prop := fun k ↦ Closure (G k) ⊆ G m
+        have hQn : Q n = (Closure (G n) ⊆ G m) := by rfl
+        rw [← hQn]
+
+        apply my_stronger_induction n P Q
+        · exact hPn
+        · intro n hn hi
+          simp [P, Q] at hi hn
+          simp [Q]
+
+          have s_options := s_options n hn
+          cases' s_options with hs0 hs1
+
+          · -- caso s(n) = 0
+            rw [hm0, ← hs0]
+            specialize hG n hn
+            exact hG.right
+
+          · -- caso s(n) > 1
+            have s_prop := (s_prop n hn).left
+            simp at s_prop
+            specialize hi (s n) s_prop hs1
+
+            trans Closure (G (s n))
+            · trans G (s n)
+              · specialize hG n hn
+                exact hG.right
+              · exact set_inside_closure (G (s n))
+            · exact hi
+
+
+    · -- caso n > 0, m > 0
+      have cases : m = 1 ∨ m > 1 := by exact LE.le.eq_or_gt hm0
+      cases' cases with hm1 hm1
+
+      · -- caso n > 0, m = 1 (imposible)
+        simp [hm1] at lema2
+
+      · -- caso n > 0, m > 1
+        have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn0
+        cases' cases with hn1 hn1
+
+        · -- caso n = 1, m > 1
+          -- inducción sobre m
+
+          let P : ℕ → Prop := fun k ↦ k > 1
+          have hPm : P m
+          · simp [P]
+            exact hm1
+
+          let Q : ℕ → Prop := fun k ↦ Closure (G n) ⊆ G k
+          have hQm : Q m = (Closure (G n) ⊆ G m) := by rfl
+          rw [← hQm]
+
+          apply my_stronger_induction m P Q
+          · exact hPm
+          · intro m hm hi
+            simp [P, Q] at hi
+            simp [Q]
+
+            have r_options := r_options m hm
+            cases' r_options with hr1 hr1
+
+            · -- caso r(m) = 1
+              rw [hn1, ← hr1]
+              specialize hG m hm
+              exact hG.left
+
+            · -- caso r(n) > 1
+              have r_prop := (r_prop m hm).left
+              simp at r_prop
+              specialize hi (r m) r_prop hr1
+
+              trans G (r m)
+              · exact hi
+              · trans Closure (G (r m))
+                · exact set_inside_closure (G (r m))
+                · specialize hG m hm
+                  exact hG.left
+
+
+        · -- caso n > 1, m > 1
+          have cases : n < m ∨ m ≤ n := by exact Nat.lt_or_ge n m
+          cases' cases with h h
+
+          · -- n < m
+            apply (somethingnew1 hT C1 C2 hC1 hC2 hC1C2 G hG0 hG1 hGOpen hG)
+            exact hn1
+            exact hm1
+            constructor
+            exact h
+            exact hnm
+
+          have cases : m < n ∨ m = n := by exact Or.symm (Nat.eq_or_lt_of_le h)
+          cases' cases with h h
+
+          · -- m < n
+            apply (somethingnew2 hT C1 C2 hC1 hC2 hC1C2 G hG0 hG1 hGOpen hG)
+            exact hn1
+            exact hm1
+            constructor
+            exact h
+            exact hnm
+
+          · -- m = n
+            by_contra
+            simp [h] at hnm
+
 
 
 lemma somethingnew {X : Type} [T : TopologicalSpace X]
@@ -147,6 +508,105 @@ lemma somethingnew {X : Type} [T : TopologicalSpace X]
 
     ∀ n, ∀ m, f n < f m → Closure (G n) ⊆ G m
      := by
+
+  /-
+  en realidad aquñi la idea sería
+  - diferenciar casos
+    - n = 0, m = 1
+    - n = 1 m = 0
+    - n = 0, m > 1
+    - m = 1, n > 1
+
+    - m,n > 1 -> aplicar sn1 y sn2
+  -/
+
+
+  intro n m hnm
+
+  let P : ℕ →  ℕ → Prop := fun n ↦ fun m ↦ n > 1 ∧ m > 1 ∧ f n < f m
+  have hP : P n m := by sorry
+
+  let Q : ℕ → ℕ → Prop := fun n ↦ fun m ↦ Closure (G n) ⊆ G m
+  have hQ : Q n m = (Closure (G n) ⊆ G m) := by rfl
+  rw [← hQ]
+
+  apply my_stronger_double_induction' n m P Q hP
+  simp [P, Q]
+
+  intro n m hn hm hfnm HI
+
+  have hin : ∀ i < n, 1 < i → f i < f m → Closure (G i) ⊆ G m
+  sorry
+
+  have him : ∀ j < m, 1 < j → f n < f j → Closure (G n) ⊆ G j
+  sorry
+
+
+  have cases : n < m ∨ m < n
+  · apply Nat.lt_or_gt_of_ne
+    by_contra c
+    simp [c] at hfnm
+
+  cases' cases with hnm hnm
+
+  · -- caso n < m
+
+    have cases := r_options m hm
+    cases' cases with hr1 hr1
+
+    · -- caso r m = 1
+      sorry --trivial
+
+    · -- caso r m > 1
+      have aux : f n ≤ f (r m)
+      · apply (r_prop m hm).right.right
+        simp
+        exact hnm
+        exact hfnm
+
+      have cases : f n = f (r m) ∨ f n < f (r m) := by exact Or.symm (lt_or_eq_of_le aux)
+      cases' cases with aux aux
+
+      · sorry -- trivial
+
+      · have hrm := (r_prop m hm).left
+        simp at hrm
+        specialize him (r m) hrm hr1 aux
+        trans G (r m)
+        · exact him
+        · trans Closure (G (r m))
+          · exact set_inside_closure (G (r m))
+          · exact (hG m hm).left
+
+  · -- caso m < n
+
+    have cases := s_options n hn
+    cases' cases with hs1 hs1
+
+    · -- caso s n = 0
+      sorry --trivial
+
+    · -- caso r n > 1
+      have aux : f (s n) ≤ f m
+      · apply (s_prop n hn).right.right
+        simp
+        exact hnm
+        exact hfnm
+
+      have cases : f (s n) = f m ∨ f (s n) < f m := by exact Or.symm (lt_or_eq_of_le aux)
+      cases' cases with aux aux
+
+      · sorry -- trivial
+
+      · have hsn := (s_prop n hn).left
+        simp at hsn
+        specialize hin (s n) hsn hs1 aux
+        trans Closure (G (s n))
+        · trans G (s n)
+          · exact (hG n hn).right
+          · exact set_inside_closure (G (s n))
+        · exact hin
+
 
   /- UN INTENTO : utilizar inducción sobre P → Q
   creo que en verdad no sirve de nada
@@ -267,6 +727,8 @@ lemma somethingnew {X : Type} [T : TopologicalSpace X]
 
 
 -/
+
+/-
 
 
   intro n m hnm
@@ -1225,3 +1687,56 @@ def propG {X : Type} [T : TopologicalSpace X]
         )
       )
     )
+
+-/
+
+
+
+
+
+
+lemma somethingnew'' {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    (G : ℕ → Set X)
+    (hG0 : G 0 = C2ᶜ)
+    (hG1 : G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2))
+    (hGOpen : ∀ n, IsOpen (G n))
+    (hG: ∀ n > 1,
+        (Closure (G (r n)) ⊆ G n) ∧
+        (Closure (G n) ⊆ G (s n))
+    )
+
+    :
+
+    ∀ n > 1, ∀ m > 1, f n < f m → Closure (G n) ⊆ G m
+     := by
+
+  intro n hn1 m hm1 hfnm
+
+  let P : ℕ → ℕ → Prop := fun i ↦ fun j ↦ (i > 1) ∧ (j > 1) ∧ (f i < f j)
+  have hP : P n m := by constructor; exact hn1; constructor; exact hm1; exact hfnm
+
+  let Q : ℕ → ℕ → Prop := fun i ↦ fun j ↦ Closure (G i) ⊆ G j
+
+  apply my_stronger_double_induction n m P Q hP
+  simp [P, Q]
+
+  intro n m hn1 hm1 hfnm
+  constructor
+
+  · -- dejo fijo m
+    intro hi
+    simp [hm1] at hi
+
+
+
+    sorry
+
+  · -- dejo fijo n
+    sorry
