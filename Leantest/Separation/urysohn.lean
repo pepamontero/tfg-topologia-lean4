@@ -2,7 +2,7 @@ import Leantest.Separation.normal
 import Leantest.MyDefs.my_inf
 import Leantest.MyDefs.sets
 import Leantest.Continuous.bases
-import Leantest.Separation.def_G
+import Leantest.Separation.def_F
 
 /-
       LEMA DE URYSOHN
@@ -71,55 +71,24 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       have hG0' := Classical.choose_spec (h C2ᶜ C1 aux hC1' aux')
       exact hG0'.right.left
 
+    let F := fun x ↦ F h C1 C2 x
 
-    -- setting up F
-    let F : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ G p}
+    let k := fun x ↦ k h C1 C2 x
 
-    have hF1 : ∀ x : X, F x ≠ ∅
-    · intro x
-      have aux : ∃ p : ℚ, x ∈ G p
-      · use 2
-        simp [G, H]
-      exact Set.nonempty_iff_ne_empty.mp aux
+    have claim1 :  ∀ (p : ℚ), ∀ x ∈ Closure (H h C1 C2 p), k x ≤ ↑p
+    exact fun p x a ↦ claim1 h C1 C2 hC1' aux aux' p x a
 
-    have hF2 : ∀ x : X, ∀ p : ℚ, p < 0 → p ∉ F x
-    · intro x p hp
-      by_contra hpF
-      simp [F] at hpF
-      rw [hG_empty p hp] at hpF
-      exact hpF
+    have claim2 : ∀ (p : ℚ), ∀ x ∉ H h C1 C2 p, k x ≥ ↑p
+    exact fun p x a ↦ claim2 h C1 C2 hC1' aux aux' p x a
 
-    have hF3 : ∀ x : X, hasMyInf (F x)
-    · intro x
 
-      use 0
 
-      constructor
-      · intro p hp
-        by_contra c
-        simp at c
-        apply hF2 x at c
-        exact c hp
-      · intro y hy
-        simp [isMyLowerBound] at hy
-      sorry
+    have k_prop : ∀ x : X, (k x) ∈ Y
+    · rw [hY]
+      exact fun x ↦ k_in_01 h C1 C2 x
 
-    -- setting up f
-    let k : X → ℝ := fun x ↦ MyInf (F x) (hF3 x)
-    have hk : ∀ x : X, (k x) ∈ Y
-    sorry
-
-        -- CLAIMS
-    have claim1 : ∀ p : ℚ, ∀ x : X, x ∈ Closure (G p) → (k x) ≤ p
-    sorry
-
-    have claim2 : ∀ p : ℚ, ∀ x : X, x ∉ (G p) → (k x) ≥ p
-    sorry
-
-    let f : X → Y := fun x ↦ ⟨k x, hk x⟩
+    let f : X → Y := fun x ↦ ⟨k x, k_prop x⟩
     use f
-
-
 
 
     constructor
