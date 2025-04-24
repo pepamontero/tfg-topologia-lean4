@@ -9,7 +9,8 @@
 \usepackage{array} % Matrices, tablas
 \usepackage{xcolor} % Colores de texto
 \usepackage{enumitem} % Listas con letras
-\usepackage[spanish]{babel}
+\usepackage[spanish]{babel} % Español
+\usepackage{url}
 %LEAN
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -82,71 +83,284 @@ Introducción al trabajo.
 
 \section{Lean Theorem Prover}
 
-El proyecto Lean fue iniciado en 2012 por Leonardo de Moura, que formaba parte de Microsoft Research Redmond. Es un proyecto activo con una visión a largo plazo, y con miras en el potencial de automatización en las demostraciones matemáticas.\cite{avigad2015theorem}
+A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones matemáticas es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.
 
-Lean es un asistente de demostración, es decir, es un software que proporciona un lenguaje para definir objetos, especificar propiedades de esos objetos y probar que estas especificaciones se cumplen. El sistema comprueba que dichas pruebas son correctas y coherentes desde un punto de vista lógico. \cite{leanprover2024} 
+Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de "verificación", y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite{avigad2024theorem}.
 
-Sin embargo, Lean es también un lenguaje de programación, en particular un lenguaje funcional basado en tipos dependientes. Lean 4 es el resultado de volver a implementar el asistente de demostración de Lean 3 en el propio lenguaje de Lean. El nuevo compilador produce código en C, lo que permite a los usuarios implementar automatizaciones de pruebas en Lean de manera eficiente, compilar estas automatizaciones a C y añadirlas como plugins\cite{moura2021lean}.
+En este trabajo nos centraremos en el uso de *Lean Theorem Prover*, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar subproblemas sencillos al sistema \cite{avigad2024theorem}.
 
-El objetivo del proyecto Lean es reducir la distancia entre demostraciones matemáticas asistidas y automatizadas, integrando herramientas y métodos automatizados en un marco que facilita la interacción con el usuario y la construcción de pruebas axiomáticas completamente especificadas\cite{avigad2015theorem}.
+Aunque aquí nos limitaremos a su uso como asistente de demostración, Lean es también un lenguaje de programación funcional completo, lo que ofrece amplias posibilidades de personalización y automatización al usuario \cite{avigad2024theorem}.
 
-\subsection{Teoría de tipos dependientes}
+En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen \cite{avigad2024theorem}. Esta tarea se ve facilitada por \textit{Mathlib}, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada colaborativamente por una comunidad activa y en constante crecimiento \cite{mathlib}.
 
-[No se hasta qué punto desarrollar este apartado]
+Las demostraciones son verificadas automáticamente por el núcleo lógico de Lean, que garantiza su corrección mediante un sistema de tipos expresivo y riguroso. La fiabilidad de Lean como asistente de demostración reside precisamente en la simplicidad y robustez de este núcleo \cite{bailey2024type}.
 
-Para ambos aspectos de Lean es importante entender la teoría de tipos dependientes en la que se basa. En esta teoría, cada expresión tiene un "tipo" asociado. Por ejemplo, una variable "x" puede hacer referencia a un número natural en un contexto y a un número real en otro.
+En esta sección seguiremos principalmente el manual en línea \textit{Theorem Proving in Lean 4}~\cite{avigad2024theorem} que es una versión actualizada del libro \textit{Theorem Proving in Lean}~\cite{avigad2021theorem} publicado en 2021 para adaptarse a la nueva versión de Lean. A nivel teórico, no existe una gran diferencia entre los dos, por lo que ambas referencias son válidas para comprender los fundamentos que exponemos aquí.
 
-En Lean podemos declarar variables de un tipo determinado utilizando el operador \code{:}. Por ejemplo \code{n : $\mathbb{N}$} \footnote{Podemos escribir $\mathbb{N}$ en Lean escibiendo \code{$\backslash$nat} y después pulsando espacio.} quiere decir que $n$ es un número natural.
 
-Ejemplos:
+\subsection{La teoría de tipos de Lean}
 
+La teoría de conjuntos de Zermelo-Fraenkel con el axioma de elección (ZFC) es la base fundacional elegida para formalizar la mayoría de las matemáticas que conocemos. En este marco, todos los objetos matemáticos (números, funciones, estructuras algebraicas, etc.) pueden representarse como conjuntos, construidos a partir de unos pocos axiomas básicos.
+
+Sin embargo, este sistema carece de una estructura interna diferenciada: todo objeto matemático, como un número, una función o incluso una colección de funciones son, en última instancia, conjuntos. Además, las pruebas en ZFC no son necesariamente constructivas, lo que impide extraer directamente información útil de ellas. Por estas razones, ZFC no resulta el sistema más adecuado en este contexto.
+
+Para lograr una representación más clara y diferenciada de los objetos matemáticos, Lean utiliza, en su lugar, un sistema basado en tipos. Además, este enfoque nos ofrece la posibilidad de establecer una correspondencia entre programas y demostraciones matemáticas, conocida como la correspondencia de Curry-Howard \footnote{La correspondencia de Curry-Howard establece una relación entre lógica y programación; permite entender como pueden ser equivalentes \quotes{demostrar una proposición} y \quotes{construir un término de cierto tipo}. Veremos qué quiere decir esto en la práctica más adelante, pero las ideas más profundas, que quedan fuera del alacance de este trabajo, se exponen detalladamente en \cite{sorensen2006lectures}}.
+
+En particular, Lean se fundamenta en el \textit{Cálculo de Construcciones Inductivas}, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no cumulativa de universos. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales.
+
+En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con un compilador interactivo que procesa cada línea cuando el cursor se encuentra sobre ella, mostrando el resultado por pantalla. A partir de ahora, los comentarios que acompañan al código reflejan la salida que Lean devuelve en cada línea. Los comentarios en Lean se escriben empezando con doble guión ($--$) y están en color gris.
+
+\subsubsection{Teoría de tipos}
+
+Empecemos por lo más básico: la teoría de tipos. Cambiamos el foco de \quotes{cada objeto es un conjunto }, propio de ZFC, a \quotes{cada objeto es un término con un tipo asociado}. Esto nos permite estructurar con mayor claridad los objetos matemáticos y sus relaciones.
+
+Por ejemplo, $3$ es un término de tipo \quotes{natural} ($\mathbb{N}$), mientras que \quotes{true} es un término de tipo \quotes{booleano}. En Lean podemos comprobar el tipo de estas expresiones utilizando el comando \bluecode{\#check}\footnote{En Lean, podemos escribir $\mathbb{N}$ escribiendo \code{$\backslash$nat} en el editor y luego pulsando espacio. En general, escribiremos los símbolos matemáticos de esta forma. Una lista comprensiva con los símbolos utilizados en el proyecto y sus respectivos comandos se puede encontrar en (un anexo)}:
+
+%to-do: me sale en 3 en negro
 \begin{lstlisting}
-  variable (n : ℕ)
-  variable (f : ℕ → ℕ)
-  variable (g : ℕ → ℕ × ℕ)
-  variable (p q : ℚ) -- puedo definir varias variables del mismo tipo a la vez
+  #check 3    -- 3 : ℕ 
+  #check true   -- Bool.true : Bool
 \end{lstlisting}
 
-\code{A → B}
+Como en este ejemplo, en Lean utilizamos el símbolo $:$ para describir la información sobre el tipado. Es decir, si $x$ es un término de tipo $X$, escribimos $x : X$.
 
-Podemos utilizar entonces el comando \bluecode{$\#$check} para ver que interpreta Lean en cada caso. 
-
-\begin{lstlisting}
-  #check n            -- output: n : ℕ
-  #check f            -- output: f : ℕ → ℕ
-  #check f 2            -- output: f 2 : ℕ
-  #check (p, q)            -- output: (p, q) : ℚ × ℚ
-\end{lstlisting}
-
-TIPO PROP
-
-Un tipo a destacar en Lean es el tipo \bluecode{Prop}. Un objeto de tipo \bluecode{Prop} es una expresión lógica, que puede tomar los valores verdadero o falso, y se puede operar con los conectores lógicos que conocemos. Podemos declarla como cualquier otra:
+Por otro lado, un tipo, como es $\mathbb{N}$, también es un término. Podemos comprobar su tipo:
 
 \begin{lstlisting}
-  variable (P Q : Prop)
-  #check P            -- output: P : Prop
-  #check ¬P            -- output: ¬P : Prop
-  #check P ∧ Q            -- output: P ∧ Q : Prop
+  #check ℕ    -- ℕ : Type
 \end{lstlisting}
 
-También podemos declarar nuevos tipos y construcciones sobre tipos. Ejemplo:
+En Lean, los tipos tienen su propio tipo, que recibe el nombre de \code{Type}. Esto nos permite definir nuevos tipos. Podemos utilizar el comando \bluecode{variable} para definir objetos en nuestro código\footnote{Veremos este comando en detalle más adelante}.
 
 \begin{lstlisting}
   variable (X : Type)
-  variable (F : Type → Type)
-  #check F ℕ            -- output: F ℕ : Type
+  #check X    -- X : Type
+  variable (x : X)
+  #check x    -- x : X
 \end{lstlisting}
 
-"Tipo" es un tipo en si mismo.* Jerarquía de tipos. Necesario explicar?
+Ahora, podemos combinar distintos tipos para obtener tipos más complejos. Sean $X$ e $Y$ dos tipos. Podemos considerar el tipo $X \times Y$, que denota los pares formados por un elemento de $X$ y otro de $Y$. El tipo que más utilizaremos es $X \to Y$, que denota las funciones de $X$ en $Y$. Escribimos esto en Lean.
 
-* Tipos dependientes : lista de reales vs. lista de enteros?
+\begin{lstlisting}
+  variable (X Y : Type)
+  #check X × Y    -- X × Y : Type
+  variable (x : X) (y : Y)
+  #check (x, y)    -- (x, y) : X × Y
+  
+  #check X → Y    -- X → Y : Type
+  variable (f : X → Y)
+  #check f    -- f : X → Y
+\end{lstlisting}
+
+Por otro lado, a partir de la yuxtaposición de términos simples, podemos formar términos más complejos. En Lean, las reglas de tipado dictan el tipo de estos nuevos términos obtenidos. Por ejemplo, si $x$ es de tipo $X$ y $f$ es de tipo $A \to B$, como en el ejemplo anterior, entonces $f x$ tiene tipo $B$. En efecto:
+
+\begin{lstlisting}
+  #check f x    -- f x : Y
+\end{lstlisting}
+
+La capacidad de Lean para identificar el tipo de un término sin necesidad de que el usuario lo especifique se conoce como \textbf{inferencia de tipos}. Como veremos más adelante, este proceso ocurre de manera automática en su núcleo y es el aspecto crucial de la verificación de demostraciones.
+
+\subsubsection{Teoría de tipos dependientes}
+
+Para poder expresar los distintos objetos matemáticos en esta teoría, es importante que un tipo no sea necesariamente estático, sino que pueda depender de otros términos.
+
+Por ejemplo, \code{Fin} es un tipo en Lean que describe los números naturales menores que otro número natural dado. Precisamente, no tiene sentido afirmar que un término tiene tipo \code{Fin}, porque \code{Fin} depende de este número dado: un término de tipo \code{$\mathbb{N}$}. En efecto,
+
+\begin{lstlisting}
+  #check Fin    -- Fin (n : ℕ) : Type
+  #check Fin 5    -- Fin 5 : Type
+\end{lstlisting}
+
+Decimos que \code{Fin} es un tipo dependiente, porque depende del valor de n. Lean admite, por tanto, tipos dependientes en su teoría.
+
+\subsubsection{Cálculo de Construcciones}
+
+El Cálculo de Construcciones es una extensión del Cálculo Lambda con tipos. El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal en el que todos los términos se ven como funciones (o abstracciones) y se operan entre sí mediante aplicación de funciones (el uso de una función sobre un argumento) \cite{pierce2002types}. A pesar de su simplicidad, este sistema se ha convertido en la base formal de muchos lenguajes de programación modernos.
+
+Por ejemplo, una función válida podría ser $n \mapsto 2n : \mathbb{N} \rightarrow \mathbb{N}$, que representa una función que, al ser aplicada a un número natural, devuelve el número multiplicado por dos.
+
+En Lean, definimos funciones utilizando el comando \code{fun}\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, 2 * n}, más similar a la del Cálculo Lambda, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ 2 * n} para mejorar la legibilidad del código.}, por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
+
+\begin{lstlisting}
+  def f : ℕ → ℕ := fun n ↦ 2 * n
+\end{lstlisting}
+
+Además, se puede definir una reducción sobre este tipo de términos: el término formado por la anterior función aplicada a $3$, $(n \mapsto 2n)3$, se puede reducir a $2 \cdot 3$ por aplicación funcional, y luego a $6$ por definición de la multiplicación.
+
+Podemos comprobar el resultado de esta reducción utilizando el comando \bluecode{\#eval}.
+
+\begin{lstlisting}
+  #eval f 3    -- 6
+\end{lstlisting}
+
+Diremos que dos términos que pueden reducirse de esta manera al mismo valor son \textbf{iguales por definición}. Lean trata términos que sean iguales por definición como literalmente iguales, como veremos más adelante. En la siguiente sección, utilizaremos la noción de equivalencia por definición con frecuencia.
+
+\subsubsection{Jerarquía de universos}
+
+Puesto que en la teoría de tipos cada elemento tiene un tipo, tiene sentido hacerse la pregunta: ¿De qué tipo es \code{Type}?
+
+La respuesta es que \code{Type} tiene tipo \code{Type 1}; a su vez \code{Type 1} tiene tipo \code{Type 2}, etc. En general, para cada $n$, \code{Type n} tiene tipo \code{Type n+1}, formando una secuencia numerable de tipos que llamaremos \textbf{universos}. En particular, \code{Type} es una abreviación de \code{Type 0}.
+
+\begin{lstlisting}
+  #check Type    -- Type : Type 1
+  #check Type 23    -- Type 23 : Type 24
+\end{lstlisting}
+
+Hemos llegado a la jerarquía numerable de universos de Lean. Decimos que es no cumulativa porque si, por ejemplo, tenemos \code{A : Type n}, no podemos asumir que \code{A : Type (n+1)}.
+
+Esta jerarquía es importante porque nos permite ver cada tipo como un término en sí mismo, con un tipo asociado a su vez. Además, la propiedad no-cumulativa evita que ocurran conversiones implítias y facilita la inferencia de tipos de Lean.
+
+Aún así, en la práctica, Lean se encarga de realizar ciertas conversiones de manera automática que permiten que, en general, no necesitemos trabajar explícitamente con estos universos.
+
+\subsubsection{Tipos inductivos}
+
+En Lean, la gran mayoría de tipos son instancias de una familia de tipos conocidos como \textbf{tipos inductivos}. Un tipo inductivo es una estructura formada por una lista finita de constructores, cada uno con su tipo correspondiente. Cada constructor describe una forma válida de construir un término de este nuevo tipo.
+
+En Lean, definimos un tipo inductivo utilizando la palabra clave \bluecode{inductive}.
+
+\begin{lstlisting}
+  inductive Foo where
+    | constructor₁ : ... → Foo
+    | constructor₂ : ... → Foo
+    ...
+    | constructorₙ : ... → Foo
+\end{lstlisting}
+
+Una forma simple de definir un tipo inductivo es dar una lista finita de términos de ese tipo. Por ejemplo:
+
+\begin{lstlisting}
+  inductive Weekday where
+    | sunday : Weekday
+    | monday : Weekday
+    | tuesday : Weekday
+    | wednesday : Weekday
+    | thursday : Weekday
+    | friday : Weekday
+    | saturday : Weekday
+
+  #check Weekday    -- Weekday : Type
+\end{lstlisting}
+
+Sin embargo, los tipos inductivos permiten construcciones más complejas. Por ejemplo, el tipo de los números naturales puede definirse como:
+
+\begin{lstlisting}
+  inductive Nat where
+    | zero : Nat
+    | succ : Nat → Nat
+\end{lstlisting}
+
+Este tipo tiene una base (el número cero) y una regla inductiva (el sucesor). Así, cualquier número natural o bien es \code{zero}, o bien se construye de manera finita aplicando \code{succ} repetidas veces sobre \code{zero}.
+
+Cada tipo inductivo viene con dos reglas asociadas, internamente:
+\begin{itemize}
+  \item Reglas de introducción: indican las (únicas) formas de construir términos del tipo; son los constructores. En el ejemplo anterior: \begin{itemize}
+    \item \code{zero} es de tipo \code{Nat}
+    \item si \code{n : Nat}, entonces \code{succ n} es de tipo \code{Nat}
+  \end{itemize}
+  \item Reglas de eliminación: indican la forma de \quotes{usar} un término de ese tipo, mediante un principio de eliminación (o recursión), que en Lean se llama \code{Foo.rec} para un tipo \code{Foo}.
+\end{itemize}
+
+Por ejemplo, sobre el tipo \code{Weekday}, podemos definir la función que devuelve el \quotes{día siguiente} a uno dado:
+
+\begin{lstlisting}
+  def nextDay (d : Weekday) : Weekday :=
+    match d with
+    | sunday    => monday
+    | monday    => tuesday
+    | tuesday   => wednesday
+    | wednesday => thursday
+    | thursday  => friday
+    | friday    => saturday
+    | saturday  => sunday
+\end{lstlisting}
+
+La expresión \code{match d with`} se compila internamente utilizando el principio de recursión \code{Weekday.rec}.
+
+De forma parecida, podemos definir la suma sobre los naturales de manera recursiva:
+
+\begin{lstlisting}
+  def add (m n : Nat) : Nat :=
+    match n with
+    | Nat.zero   => m
+    | Nat.succ n => Nat.succ (add m n)
+\end{lstlisting}
+
+En el caso de \code{Nat}, el principio de reducción, \code{Nat.rec} que Lean utiliza para compilar \code{match d with} se corresponde con el principio de inducción al que estamos acostrumbrados.
+
+Veremos más adelante cómo este principio de inducción puede utilizarse no solo para definir funciones, sino también para probar propiedades sobre todos los términos de un tipo inductivo.
+
+Finalmente, mediante tipos inductivos podemos definir, como caso particular, los conectores lógicos (negación, conjunción, disyunción e implicación). Esto constituye la gran diferencia final entre la teoría de conjuntos y el cálculo de construcciones inductivas. Para utilizar la teoría de conjuntos, es necesario haber desarrollado previamente la lógica (de primer orden). De esta manera, las demostraciones formales no constituyen objetos matemáticos, sino que viven exclusivamente en el plano metateórico.
+
+En el cálculo de construcciones inductivas, en cambio, la lógica se expresa dentro de la misma teoría, y las demostraciones son objetos matemáticos que viven dentro de ella.
+
+\subsubsection{Las demostraciones como objeto matemático}
+
+Las proposiciones, como cualquier otro objeto en esta teoría, son términos con un tipo asociado. En Lean, este tipo recibe el nombre de \code{Prop}.
+
+\begin{lstlisting}
+  #check Prop    -- Prop : Type
+  variable (P : Prop)
+  #check P    -- P : Prop
+  #check True    -- True : Prop
+  #check ¬ P    -- ¬ P : Prop
+\end{lstlisting}
+
+Dado \code{p} un elemento de tipo \code{Prop} (\code{p : Prop}), podríamos introducir un nuevo tipo dependiente de \code{p}, \code{Proof p}. Diríamos que un término de tipo \code{Proof p} es una demostración de \code{p}.
+
+Sin embargo, en lugar de introducir este nuevo tipo, intepretamos una proposición \code{p : Prop} como un tipo en si mismo, en particular, el tipo de las demostraciones de \code{p}. Entonces una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Tiene entonces sentido decir que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
+
+\begin{lstlisting}
+  variable (p : Prop)
+  variable (h : p)
+  #check h    -- h : p
+\end{lstlisting}
 
 
+Esto, junto con la teoría de tipos dependientes, nos proporciona una forma de definir cualquier resultado matemático: por ejemplo, \quotes{ser par} es una propiedad que depende de un número natural $n$, por lo que podríamos describirlo mediante \code{es\_par : $\mathbb{N} \to$ Prop}. Para cada \code{n} natural, obtenemos un término de tipo \code{Prop}.
+
+\begin{lstlisting}
+  def es_par : ℕ → Prop := ...
+  #check es_par    -- es_par : ℕ → Prop
+  #check es_par 3    -- es_par 3 : Prop
+\end{lstlisting}
+
+En este caso, un término de tipo \code{es\_par n} será una prueba de que \code{n} es par.
+
+Además, si \code{p : Prop} es una proposición, Lean reconoce cualesquiera dos elementos de tipo \code{p} (\code{h1 h2 : p}) como iguales por definición: no importa qué prueba concreta tengamos, sólo importa su existencia. Esto se conoce como \quotes{irrelevacia de las demostraciones} (\textit{proof irrelevance}).
+
+Por lo anterior, dadas dos proposiciones \code{p q : Prop}, podemos identificar los términos de tipo \code{Implies p q} (pruebas de \code{Implies p q}) con los términos de tipo \code{p $\to$ q}; si \code{h : Implies p q}, entonces \code{h} es una prueba de que \code{p} implica \code{q}, y por tanto podemos verlo como una función que, dada una prueba de \code{p}, devuelve una prueba de \code{q}. El conector \code{Implies} es por tanto redundante, y en lo que sigue utilizaremos sólo la expresión \code{$\to$}.
+
+En resumen, para poder expresar un resultado matemático en este lenguaje, tenemos que escribir un término de la forma \code{p : Prop}. Para probar que el resultado es cierto, debemos construir un término \code{h : p}. El trabajo de Lean como asistente de demostración es verificar que el término \code{h} está bien construido y tiene el tipo correcto.
 
 
-\subsection{Lean como asistente de demostración}
+\subsection{¿Por qué fiarnos de Lean?}
+
+Ahora que hemos descrito la manera en la que un resultado se considera demostrado en Lean, tiene sentido hacerse la pregunta: ¿por qué deberíamos fiarnos de la inferencia de tipos de Lean? ¿Qué garantías tenemos de que las demostraciones que Lean acepta, son realmente correctas? 
+
+Como hemos mencionado, la responsabilidad de verificar que las construcciones que hacemos son correctas según las reglas formales del sistema recae sobre el núcleo (o \textit{kernel}) de Lean. El kernel es un pequeño programa que contiene la implementación mínima de la lógica interna de Lean.
+
+El resto de componentes de Lean con el que interactuamos para construir demostraciones (como por ejemplo las tácticas que veremos después) devuelven construcciones expresadas en el lenguaje del kernel de Lean \cite{bailey2024type}. Esto quiere decir que confiar en Lean realmente se reduce a confiar en su kernel\footnote{Esta idea se conoce como \textit{criterio de de Bruijn}, que propone que un verificador formal debe producir sus pruebas en el lenguaje de un núcleo pequeño, incluso aunque utilicen otros métodos más complicados para construir dichas pruebas a priori \cite{bailey2024type}.}.
+
+Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean\footnote{Un ejemplo de esto es \textit{trepplein} \cite{ebner2022trepplein}, una herramienta que comprueba desmotraciones escritas en Lean 3 mediante una implementación propia, escrita en Scala.}. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos del kernel, como la inferencia de tipos o la evaluación de términos \cite{bailey2024type}.
+
+
+\subsection{Demostraciones en Lean}
 
 Para nuestro fin, nos centraremos en la función de asistente de demostración de Lean. A continuación vamos a introducir las herramientas principales que utilizaremos a la hora de formalizar resultados en Lean 4.
+
+Guión de esta sección:
+
+\begin{itemize}
+  \item Definiciones
+  \item Variables
+  \item Proposiciones
+  \item Demostraciones
+  \item Infoview y modo táctico
+  \item Tácticas
+  \item Cómo utilizar Mathlib
+  \item Noncomputable: el axioma de elección
+\end{itemize}
+
 
 
 
@@ -1142,7 +1356,7 @@ Además, por \refpep{cond_Grs}, como $n > 1$, se tiene $$\overline{G(n)} \subset
 
 % Bibliografía
 
-\bibliographystyle{plain}
+\bibliographystyle{myunsrt}
 \bibliography{references.bib}
 
 \end{document}
