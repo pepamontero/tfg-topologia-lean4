@@ -1,4 +1,5 @@
 import Leantest.MyDefs.my_denumerableQ
+import Leantest.MyDefs.my_induction
 
 /-
 definición de las funciones r y s:
@@ -89,7 +90,7 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
 
 noncomputable def r : ℕ → ℕ := fun n ↦
   if h : n > 1 then Classical.choose (exists_r n h)
-  else 0
+  else 1
 
 lemma r_prop (n : ℕ) (hn : n > 1) : (
   (r n ∈ Finset.range n) ∧
@@ -382,3 +383,39 @@ lemma sn_eq_srn (n : ℕ) (hn : n > 1)
         simp at aux
         exact aux
     · exact f_sr_prop n hn hrn
+
+
+lemma r2 : r 2 = 1 := by
+  have hr := r_options 2 (by norm_num)
+  cases' hr with hr hr
+  · exact hr
+  · by_contra
+    have hr' := (r_prop 2 (by norm_num)).left
+    simp at hr'
+    linarith
+
+lemma s2 : s 2 = 0 := by
+  have hs := s_options 2 (by norm_num)
+  cases' hs with hs hs
+  · exact hs
+  · by_contra
+    have hs' := (s_prop 2 (by norm_num)).left
+    simp at hs'
+    linarith
+
+
+lemma fr_leq (n : ℕ) : f (r n) ≤ f (n) := by
+
+  have cases : n = 0 ∨ n > 0 := by exact Nat.eq_zero_or_pos n
+  cases' cases with hn hn
+
+  · simp [hn, r, f_prop]
+    trivial
+
+  have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn
+  cases' cases with hn hn
+
+  · simp [hn, r]
+
+  · have aux := (r_prop n hn).right.left
+    exact le_of_lt aux
