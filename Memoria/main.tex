@@ -120,7 +120,7 @@ Empecemos por lo más básico: la teoría de tipos. Cambiamos el foco de \quotes
 
 Por ejemplo, $3$ es un término de tipo \quotes{natural} ($\mathbb{N}$), mientras que \quotes{true} es un término de tipo \quotes{booleano}. En Lean podemos comprobar el tipo de estas expresiones utilizando el comando \bluecode{\#check}\footnote{En Lean, podemos escribir $\mathbb{N}$ escribiendo \code{$\backslash$nat} en el editor y luego pulsando espacio. En general, escribiremos los símbolos matemáticos de esta forma. Una lista comprensiva con los símbolos utilizados en el proyecto y sus respectivos comandos se puede encontrar en (un anexo)}:
 
-%to-do: me sale en 3 en negro
+
 \begin{lstlisting}
   #check 3    -- 3 : ℕ 
   #check true   -- Bool.true : Bool
@@ -264,6 +264,8 @@ Finalmente, mediante los tipos inductivos es posible definir los conectores lóg
 
 En el cálculo de construcciones inductivas, en cambio, la lógica se expresa dentro de la misma teoría, y las demostraciones son objetos matemáticos que viven dentro de ella.
 
+\newpage
+
 \subsubsection{Las demostraciones como objeto matemático}
 
 Las proposiciones, como cualquier otro objeto en esta teoría, son términos con un tipo asociado. En Lean, este tipo recibe el nombre de \code{Prop}.
@@ -272,20 +274,17 @@ Las proposiciones, como cualquier otro objeto en esta teoría, son términos con
   #check Prop    -- Prop : Type
   variable (P : Prop)
   #check P    -- P : Prop
-  #check True    -- True : Prop
+  #print True    -- inductive True : Prop
   #check ¬ P    -- ¬ P : Prop
 \end{lstlisting}
 
-Dado \code{p} un elemento de tipo \code{Prop} (\code{p : Prop}), podríamos introducir un nuevo tipo dependiente de \code{p}, \code{Proof p}. Diríamos que un término de tipo \code{Proof p} es una demostración de \code{p}.
-
-Sin embargo, en lugar de introducir este nuevo tipo, intepretamos una proposición \code{p : Prop} como un tipo en si mismo, en particular, el tipo de las demostraciones de \code{p}. Entonces una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Tiene entonces sentido decir que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
+En Lean, intepretamos los objetos de tipo \code{Prop} como tipos en sí mismos. En particular, una proposición \code{p : Prop} es el tipo de las demostraciones de \code{p}. Por tanto, una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Tiene entonces sentido decir que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
 
 \begin{lstlisting}
   variable (p : Prop)
   variable (h : p)
   #check h    -- h : p
 \end{lstlisting}
-
 
 Esto, junto con la teoría de tipos dependientes, nos proporciona una forma de definir cualquier resultado matemático: por ejemplo, \quotes{ser par} es una propiedad que depende de un número natural $n$, por lo que podríamos describirlo mediante \code{es\_par : $\mathbb{N} \to$ Prop}. Para cada \code{n} natural, obtenemos un término de tipo \code{Prop}.
 
@@ -299,7 +298,9 @@ En este caso, un término de tipo \code{es\_par n} será una prueba de que \code
 
 Además, si \code{p : Prop} es una proposición, Lean reconoce cualesquiera dos elementos de tipo \code{p} (\code{h1 h2 : p}) como iguales por definición: no importa qué prueba concreta tengamos, sólo importa su existencia. Esto se conoce como \quotes{irrelevacia de las demostraciones} (\textit{proof irrelevance}).
 
-Por lo anterior, dadas dos proposiciones \code{p q : Prop}, podemos identificar los términos de tipo \code{Implies p q} (pruebas de \code{Implies p q}) con los términos de tipo \code{p $\to$ q}; si \code{h : Implies p q}, entonces \code{h} es una prueba de que \code{p} implica \code{q}, y por tanto podemos verlo como una función que, dada una prueba de \code{p}, devuelve una prueba de \code{q}. El conector \code{Implies} es por tanto redundante, y en lo que sigue utilizaremos sólo la expresión \code{$\to$}.
+Esta propiedad tiene ventajas prácticas. Por ejemplo, si demostramos una existencia (una proposición del estilo $\exists x, P(x)$) de dos maneras distintas utilizando dos valores diferentes, Lean identificará ambas pruebas, por lo que al extraer de $\exists x, P(x)$ un valor $x$ con $P(x)$, este valor será independiente de la demostración utilizada. Sin embargo, esto también tiene la desventaja de que este tipo de pruebas no son constructivas: no es posible recuperar exactamente el valor que utilizamos para completar la demostración.
+
+También por esta propiedad, dadas dos proposiciones \code{p q : Prop}, podemos identificar los términos de tipo \code{Implies p q} con los términos de tipo \code{p $\to$ q}; si \code{h : Implies p q}, entonces \code{h} es una prueba de que \code{p} implica \code{q}, y por tanto podemos verlo como una función que, dada una prueba de \code{p}, devuelve una prueba de \code{q}. El conector \code{Implies} es por tanto redundante, y en lo que sigue utilizaremos sólo la expresión \code{$\to$}.
 
 En resumen, para poder expresar un resultado matemático en este lenguaje, tenemos que escribir un término de la forma \code{p : Prop}. Para probar que el resultado es cierto, debemos construir un término \code{h : p}. El trabajo de Lean como asistente de demostración es verificar que el término \code{h} está bien construido y tiene el tipo correcto.
 
@@ -308,11 +309,12 @@ En resumen, para poder expresar un resultado matemático en este lenguaje, tenem
 
 Ahora que hemos descrito la manera en la que un resultado se considera demostrado en Lean, tiene sentido hacerse la pregunta: ¿por qué deberíamos fiarnos de la inferencia de tipos de Lean? ¿Qué garantías tenemos de que las demostraciones que Lean acepta, son realmente correctas? 
 
-Como hemos mencionado, la responsabilidad de verificar que las construcciones que hacemos son correctas según las reglas formales del sistema recae sobre el núcleo (o \textit{kernel}) de Lean. El kernel es un pequeño programa que contiene la implementación mínima de la lógica interna de Lean.
+Como hemos señalado, demostrar un resultado en Lean consiste en construir correctamente un término que tiene un determinado tipo. Este proceso es análogo al de verificar programas: se trata de comprobar que un término está bien formado (siguiendo unas reglas concretas) y satisface una especificación dada, expresada como un tipo. Esta tarea recae sobre el núcleo (o \textit{kernel}) de Lean, un pequeño programa que contiene la implementación mínima de la lógica interna de Lean.
 
 El resto de componentes de Lean con el que interactuamos para construir demostraciones (como por ejemplo las tácticas que veremos después) devuelven construcciones expresadas en el lenguaje del kernel de Lean \cite{bailey2024type}. Esto quiere decir que confiar en Lean realmente se reduce a confiar en su kernel\footnote{Esta idea se conoce como \textit{criterio de de Bruijn}, que propone que un verificador formal debe producir sus pruebas en el lenguaje de un núcleo pequeño, incluso aunque utilicen otros métodos más complicados para construir dichas pruebas a priori \cite{bailey2024type}.}.
 
-Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean\footnote{Un ejemplo de esto es \textit{trepplein} \cite{ebner2022trepplein}, una herramienta que comprueba desmotraciones escritas en Lean 3 mediante una implementación propia, escrita en Scala.}. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos del kernel, como la inferencia de tipos o la evaluación de términos \cite{bailey2024type}.
+Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel \cite{bailey2024type}. Por ejemplo, en \cite{carneiro2024lean4lean}, Carneiro describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de \textit{mathlib}.
+
 
 
 \subsection{Demostraciones en Lean}
