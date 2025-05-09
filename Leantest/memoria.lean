@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 -- meter variables aquí y unificar la notacion
 
+#print True
+
 section deptypes
 
 variable (n m : ℚ)
