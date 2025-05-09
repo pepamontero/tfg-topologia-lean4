@@ -81,17 +81,19 @@
 
 Introducción al trabajo.
 
+\newpage
+
 \section{Lean Theorem Prover}
 
-A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones matemáticas es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.
+A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones formales es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.
 
-Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de "verificación", y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite{avigad2024theorem}.
+Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de "verificación", y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite[Sección~1]{avigad2024theorem}.
 
-En este trabajo nos centraremos en el uso de *Lean Theorem Prover*, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar subproblemas sencillos al sistema \cite{avigad2024theorem}.
+En este trabajo nos centraremos en el uso de \textbf{Lean Theorem Prover}, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar subproblemas sencillos al sistema
 
-Aunque aquí nos limitaremos a su uso como asistente de demostración, Lean es también un lenguaje de programación funcional completo, lo que ofrece amplias posibilidades de personalización y automatización al usuario \cite{avigad2024theorem}.
+Aunque aquí nos limitaremos a su uso como asistente de demostración, Lean es también un lenguaje de programación funcional completo, lo que ofrece amplias posibilidades de personalización y automatización al usuario \cite[Sección~1]{avigad2024theorem}.
 
-En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen \cite{avigad2024theorem}. Esta tarea se ve facilitada por \textit{Mathlib}, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada colaborativamente por una comunidad activa y en constante crecimiento \cite{mathlib}.
+En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen. Esta tarea se ve facilitada por \textit{Mathlib}, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada colaborativamente por una comunidad activa y en constante crecimiento \cite{mathlib}.
 
 Las demostraciones son verificadas automáticamente por el núcleo lógico de Lean, que garantiza su corrección mediante un sistema de tipos expresivo y riguroso. La fiabilidad de Lean como asistente de demostración reside precisamente en la simplicidad y robustez de este núcleo \cite{bailey2024type}.
 
