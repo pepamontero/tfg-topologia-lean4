@@ -1,0 +1,11 @@
+\lstdefinelanguage{infoview}{
+  basicstyle=\ttfamily\small,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  morekeywords={⊢},
+  keywordstyle=\color{tacticcolor},
+  moredelim=**[is][\color{black}]{¶}{¶},  % "Tactic state"
+  moredelim=**[is][\color{tacticcolor}]{£}{£},   % Primera línea azul
+  moredelim=**[is][\color{contextcolor}]{§}{§}, % Identificadores antes de :
+}

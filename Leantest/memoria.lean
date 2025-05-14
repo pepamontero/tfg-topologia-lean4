@@ -1,8 +1,34 @@
 import Mathlib.Tactic
 
+#check Nat
+
+
+
+
+
+
+
 -- meter variables aquí y unificar la notacion
 
 #print True
+
+axiom A : Prop
+axiom h : A → A
+axiom a : ℕ
+axiom ha : a > 2
+
+variable (x : ℕ)
+axiom hx : x ≥ 0
+#check hx
+
+theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := sorry
+
+
+def mi_proposicion : Prop := False → True
+
+def prueba_de_mi_proposicion : mi_proposicion := by intro h; by_contra; exact h
+
+def my_comm_sum (a b : ℕ) : a + b = b + a := by exact Nat.add_comm a b
 
 section deptypes
 

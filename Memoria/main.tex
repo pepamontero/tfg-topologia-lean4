@@ -2,6 +2,9 @@
   % números en los comentarios aparecen en negro (debería prevalecer el comentario)
   % quitar los newpage que he tenido que meter para q no se me fastidien los footnotes
 
+% Spell checker settings
+% spell-checker: disable
+
 \documentclass{article}
 
 % Paquetes usados
@@ -22,12 +25,13 @@
 \usepackage{amssymb}
 \usepackage{color}
 \definecolor{keywordcolor}{rgb}{0.8, 0.1, 0.1}   % red
-\definecolor{tacticcolor}{rgb}{0.0, 0.1, 0.9}    % blue
+\definecolor{tacticcolor}{rgb}{0.0, 0.4, 0.9}    % blue
 \definecolor{commentcolor}{rgb}{0.4, 0.4, 0.4}   % grey
-\definecolor{symbolcolor}{rgb}{0.0, 0.1, 0.6}    % blue
+\definecolor{symbolcolor}{rgb}{0.0, 0.4, 0.9}    % blue
 \definecolor{sortcolor}{rgb}{0.1, 0.5, 0.1}      % green
 \definecolor{attributecolor}{rgb}{0.7, 0.1, 0.1} % red
 \definecolor{backgroundcolor}{rgb}{0.92, 0.92, 0.92} % light grey
+\definecolor{contextcolor}{rgb}{0.9, 0.4, 0.1} %orange
 
 % Distancias entre párrafos, quitar sangrías
 \setlength{\parindent}{0pt}
@@ -58,11 +62,15 @@
 \newcommand{\redcode}[1]{\code{\textcolor{red}{#1}}}
 
 % Lean code
-\def\lstlanguagefiles{lstlean.tex}
-\lstset{language=lean, backgroundcolor=\color{backgroundcolor}} %default language  
+\def\lstlanguagefiles{lstlean.tex, infoview.tex}
+\lstset{language=lean, backgroundcolor=\color{backgroundcolor}} %default language
 
-% Spell checker settings
-% spell-checker: disable
+% Infoview
+
+\newcommand{\numberofgoals}[1]{£{#1} goals£}
+
+
+
 
 % Math commands
 \newcommand{\nat}{\mathbb{N}}
@@ -87,6 +95,7 @@
 \section{Introducción}
 
 Introducción al trabajo.
+
 
 \newpage
 
@@ -406,7 +415,7 @@ En el último ejemplo quería destacar que Lean no pone ninguna pega a un result
 
 [No se donde poner esta sección si antes de defs y resultados o despues o incluso dentro de pruebas??]
 
-La librería de matemáticas de Lean, \textit{Mathlib}, es un proyecto colaborativo con el objetivo de construir una base de datos unificada de definiciones y resultados matemáticos formalizadas en el lenguaje Lean, y cuenta con numerosos colaboradores habituales y actividad diaria\cite{leanprover2024}.
+La librería de matemáticas de Lean, \textit{Mathlib}, es un proyecto colaborativo con el objetivo de construir una base de datos unificada de definiciones y resultados matemáticos formalizadas en el lenguaje Lean, y cuenta con numerosos colaboradores habituales y actividad diaria.
 
 Cómo utilizamos Mathlib?? <- esto es importante
 
