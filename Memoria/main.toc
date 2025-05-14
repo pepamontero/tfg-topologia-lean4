@@ -9,14 +9,9 @@
 \contentsline {subsubsection}{\numberline {2.1.5}Tipos inductivos}{7}{}%
 \contentsline {subsubsection}{\numberline {2.1.6}Las demostraciones como objeto matemático}{10}{}%
 \contentsline {subsection}{\numberline {2.2}¿Por qué fiarnos de Lean?}{11}{}%
-\contentsline {subsection}{\numberline {2.3}Demostraciones en Lean}{12}{}%
-\contentsline {subsubsection}{\numberline {2.3.1}Definiciones}{12}{}%
-\contentsline {subsubsection}{\numberline {2.3.2}Resultados}{13}{}%
-\contentsline {subsubsection}{\numberline {2.3.3}Mathlib}{14}{}%
-\contentsline {subsubsection}{\numberline {2.3.4}Pruebas}{14}{}%
-\contentsline {section}{\numberline {3}Espacios topológicos en Lean}{24}{}%
-\contentsline {subsection}{\numberline {3.1}Espacios topolǵicos normales}{25}{}%
-\contentsline {section}{\numberline {4}El Lema de Urysohn}{27}{}%
-\contentsline {subsection}{\numberline {4.1}El recíproco}{28}{}%
-\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{28}{}%
-\contentsline {subsection}{\numberline {4.3}Una parte}{28}{}%
+\contentsline {section}{\numberline {3}Espacios topológicos en Lean}{12}{}%
+\contentsline {subsection}{\numberline {3.1}Espacios topolǵicos normales}{12}{}%
+\contentsline {section}{\numberline {4}El Lema de Urysohn}{15}{}%
+\contentsline {subsection}{\numberline {4.1}El recíproco}{15}{}%
+\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{15}{}%
+\contentsline {subsection}{\numberline {4.3}Una parte}{15}{}%
