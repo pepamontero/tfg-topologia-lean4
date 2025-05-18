@@ -57,9 +57,9 @@
     \ttfamily
     \tikz \node[anchor=base,fill=backgroundcolor]{#1};% added this percent
 }}
-\newcommand{\bluecode}[1]{\code{\textcolor{blue}{#1}}}
-\newcommand{\blue}[1]{\textcolor{blue}{#1}}
-\newcommand{\redcode}[1]{\code{\textcolor{red}{#1}}}
+\newcommand{\bluecode}[1]{\code{\textcolor{tacticcolor}{#1}}}
+\newcommand{\blue}[1]{\textcolor{tacticcolor}{#1}}
+\newcommand{\redcode}[1]{\code{\textcolor{keywordcolor}{#1}}}
 
 % Lean code
 \def\lstlanguagefiles{lstlean.tex, infoview.tex}
@@ -417,6 +417,30 @@ Al contrario de lo que estamos acostumbrados, definir una variable en Lean no si
 
 \subsubsection{Proposiciones}
 
+Además de introducir objetos, también queremos enunciar y demostrar proposiciones. En Lean, esto se hace del mismo modo que en otros sistemas formales: primero escribimos los resultados (como lemas o teoremas) formalmente, y después proporcionamos una demostración.
+
+Como ya hemos visto, una proposición en Lean es un término de tipo \code{Prop}, y una demostración de \code{p : Prop} es simplemente un término de tipo \code{p}. Por tanto, demostrar una proposición no es diferente de definir un objeto; podemos utilizar \bluecode{def} para escribir resultados matemáticos. Por ejemplo:
+
+\begin{lstlisting}
+  def mi_prop : 1 > 0 := ...
+\end{lstlisting}
+
+Aquí estamos diciendo que \code{mi\_prop} es un objeto de tipo \code{1 > ~0}. Si en el lugar de \code{...} proporcionamos un término de tipo \code{1 > ~0}, habremos demostrado \code{mi\_prop}.
+
+Sin embargo, para mayor claridad y estructura, Lean proporciona los comandos \bluecode{lemma} y \bluecode{theorem}. Ambos funcionan exactamente igual que \bluecode{def} y son intercambiables entre sí, pero facilitan la lectura del código indicando qué objetos son resultados matemáticos, y la jerarquía de importancia entre ellos. La sintaxis es la misma:
+
+\begin{lstlisting}
+  lemma my_lemma : 1 > 0 := ...
+  theorem commutative_sum (a b : ℕ) : a + b = b + a := ...
+\end{lstlisting}
+
+Existe también el comando \bluecode{example}, que sirve para escribir demostraciones sin la necesidad de nombrar el resultado:
+
+\begin{lstlisting}
+  example (a b : ℕ) : a * b = b * a := ...
+\end{lstlisting}
+
+Este tipo de expresiones no amplían el contexto ni definen nuevos objetos; son simplemente comprobaciones locales. Pero veremos que nos pueden ser útiles en ciertas ocasiones.
 
 
 \subsubsection{Demostraciones: el modo táctico}
