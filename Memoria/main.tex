@@ -67,10 +67,6 @@
 
 % Infoview
 
-\newcommand{\numberofgoals}[1]{£{#1} goals£}
-
-
-
 
 % Math commands
 \newcommand{\nat}{\mathbb{N}}
@@ -95,6 +91,26 @@
 \section{Introducción}
 
 Introducción al trabajo.
+
+
+
+\noindent
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
+    exact And.intro hp hq
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+  \begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhpħ : p
+    ħhqħ : q
+    ⊢ p ∧ q\end{lstlisting}
+\end{minipage}
 
 
 \newpage
@@ -331,11 +347,77 @@ Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequ
 
 \subsection{Demostraciones en Lean}
 
+Hasta ahora, hemos explorado la teoría de tipos dependientes sobre la que se construye Lean, así como los fundamentos que garantizan la corrección de sus demostraciones. Pasamos por tanto a un enfoque más práctico: ¿cómo escribimos matemáticas en Lean?
 
+Recordemos que formalizar un resultado en Lean no consiste solo en escribir su enunciado, sino también en construir una demostración paso a paso, sin omiciones y con total precisión. Aquí, nunca nos basta con escribir "trivial" cuando creamos que algo ya deberíamos poder saberlo: necesitamos convencer al sistema de que cada paso es válido.
+
+Esta sección está dedicada a aprender a escribir demostraciones en Lean. Veremos cómo introducir nuevos objetos en nuestros contexto, como enunciar proposiciones y cómo construir demostraciones interactuando con Lean. También presentaremos algunas herramientas de automatización y métodos para poder apoyarnos en la librería de Mathlib.
 
 \subsubsection{Axiomas, definiciones y variables}
 
+Antes de escribir demostraciones en cualquier sistema formal, necesitamos describir el \textbf{contexto} en el que trabajamos: el conjunto de objetos e hipótesis disponibles en un momento dado. Este contexto es dinámico y se va ampliando a medida que introducimos nuevos elementos.
+
+En Lean ocurre exactamente lo mismo. El sistema mantiene y actualiza este contexto constantemente para comprobar que cada expresión está bien formada y tiene el tipo esperado.
+
+Podemos introducir nueva información en el contexto de distintas formas. Distinguimos entre axiomas, definiciones y variables, cada una con una función lógica distinta en el sistema.
+
+\begin{itemize}
+  \item \textbf{Axiomas}\footnote{En Lean 3, a este tipo de declaraciones se les llamaba \textit{constantes} y utilizaban el comando \bluecode{constant}.}
+\end{itemize}
+
+Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que "x es de tipo X" es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos\footnote{En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. \code{inductive Nat} se puede ver como una versión extructurada de \code{axiom Nat : Type}, \code{axiom zero : Nat}, \code{axiom succ : Nat to Nat}, etc.}. Por ejemplo:
+
+\begin{lstlisting}
+  axiom P : Prop
+  axiom h : P → P
+\end{lstlisting}
+
+Estamos declaranto una proposicion $P$ y una prueba de que $P$ implica $P$.
+
+\begin{lstlisting}
+  axiom n : ℕ
+  axiom hn : n > 2
+\end{lstlisting}
+
+Aquí estamos suponiendo que $n$ es un número natural mayor que $2$.
+
+Así, los axiomas nos permiten fijar hechos en el contexto que queremos asumir como válidos a lo largo de nuestras demostraciones.
+
+
+\begin{itemize}
+  \item \textbf{Definiciones}
+\end{itemize}
+
+Introducen objetos nuevos a partir de otros ya conocidos. A diferencia de los axiomas, no  basta con indicar el tipo del nuevo objeto, sino que también hay que dar su construcción. Por ejemplo:
+
+\begin{lstlisting}
+  def f : ℕ → ℕ := fun n ↦ 2 * n
+  def n : ℕ := 3
+  def es_par : ℕ → Prop := fun n ↦ ∃ m, n = f m
+\end{lstlisting}
+
+Además, cuando el tipo puede inferirse a partir de la construcción, no es necesario indicarlo explícitamente:
+
+\begin{lstlisting}
+  def n := 3
+  #check n    -- n : ℕ
+\end{lstlisting}
+
+\begin{itemize}
+  \item \textbf{Variables}
+\end{itemize}
+
+Al contrario de lo que estamos acostumbrados, definir una variable en Lean no significa asignarle un valor arbitrario. En su lugar, lo que se introduce es un contexto universal: si $x$ es una variable, siempre que $x$ aparezca de forma libre, Lean interpretará que lo que sigue está cuantificado universalmente respecto a $x$. Por ejemplo\footnote{Las variables, a diferencia de los axiomas y las definiciones, se escriben entre paréntesis. Lo mismo ocurre con los argumentos que toman las proposiciones, como veremos más adelante. Esto está relacionado con la correspondencia de Curry–Howard: declarar una variable equivale a abstraer sobre ella, y por tanto a cuantificar universalmente(?).}:
+
+\begin{lstlisting}
+  variable (x : ℕ)
+  axiom hx : x ≥ 0
+  #print hx    -- axiom hx : ∀ (x : ℕ), x ≥ 0
+\end{lstlisting}
+
 \subsubsection{Proposiciones}
+
+
 
 \subsubsection{Demostraciones: el modo táctico}
 
@@ -343,6 +425,8 @@ Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequ
 
 \subsubsection{Utilizar Mathlib}
 
+
+\newpage
 
 \section{Espacios topológicos en Lean}
 
