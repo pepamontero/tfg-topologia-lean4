@@ -11,13 +11,14 @@
 \contentsline {subsection}{\numberline {2.2}¿Por qué fiarnos de Lean?}{11}{}%
 \contentsline {subsection}{\numberline {2.3}Demostraciones en Lean}{12}{}%
 \contentsline {subsubsection}{\numberline {2.3.1}Axiomas, definiciones y variables}{12}{}%
-\contentsline {subsubsection}{\numberline {2.3.2}Proposiciones}{12}{}%
-\contentsline {subsubsection}{\numberline {2.3.3}Demostraciones: el modo táctico}{12}{}%
-\contentsline {subsubsection}{\numberline {2.3.4}Herramientas de automatización}{12}{}%
-\contentsline {subsubsection}{\numberline {2.3.5}Utilizar Mathlib}{12}{}%
-\contentsline {section}{\numberline {3}Espacios topológicos en Lean}{12}{}%
-\contentsline {subsection}{\numberline {3.1}Espacios topolǵicos normales}{12}{}%
-\contentsline {section}{\numberline {4}El Lema de Urysohn}{15}{}%
-\contentsline {subsection}{\numberline {4.1}El recíproco}{15}{}%
-\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{15}{}%
-\contentsline {subsection}{\numberline {4.3}Una parte}{16}{}%
+\contentsline {subsubsection}{\numberline {2.3.2}Proposiciones}{14}{}%
+\contentsline {subsubsection}{\numberline {2.3.3}Demostraciones: el modo táctico}{14}{}%
+\contentsline {subsubsection}{\numberline {2.3.4}Algunas tácticas básicas}{17}{}%
+\contentsline {subsubsection}{\numberline {2.3.5}Herramientas de automatización}{17}{}%
+\contentsline {subsubsection}{\numberline {2.3.6}Utilizar Mathlib}{17}{}%
+\contentsline {section}{\numberline {3}Espacios topológicos en Lean}{18}{}%
+\contentsline {subsection}{\numberline {3.1}Espacios topolǵicos normales}{18}{}%
+\contentsline {section}{\numberline {4}El Lema de Urysohn}{21}{}%
+\contentsline {subsection}{\numberline {4.1}El recíproco}{21}{}%
+\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{21}{}%
+\contentsline {subsection}{\numberline {4.3}Una parte}{21}{}%

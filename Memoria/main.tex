@@ -445,9 +445,91 @@ Este tipo de expresiones no amplían el contexto ni definen nuevos objetos; son 
 
 \subsubsection{Demostraciones: el modo táctico}
 
+Llegamos a la parte central de esta sección: \textbf{escribir demostraciones} en Lean. En general, hay dos formas de construir una demostración en Lean:
+
+\begin{itemize}
+  \item Mediante \textbf{términos}, es decir, escribiendo directamente una expresión del tipo deseado.
+  \item Mediante el \textbf{modo táctico}, en el que una demostración se construye paso a paso usando instrucciones llamadas \textbf{tácticas}.
+\end{itemize}
+
+En este trabajo utilizaremos exclusivamente el modo táctico, ya que es el enfoque más práctico y más cercano a la forma en que razonamos al escribir demostraciones matemáticas en lenguaje natural. 
+
+En una demostración informal, solemos avanzar mediante pasos lógicos encadenados: \quotes{supongamos que...}, \quotes{entonces...}, \quotes{por el lema..., se tiene...}. Cada uno de estos pasos se traduce en Lean mediante una táctica: una instrucción que modifica el estado de la demostración, ya sea introduciendo hipótesis, aplicando resultados conocidos, dividiendo el objetivo en partes más manejables, etc.
+
+Además, el modo táctico nos permite trabajar de manera \textbf{interactiva} con Lean. Si escribimos un enunciado, e inmediatamente después de \code{:=} escribimos \bluecode{by}, estamos indicando a Lean que para la construcción de este término vamos a utilizar el modo táctico. Por ejemplo:
+
+\begin{lstlisting}
+  theorem and (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
+\end{lstlisting}
+
+Estamos indicando que queremos construir un término de tipo \code{p $\land$ q} a partir de las hipótesis \code{hp : p} y \code{hq : q}, y que para esa construcción vamos a utilizar el modo táctico.
+
+Internamente, Lean interpreta esto mediante la generación de un contexto local (nuestras hipótesis) y un \textbf{objetivo} (nuestra tesis), que consiste en construir el término del tipo esperado. Después de \bluecode{by}, podemos empezar a escribir tácticas, que Lean interpretará actualizando el contexto y el objetivo deseado.
+
+Este objetivo aparece reflejado en el \textbf{InfoView}, una ventana que muestra el estado actual de nuestra demostración. Lean procesa línea a línea de forma automática, por lo que en cualquier momento podemos consultar el impacto de haber aplicado una táctica simplemente colocando el cursor sobre la línea de código correspondiente.
+
+De hecho, en el InfoView también se muestran los resultados de las instrucciones que ya hemos visto como \bluecode{\#check}, \bluecode{\#print} o \bluecode{\#eval}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{figuras/check-example-light-version.png}
+\end{figure}
+
+En general, cuando escribamos en Lean, tendremos abierta esta ventana paralelamente a nuestro código, para poder ir viendo el progreso de nuestra demostración.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{figuras/theorem-example-light-version.png}
+\end{figure}
+
+Bajo el apartado \code{Tactic state}, podemos comprobar:
+
+\begin{itemize}
+  \item El número de tesis que nos quedan por demostrar (en este caso solo una: \bluecode{1 goal}).
+  \item Nuestro contexto.
+  \item La (o las) tesis, marcadas con el símbolo \bluecode{$\vdash$}.
+\end{itemize}
+
+A partir de este punto, podemos empezar a añadir las tácticas que van a construir nuestra demostración. Las tácticas se escriben una detrás de otra, separadas por punto y coma (\code{;}) o por saltos de línea.
+
+Al escribir una táctica, el apartado \code{Tactic state} del InfoView se actualizará según corresponda. Cuando todas las tesis se hayan resueltos, el InfoView mostrará \bluecode{No goals}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{figuras/no-goals-example-light-version.png}
+\end{figure}
+
+\newpage
+
+\subsubsection{Algunas tácticas básicas}
+
+En esta sección veremos algunas de las tácticas más básicas y útiles para construir demostraciones en Lean. Veremos cómo se aplican y qué efecto tienen en el InfoView. El resto de tácticas que aparecen a lo largo del trabajo pueden consultarse en el Anexo (letra, probablemente la A).
+
+\vspace{1em}
+\noindent\textbf{\bluecode{intro}}
+
+Da una instrucción de la forma "supongamos que...". 
+Para demostrar A implica B, en general primero suponemos A, y a partir de ahí vemos si B es cierto.
+
+\begin{itemize}
+  \item \bluecode{intro}
+\end{itemize}
+
+Da una instrucción de la forma "supongamos que...". 
+Para demostrar A implica B, en general primero suponemos A, y a partir de ahí vemos si B es cierto.
+
+\vspace{1em}
+\noindent\hspace{2em}\textbf{\bluecode{intro}}
+
+Da una instrucción de la forma "supongamos que...". 
+Para demostrar A implica B, en general primero suponemos A, y a partir de ahí vemos si B es cierto.
+
+
 \subsubsection{Herramientas de automatización}
 
 \subsubsection{Utilizar Mathlib}
+
+
 
 
 \newpage
