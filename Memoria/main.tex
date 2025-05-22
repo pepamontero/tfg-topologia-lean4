@@ -568,8 +568,10 @@ Es útil cuando el objetivo tiene la forma de una implicación o un cuantificado
     ⊢ p → p
 \end{lstlisting}
 \end{minipage}
-
-
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
 \begin{minipage}[t]{0.58\textwidth}
 \begin{lstlisting}[language=lean]
   example (p : Prop) : p → p := by
@@ -608,12 +610,39 @@ Y para deshacer cuantificadores:
     ⊢ ∀ (p : Prop), p → p
 \end{lstlisting}
 \end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : ∀ (p : Prop), p → p := by
+    intro q
 
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħqħ : Prop
+    ⊢ q → q
+\end{lstlisting}
+\end{minipage}
+
+
+\vspace{1em}
+\noindent\textbf{\bluecode{exact}}
+
+La táctica \bluecode{exact} se utiliza cuando ya tenemos, en nuestro contexto, exactamente lo que queremos demostrar. Es decir, existe una hipótesis que coincide con la tesis actual. Por ejemplo:
 
 \begin{minipage}[t]{0.58\textwidth}
 \begin{lstlisting}[language=lean]
   example : ∀ (p : Prop), p → p := by
-    intro p
+    intro p hp
+
 
 ~
 \end{lstlisting}
@@ -624,15 +653,178 @@ Y para deshacer cuantificadores:
   Tactic state
     ŋ1 goalŋ
     ħpħ : Prop
+    ħhpħ : p
     ⊢ p → p
+\end{lstlisting}
+\end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : ∀ (p : Prop), p → p := by
+    intro p hp
+    exact hp
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋNo goalsŋ
+~
 \end{lstlisting}
 \end{minipage}
 
 
 \vspace{1em}
-\noindent\textbf{\bluecode{exact}}
+\noindent\textbf{\bluecode{apply}}
+
+La táctica \bluecode{apply} nos permite usar una implicación para reducir un objetivo a otro más simple. Equivale a utilizar la regla del \textit{Modus Ponens}: si tenemos una hipótesis de la forma $p \rightarrow q$ y queremos demostrar $q$, basta con demostrar $p$.
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : (p q : Prop) (hp : p)
+      (hpq : p → q) : q := by
 
 
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhpħ : p
+    ħhpqħ : p → q
+    ⊢ q
+\end{lstlisting}
+\end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : (p q : Prop) (hp : p)
+      (hpq : p → q) : q := by
+    apply hpq 
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhpħ : p
+    ħhpqħ : p → q
+    ⊢ p
+\end{lstlisting}
+\end{minipage}
+
+Podríamos completar esta demostración usando \code{\blue{exact} hp}.
+
+
+\vspace{1em}
+\noindent\textbf{\bluecode{use}}
+
+Utilizamos \bluecode{use} para trabajar con el cuantificador existencial. Si queremos demostrar una proposición de la forma \quotes{$\exists x, P x$}, basta con encontrar un $x_0$ concreto que satisfaga la propiedad $P$.
+
+En este caso, aplicamos \bluecode{use} para indicarle a Lean el valor concreto $x_0$ que queremos usar para demostrar la existencia. El objetivo pasa a ser entonces demostrar que $x_0$ satisface $P$. Por ejemplo:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : ∃ n : ℕ, n > 3 := by
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ⊢ ∃ n, n > 3
+\end{lstlisting}
+\end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : ∃ n : ℕ, n > 3 := by
+    use 5
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ⊢ 5 > 3
+\end{lstlisting}
+\end{minipage}
+
+
+\vspace{1em}
+\noindent\textbf{\bluecode{left}, \bluecode{right}}
+
+Las táticas \bluecode{left} y \bluecode{right} se utilizan para trabajar con disyunciones, es decir, proposiciones de la forma $A \lor B$.
+
+En una demostración informal, si queremos demostrar que \quotes{$A$ o $B$} es cierto, nos basta con demostrar una de las dos. Utilizamos \bluecode{left} para indicar que vamos a demostrar la parte izquierda ($A$), y \bluecode{right} si queremos demostrar la parte derecha ($B$). Por ejemplo:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : (p q : Prop) (hp : p) :
+      p ∨ q := by
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhpħ : p
+    ⊢ p ∨ q
+\end{lstlisting}
+\end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example : (p q : Prop) (hp : p) :
+      p ∨ q := by
+    left
+    
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhpħ : p
+    ⊢ p
+\end{lstlisting}
+\end{minipage}
 
 
 \subsubsection{Herramientas de automatización}
