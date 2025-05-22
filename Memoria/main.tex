@@ -811,7 +811,7 @@ En una demostración informal, si queremos demostrar que \quotes{$A$ o $B$} es c
   example : (p q : Prop) (hp : p) :
       p ∨ q := by
     left
-    
+
 ~
 \end{lstlisting}
 \end{minipage}%
@@ -825,6 +825,244 @@ En una demostración informal, si queremos demostrar que \quotes{$A$ o $B$} es c
     ⊢ p
 \end{lstlisting}
 \end{minipage}
+
+Podríamos finalizar esta demostración aplicando \code{\blue{exact} hp}.
+
+
+
+\vspace{1em}
+\noindent\textbf{\bluecode{constructor}}
+
+Utilizamos \bluecode{constructor} para trabajar con conjunciones, es decir, proposiciones de la forma $A \land B$.
+
+Cuando queremos demostrar  que \quotes{$A$ y $B$} es cierto, basta con demostrar $A$ por un lado y $B$ por otro. Al aplicar \bluecode{constructor}, Lean divide un objetivo \code{A $\land$ B} en dos subobjetivos con el mismo contexto: uno para \code{A} y otro para \code{B}. Por ejemplo:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (hp : p)
+      (hq : q) : p ∧ q := by
+
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhpħ : p
+    ħhqħ : q
+    ⊢ p ∧ q
+\end{lstlisting}
+\end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (hp : p)
+      (hq : q) : p ∧ q := by
+    constructor
+
+
+
+
+
+
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ2 goalsŋ
+    case left
+      ħp qħ : Prop
+      ħhpħ : p
+      ħhqħ : q
+      ⊢ p
+    case right
+      ħp qħ : Prop
+      ħhpħ : p
+      ħhqħ : q
+      ⊢ q
+\end{lstlisting}
+\end{minipage}
+
+Después de aplicar \bluecode{constructor}, el InfoView mostrará dos objetivos pendientes (\bluecode{2 goals}). Al resolver cada uno por separado, completamos la demostración.
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (hp : p)
+      (hq : q) : p ∧ q := by
+    constructor
+    exact hp
+    exact hq
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋNo goalsŋ
+
+
+~
+\end{lstlisting}
+\end{minipage}
+
+Aunque lo anterior es correcto, lo habitual cuando trabajamos con más de una tesis es utilizar \code{·} para separarlas. Cuando escribimos \code{·} tras un salto de línea, Lean enfoca el primer objetivo, ocultando temporalmente el resto. Por ejemplo:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (hp : p)
+      (hq : q) : p ∧ q := by
+    constructor
+    ·
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    case left
+      ħp qħ : Prop
+      ħhpħ : p
+      ħhqħ : q
+      ⊢ p
+\end{lstlisting}
+\end{minipage}
+
+Si colocamos el cursor al final, el InfoView solo muestra \bluecode{1 goal}, porque el segundo objetivo está oculto por ahora. La demostración completa en este estilo sería:
+
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (hp : p)
+      (hq : q) : p ∧ q := by
+    constructor
+    · exact hp
+    · exact hq
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋNo goalsŋ
+
+
+~
+\end{lstlisting}
+\end{minipage}
+
+
+\vspace{1em}
+\noindent\textbf{\bluecode{constructor}}
+
+La táctica \bluecode{cases'} se utiliza para analizar una disyunción en el contexto, es decir, una hipótesis de la forma $A \lor B$.
+
+En una demostración informal, equivale a hacer un razonamiento por casos: \quotes{Supongamos que ocurre $A$, veamos si se sigue la tesis; supongamos depués que ocurre $B$, y comprobemos si también se sigue}.
+
+Al aplicar \code{\blue{cases'} h } sobre una hipótesis h, Lean duplica el objetivo (que no cambia), pero modifica el contexto en cada uno de los nuevos objetivos, introduciendo las hipótesis correspondientes a cada caso. Utilizamos el comando \bluecode{with} para asignar nombres a las nuevas hipótesis. Por ejemplo:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (h : p ∨ q)
+      (hpq : p → q) : q := by
+
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħp qħ : Prop
+    ħhħ : p ∨ q
+    ħhpqħ : p → q
+    ⊢ q
+\end{lstlisting}
+\end{minipage}
+%
+\noindent
+\makebox[\textwidth]{$\downarrow$}
+%
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (h : p ∨ q)
+      (hpq : p → q) : q := by
+    cases' h with hp hq
+
+
+
+
+
+
+
+      
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ2 goalsŋ
+    case inl
+      ħp qħ : Prop
+      ħhpqħ : p → q
+      ħhpħ : p
+      ⊢ q
+    case inr
+      ħp qħ : Prop
+      ħhpqħ : p → q
+      ħhqħ : q
+      ⊢ q
+\end{lstlisting}
+\end{minipage}
+
+Podemos entonces completar la demostración con las herramientas que tenemos hasta ahora:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q : Prop) (h : p ∨ q)
+      (hpq : p → q) : q := by
+    cases' h with hp hq
+    · apply hpq
+      exact hp
+    · exact hq
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋNo goalsŋ
+
+
+
+~
+\end{lstlisting}
+\end{minipage}
+
+
+Como hemos visto por medio de estos ejemplos, completar una demostración en modo táctico consiste en combinar estas instrucciones una después de otra, haciendo que las hipótesis y las tesis vayan avanzando hasta alcanzar el estado deseado: \bluecode{No goals}. Las tácticas nos dan la flexibilidad necesaria para formalizar una gran variedad de resultados matemáticos.
+
 
 
 \subsubsection{Herramientas de automatización}
