@@ -1,5 +1,6 @@
 % TO-DO
   % números en los comentarios aparecen en negro (debería prevalecer el comentario)
+  % gestionar que exact? aparece con ? en azul en el infoview
   % quitar los newpage que he tenido que meter para q no se me fastidien los footnotes
 
 % Spell checker settings
@@ -100,23 +101,6 @@ Introducción al trabajo.
 
 
 
-\noindent
-\begin{minipage}[t]{0.58\textwidth}
-\begin{lstlisting}[language=lean]
-  example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
-    exact And.intro hp hq
-\end{lstlisting}
-\end{minipage}%
-\hfill
-\begin{minipage}[t]{0.40\textwidth}
-  \begin{lstlisting}[language=infoview]
-  Tactic state
-    ŋ1 goalŋ
-    ħp qħ : Prop
-    ħhpħ : p
-    ħhqħ : q
-    ⊢ p ∧ q\end{lstlisting}
-\end{minipage}
 
 
 \newpage
@@ -1065,10 +1049,273 @@ Como hemos visto por medio de estos ejemplos, completar una demostración en mod
 
 
 
-\subsubsection{Herramientas de automatización}
+\subsubsection{Herramientas de automatización y búsqueda en Mathlib}
 
-\subsubsection{Utilizar Mathlib}
+A medida que las demostraciones en Lean se vuelven más complejas, no siempre resulta práctico construir cada paso manualmente. Para agilizar el proceso, Lean incorpora algunas herramientas de automatización que permiten delegar ciertas tareas al sistema.
 
+Además, en lugar de volver a demostrar resultados que ya están formalizados, es fundamental \textbf{aprovechar la biblioteca matemática de Lean, Mathlib}, que contiene miles de definiciones y teoremas disponibles para su reutilización.
+
+Sin embargo, apoyarse en Mathlib no siempre es directo: los resultados pueden tener nombres poco intuitivos o muy específicos, y encontrar el lema que necesitamos en un momento dado no es siempre fácil.
+
+Por ejemplo, un resultado tan simple como: \quotes{Si $a, b, c$ son números reales tales que $a < b$ y $c < 0$, entonces $a + c < b$} (que en una prueba informal considereíamos casi trivial), aparece en Mathlib con el nombre \code{add\_lt\_of\_lt\_of\_neg'}. En la práctica, recordar todos estos nombres resulta inviable, incluso para resultados elementales.
+
+En esta sección introduciremos la táctica \bluecode{exact?}, que permite resolver objetivos simples de manera inmediata, y dos herramientas externas que podemos utilizar para localizar resultados en Mathlib. Además, veremos la forma en la que integrar estas herramientas en nuestro proceso de demostración de resultados.
+
+\vspace{1em}
+\noindent\textbf{La táctica \bluecode{exact?}}
+
+Lean incorpora algunas tácticas que intentan cerrar el objetivo actual utilizando tanto las hipótesis del contexto como los resultados disponibles en los archivos importados. Las más destacadas son \bluecode{exact?}\footnote{La táctica \bluecode{exact?} tenía el nombre \bluecode{library\_search} en Lean 3.} y \bluecode{apply?}.
+
+A lo largo del proyecto, la que he utilizado con mayor frecuencia es \bluecode{exact?}. Esta táctica intenta encontrar una expresión que tenga exactamente el tipo del objetivo actual, buscando tanto en la información local (hipótesis del contexto, resultados definidos anteriormente) como en la librería de Mathlib.
+
+Por ejemplo, en el caso de encontrar hipótesis locales:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p : Prop) : p → p := by
+    intro hp
+    exact?
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Suggestions
+    Try this: exact hp
+~
+\end{lstlisting}
+\end{minipage}
+
+Y en el caso de encontrar resultados de Mathlib:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (n : ℕ) : n ≥ 0 := by
+	  exact?
+  ~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Suggestions
+    Try this: exact Nat.zero_le n
+\end{lstlisting}
+\end{minipage}
+
+En general, utilizar la expresión sugerida por \bluecode{exact?} concluirá la prueba.
+
+A pesar de que \bluecode{exact?} nos puede ayudar en muchos casos, es una herramienta relativamente sencilla, que solo puede dar un paso (aplicar un teorema o una hipótesis). Esto implica que si no tenemos las hipótesis exactas de los teoremas como aparecen en Mathlib, \bluecode{exact?} no encontrará ninguna solución.
+
+Cuando trabajamos con hipótesis más complejas, lo habitual no es utilizar \bluecode{exact?} directamente para probar nuestra tesis, sino para probar ciertos resultados intermedios. Por esto, una táctica crucial a la hora de trabajar con \bluecode{exact?} es \bluecode{have}, el equivalente en demostraciones informales a declarar un lema en mitad de una demostración. Por ejemplo, supongamos que queremos probar:
+
+
+\begin{lstlisting}
+  example (p q r : Prop) (hpq : p → q) (hqr : q → r) (hp : p) : r
+\end{lstlisting}
+
+En lugar de tratar de demostrar inmediatamente \code{r}, podríamos probar, de manera intermedia, que se tiene \code{q}. Para esto utilizamos \bluecode{have}:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (p q r : Prop) (hpq : p → q)
+      (hqr : q → r) (hp : p) : r := by
+    have hq : q
+
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ2 goalsŋ
+    case hq
+      ħ(...)ħ
+      ⊢ q
+    ħ(...)ħ
+    ⊢ r
+\end{lstlisting}
+\end{minipage}
+
+Escribir \code{\blue{have} hq : q} introduce una nueva tesis, \code{q}, independiente de la anterior. Una vez completemos la prueba de esta nueva tesis, podremos usar el resultado en nuestra demostración. Por tanto, podríamos completar el ejemplo anterior de la siguiente forma:
+
+\begin{lstlisting}
+  example (p q r : Prop) (hpq : p → q) (hqr : q → r) (hp : p) : r := by
+    have hq : q
+    · apply hpq
+      exact hp
+    apply hqr
+    exact hq
+\end{lstlisting}
+
+Recordemos que utilizamos el punto \code{·} para separar la demostración de \code{hq} del resto de la demostración.
+
+Veamos por tanto como es el proceso de trabajar con \bluecode{exact?}. Consideremos el siguiente ejemplo, para el que \bluecode{exact?} no encuentra ningún resultado:
+
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (x : ℝ) (hx : x > 0) :
+      x / x = 1 := by
+    exact?
+
+
+
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħxħ : ℝ
+    ħhxħ : x > 0
+    ⊢ x / x = 1
+  Messages
+    `exact?` could not close the goal.
+\end{lstlisting}
+\end{minipage}
+
+\begin{enumerate}
+  \item Mirando el estado actual de la demostración, identificar cuál sería una hipótesis que desearíamos tener en nuestro contexto. En este caso, al tratarse de una división, podría ser necesario tener la hipótesis $x \neq 0$.
+  \item Añadir la nueva tesis utilizando have.
+\end{enumerate}
+
+\vspace{-1.5em}
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (x : ℝ) (hx : x > 0) :
+      x / x = 1 := by
+    have h : x ≠ 0
+    · 
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħxħ : ℝ
+    ħhxħ : x > 0
+    ⊢ x ≠ 0
+\end{lstlisting}
+\end{minipage}
+\vspace{-1.5em}
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item Intentar demostrar la nueva tesis utilizando \bluecode{exact?}.
+\end{enumerate}
+
+\vspace{-1.5em}
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (x : ℝ) (hx : x > 0) :
+      x / x = 1 := by
+    have h : x ≠ 0
+    · exact?
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Suggestions
+    Try this: Ne.symm (ne_of_lt hx)
+~
+\end{lstlisting}
+\end{minipage}
+
+
+Con esta nueva hioótesis, parece probable que \bluecode{exact?} sea capaz de terminar la demostración. En efecto:
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (x : ℝ) (hx : x > 0) :
+      x / x = 1 := by
+    have h : x ≠ 0
+    · exact Ne.symm (ne_of_lt hx)
+    exact?
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Suggestions
+    Try this: (div_eq_one_iff_eq h).mpr rfl
+~
+\end{lstlisting}
+\end{minipage}
+
+La táctica \bluecode{exact?} es un ejemplo de motor de búsqueda formal: una herramienta que, mediante metaprogramación en Lean, compara el objetivo actual con los tipos de todos los lemas disponibles y devuelve aquellos con coincidencias exactas. Por tanto, la clave de usar \bluecode{exact?} de manera eficaz reside en \textbf{desarrollar gradualmente una cierta intuición} sobre qué resultados es probable que estén formalizados en Mathlib, y la forma concreta en la que están formulados.
+
+En efecto, reconocer que un lema de Mathlib sobre división por $x$ probablemente requería la hipótesis $x\neq0$ (y no simplemente $x>0$) ha sido esencial para poder aplicar \bluecode{exact?} con éxito en el ejemplo anterior.
+
+A parte de \bluecode{exact?}, existen tácticas similares como \bluecode{apply?} y \bluecode{rw?}, que funcionan del mismo modo y permiten dar pasos intermedios. Sin embargo, en la práctica estas tácticas suelen devolver una larga lista de opciones, muchas de las cuales no son relevantes o útiles. Por tanto, cuando \bluecode{exact?} no es suficiente, es más eficaz recurrir a otras herramientas de búsqueda.
+
+\vspace{1em}
+\noindent\textbf{Otras herramientas}
+
+A lo largo de este proyecto he utilizado fundamentalmente dos herramientas externas de búsqueda en Mathlib: Moogle \cite{moogle} y LeanSearch \cite{gao2024semantic}. Ambos son motores de búsqueda semántica, lo que significa que no se limitan a buscar coincidencias literales en el texto, sino que intentan interpretar el significado matemático de nuestra consulta y compararlo con los resultados de Mathlib. Para ello utilizan modelos de lenguaje de gran escala (LLMs), que permiten establecer relaciones entre enunciados aunque estén formulados de distinta manera. En particular, admiten consultas con los siguientes formatos \cite{gao2024semantic}:
+
+\begin{itemize}
+  \item Descripciones en lenguaje natural
+  \item Nombres de teoremas conocidos
+  \item Notación matemática (en LaTeX)
+  \item Código Lean
+\end{itemize}
+
+Por ejemplo, si en el caso anterior no se nos hubiera ocurrido la idea de demostrar primero $x \neq 0$, podríamos haber buscado en Moogle algo del estilo de \textit{\quotes{division by itself is 1}}. De hecho, el segundo resultado de esta búsqueda en Moogle es:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{figuras/moogle-example.png}
+\end{figure}
+
+Que no es el mismo resultado que proponía \bluecode{exact?}, pero parece incluso más simpe. Podríamos volver a nuestro ejemplo y escribir
+
+\begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+  example (x : ℝ) (hx : x > 0) :
+      x / x = 1 := by
+    apply div_self
+
+~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  Tactic state
+    ŋ1 goalŋ
+    ħxħ : ℝ
+    ħhxħ : x > 0
+    ⊢ x ≠ 0
+\end{lstlisting}
+\end{minipage}
+
+Con lo que ya sólo faltaría demostrar que $x \neq 0$.
+
+En general, he encontrado que LeanSearch funciona mejor que Moogle, especialmente en términos de relevancia de los resultados obtenidos. Sin embargo, al principio del proyecto solo conocía Moogle, y descubrí LeanSearch más tarde, por lo que he utilizado Moogle mayoritariamente.
+
+Un ejemplo de una búsqueda real que necesité para el trabajo en LeanSearch, fue \textit{\quotes{subset of set has at most the dimension of the set}}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{figuras/leansearch-example-cropped.png}
+\end{figure}
+
+El primer resultado que aparece es justo el que necesitaba. Sin embargo, antes de buscarlo no tenía ninguna idea de cómo formalizar los resultados en los que estaba trabajando, especialmente porque no estaba familiarizada con el módulo \code{Cardinal.mk}. Este fue un ejemplo claro de que estas herramientas permiten acceder a partes de Mathlib que de otro modo serían difíciles de localizar.
+
+En conjunto, herramientas como \bluecode{exact?}, LeanSearch o Moogle han resultado fundamentales para hacer más eficiente el proceso de formalización, permitiendo apoyarse en Mathlib de forma efectiva sin necesidad de conocerla en profundidad desde el principio.
+
+
+\subsubsection{Noncomputable}
 
 
 
