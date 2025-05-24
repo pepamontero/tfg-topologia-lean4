@@ -1315,9 +1315,39 @@ El primer resultado que aparece es justo el que necesitaba. Sin embargo, antes d
 En conjunto, herramientas como \bluecode{exact?}, LeanSearch o Moogle han resultado fundamentales para hacer más eficiente el proceso de formalización, permitiendo apoyarse en Mathlib de forma efectiva sin necesidad de conocerla en profundidad desde el principio.
 
 
-\subsubsection{Noncomputable}
+\subsubsection{Noncomputable y el axioma de elección}
 
+Para finalizar esta sección sobre Lean en la práctica, es útil comentar brevemente una cuestión que aparecerá en algunas de las definiciones posteriores: el uso del \textbf{axioma de elección} y la palabra clave \bluecode{noncomputable}.
 
+En Lean, el axioma de elección se introduce de forma directa mediante
+
+\begin{lstlisting}
+  axiom choice {α : Sort u} : Nonempty α → α
+\end{lstlisting}
+
+Es decir, dado un tipo no vacío, \code{choice} nos devuelve un elemento de ese tipo, aunque no nos dice cómo encontrarlo. Por este motivo, su uso impide extraer información computable del resultado.
+
+En consecuencia, cuando definimos funciones o construcciones que dependen de \code{choice}, Lean nos obliga a marcarlas como \bluecode{noncomputable}.  Un ejemplo es la función \code{choose}, que dada una prueba de tipo existencial, selecciona un testigo:
+
+\begin{lstlisting}
+  noncomputable def choose {α : Sort u} {p : α → Prop}
+      (h : ∃ x, p x) : α :=
+    (indefiniteDescription p h).val
+\end{lstlisting}
+
+A menudo utilizaremos \code{choose} (\code{Classical.choose}, ya que se encuentra en el módulo \code{Classical}) en nuestros resultados, junto con el siguiente lema
+
+\begin{lstlisting}
+  theorem choose_spec {α : Sort u} {p : α → Prop}
+      (h : ∃ x, p x) : p (choose h) :=
+    (indefiniteDescription p h).property
+\end{lstlisting}
+
+que es una demostración de que el elemento elegido mediante \code{choose} cumple las propiedades que le pedíamos.
+
+El uso de \bluecode{noncomputable} no representa un problema para nosotros (ni, en general, para la comunidad matemática), ya que en este trabajo no nos interesa que las construcciones sean computables: trabajamos con ellas desde un punto de vista lógico y matemático, no algorítmico.
+
+Además, usar el axioma de elección tiene una ventaja práctica: cuando utilicemos \code{choose}, el elemento elegido será siempre el mismo (aunque no sepamos cuál es), y tendrá siempre la propiedad \code{choose\_spec}. Esto permite trabajar con él de forma coherente dentro de una demostración y referirse a él varias veces como si fuera un objeto determinado.
 
 \newpage
 

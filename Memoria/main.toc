@@ -15,10 +15,10 @@
 \contentsline {subsubsection}{\numberline {2.3.3}Demostraciones: el modo táctico}{14}{}%
 \contentsline {subsubsection}{\numberline {2.3.4}Algunas tácticas básicas}{17}{}%
 \contentsline {subsubsection}{\numberline {2.3.5}Herramientas de automatización y búsqueda en Mathlib}{23}{}%
-\contentsline {subsubsection}{\numberline {2.3.6}Noncomputable}{28}{}%
-\contentsline {section}{\numberline {3}Espacios topológicos en Lean}{29}{}%
-\contentsline {subsection}{\numberline {3.1}Espacios topolǵicos normales}{29}{}%
-\contentsline {section}{\numberline {4}El Lema de Urysohn}{32}{}%
-\contentsline {subsection}{\numberline {4.1}El recíproco}{32}{}%
-\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{32}{}%
-\contentsline {subsection}{\numberline {4.3}Una parte}{33}{}%
+\contentsline {subsubsection}{\numberline {2.3.6}Noncomputable y el axioma de elección}{28}{}%
+\contentsline {section}{\numberline {3}Espacios topológicos en Lean}{30}{}%
+\contentsline {subsection}{\numberline {3.1}Espacios topolǵicos normales}{30}{}%
+\contentsline {section}{\numberline {4}El Lema de Urysohn}{33}{}%
+\contentsline {subsection}{\numberline {4.1}El recíproco}{33}{}%
+\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{33}{}%
+\contentsline {subsection}{\numberline {4.3}Una parte}{34}{}%
