@@ -24,6 +24,142 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     f '' C1 = ({0} : Set ℝ) ∧ f '' C2 = ({1} : Set ℝ) := by
 
   constructor
+  swap
+
+  · -- ←
+
+    /- DEMO
+    1. Queremos ver que `X` es Normal.
+    2. Consideramos `C1` y `C2` disjuntos y cerrados.
+        Queremos ver que existen `U1` y `U2` abiertos disjuntos conteniendo a `C1` y `C2`.
+
+    3. Para la definición de Espacio Normal no se pide que sean no vacíos,
+        pero, si alguno de los dos es vacío, es fácil ver que existen tales abiertos.
+
+    4. Si ambos son no vacíos, podemos aplicar la hipótesis.
+        Tomamos la función `f` de la hipótesis.
+        Consideramos entonces: `U1 = f⁻¹([0, 1/2))` y `U2 = f⁻¹((1/2, 1])`
+          * Trivialmente son disjuntos por serlo `[0, 1/2)` y `(1/2, 1]`
+          * `[0, 1/2)` y `(1/2, 1]` son abiertos en `[0, 1]` con la top. usual del subesp.
+          * Luego `Ui` son abiertos por ser la preimagen por una función continua de abiertos
+    -/
+
+    intro h
+    rw [NormalTopoSpace] -- `1`
+    intro C1 C2 hC1 hC2 hinter -- `2`
+
+    -- `3`
+    have hcases1 : C1 = ∅ ∨ C1 ≠ ∅
+    · exact eq_or_ne C1 ∅
+    have hcases2 : C2 = ∅ ∨ C2 ≠ ∅
+    · exact eq_or_ne C2 ∅
+
+    cases' hcases1 with hcases1 hcases1
+
+    -- si C1 es vacío
+    exact left_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases1
+
+    -- si C2 es vacío
+    cases' hcases2 with hcases2 hcases2
+    exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases2
+
+    -- `4`
+    specialize h C1 C2 hcases1 hcases2 hC1 hC2 hinter
+
+    let f := Classical.choose h
+    let hf := Classical.choose_spec h
+
+    have fdef : f = Classical.choose h
+    rfl
+
+    rw [← fdef] at hf
+
+    let u : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
+    let v : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
+
+    use f ⁻¹' u
+    use f ⁻¹' v
+
+    -- * is `f⁻¹( [0, 1/2) )` Open?
+    constructor
+    apply hf.left -- aplicar def. de f continua
+    apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+    · exact hY
+    · rw [hT'] at hR
+      exact hR
+    · simp
+      norm_num
+
+
+    -- * is `f⁻¹( (1/2, 0] )` Open?
+    constructor
+    apply hf.left -- aplicar def. de f continua
+    apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+    · exact hY
+    · rw [hT'] at hR
+      exact hR
+    · simp
+      norm_num
+
+
+    -- * is `C1 ⊆ U1` ?
+    constructor
+    intro x hx
+    simp
+
+    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C1)
+    · simp
+      use x
+
+    rw [hf.right.left] at aux
+
+    have aux': Subtype.val (f x) = 0
+    trivial
+
+    constructor
+    rw [aux']
+    rw [aux']
+    norm_num
+
+    -- NOTA . PROBABLEMENTE SE PUEDE SINTETIZAR
+
+
+    -- * is `C2 ⊆ U2` ?
+    constructor
+    intro x hx
+    simp
+
+    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C2)
+    · simp
+      use x
+
+    rw [hf.right.right] at aux
+
+    have aux': Subtype.val (f x) = 1
+    trivial
+
+    constructor
+    rw [aux']
+    norm_num
+    rw [aux']
+
+
+    -- * is `U1 ∩ U2 = ∅` ?
+    ext x
+    constructor
+    all_goals intro hx
+
+    · simp at hx
+      cases' hx with hxu hxv
+      cases' hxu with hxu1 hxu2
+      cases' hxv with hxv1 hxv2
+      linarith
+
+    · by_contra
+      exact hx
+
+
+
 
   · -- →
     intro hT C1 C2 hC1 hC2 hC1' hC2' hC1C2
@@ -375,137 +511,3 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       constructor
       · exact hx
       · exact hkC1 x hx
-
-
-
-  · -- ←
-
-    /- DEMO
-    1. Queremos ver que `X` es Normal.
-    2. Consideramos `C1` y `C2` disjuntos y cerrados.
-        Queremos ver que existen `U1` y `U2` abiertos disjuntos conteniendo a `C1` y `C2`.
-
-    3. Para la definición de Espacio Normal no se pide que sean no vacíos,
-        pero, si alguno de los dos es vacío, es fácil ver que existen tales abiertos.
-
-    4. Si ambos son no vacíos, podemos aplicar la hipótesis.
-        Tomamos la función `f` de la hipótesis.
-        Consideramos entonces: `U1 = f⁻¹([0, 1/2))` y `U2 = f⁻¹((1/2, 1])`
-          * Trivialmente son disjuntos por serlo `[0, 1/2)` y `(1/2, 1]`
-          * `[0, 1/2)` y `(1/2, 1]` son abiertos en `[0, 1]` con la top. usual del subesp.
-          * Luego `Ui` son abiertos por ser la preimagen por una función continua de abiertos
-    -/
-
-    intro h
-    rw [NormalTopoSpace] -- `1`
-    intro C1 C2 hC1 hC2 hinter -- `2`
-
-    -- `3`
-    have hcases1 : C1 = ∅ ∨ C1 ≠ ∅
-    · exact eq_or_ne C1 ∅
-    have hcases2 : C2 = ∅ ∨ C2 ≠ ∅
-    · exact eq_or_ne C2 ∅
-
-    cases' hcases1 with hcases1 hcases1
-
-    -- si C1 es vacío
-    exact left_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases1
-
-    -- si C2 es vacío
-    cases' hcases2 with hcases2 hcases2
-    exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases2
-
-    -- `4`
-    specialize h C1 C2 hcases1 hcases2 hC1 hC2 hinter
-
-    let f := Classical.choose h
-    let hf := Classical.choose_spec h
-
-    have fdef : f = Classical.choose h
-    rfl
-
-    rw [← fdef] at hf
-
-    let u : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
-    let v : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
-
-    use f ⁻¹' u
-    use f ⁻¹' v
-
-    -- * is `f⁻¹( [0, 1/2) )` Open?
-    constructor
-    apply hf.left -- aplicar def. de f continua
-    apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
-    · exact hY
-    · rw [hT'] at hR
-      exact hR
-    · simp
-      norm_num
-
-
-    -- * is `f⁻¹( (1/2, 0] )` Open?
-    constructor
-    apply hf.left -- aplicar def. de f continua
-    apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
-    · exact hY
-    · rw [hT'] at hR
-      exact hR
-    · simp
-      norm_num
-
-
-    -- * is `C1 ⊆ U1` ?
-    constructor
-    intro x hx
-    simp
-
-    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C1)
-    · simp
-      use x
-
-    rw [hf.right.left] at aux
-
-    have aux': Subtype.val (f x) = 0
-    trivial
-
-    constructor
-    rw [aux']
-    rw [aux']
-    norm_num
-
-    -- NOTA . PROBABLEMENTE SE PUEDE SINTETIZAR
-
-
-    -- * is `C2 ⊆ U2` ?
-    constructor
-    intro x hx
-    simp
-
-    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C2)
-    · simp
-      use x
-
-    rw [hf.right.right] at aux
-
-    have aux': Subtype.val (f x) = 1
-    trivial
-
-    constructor
-    rw [aux']
-    norm_num
-    rw [aux']
-
-
-    -- * is `U1 ∩ U2 = ∅` ?
-    ext x
-    constructor
-    all_goals intro hx
-
-    · simp at hx
-      cases' hx with hxu hxv
-      cases' hxu with hxu1 hxu2
-      cases' hxv with hxv1 hxv2
-      linarith
-
-    · by_contra
-      exact hx
