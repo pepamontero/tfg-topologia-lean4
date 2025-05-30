@@ -101,7 +101,7 @@ lemma H_Prop {X : Type} [T : TopologicalSpace X]
 
       · -- 0 ≤ p < q ≤ 1
         simp [H, aux, aux', hp, hp', hq, hq']
-        apply G_Prop2' hT C1 C2 hC1 hC2 hC1C2
+        apply G_Prop2_ext hT C1 C2 hC1 hC2 hC1C2
         have hfp := f_inv_prop.right ⟨p, by
           constructor
           exact hp
