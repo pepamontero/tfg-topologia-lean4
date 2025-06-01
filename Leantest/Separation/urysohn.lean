@@ -122,14 +122,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
   · -- →
     intro hT C1 C2 hC1 hC2 hC1' hC2' hC1C2
 
-    have h : ∀ U : Set X, ∀ C : Set X,
-    IsOpen U → IsClosed C → C ⊆ U →
-    ∃ V : Set X, IsOpen V ∧
-    C ⊆ V ∧ (Closure V) ⊆ U
-    · rw [characterization_of_normal] at hT
-      exact hT
-
-    let Q : Set ℚ := {x : ℚ | 0 ≤ x ∧ x ≥ 1}
+    rw [characterization_of_normal] at hT
 
     have aux : IsOpen C2ᶜ
     exact IsClosed.isOpen_compl
@@ -137,11 +130,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     have aux' : C1 ⊆ C2ᶜ
     exact ABdisjoint_iff_AsubsBc.mp hC1C2
 
-    let G := H h C1 C2
-    have G_def : G = H h C1 C2 := by rfl
+    let G := H hT C1 C2
+    have G_def : G = H hT C1 C2 := by rfl
 
     -- PROPIEDADES DE G
-    have hG := H_Prop h C1 C2 hC1' aux aux'
+    have hG := H_Prop hT C1 C2 hC1' aux aux'
     rw [← G_def] at hG
     cases' hG with hG1 hG
     cases' hG with hG0 hG
@@ -162,24 +155,24 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     have aux'' : C1 ⊆ G 0
     · rw [hG0]
-      have hG0' := Classical.choose_spec (h C2ᶜ C1 aux hC1' aux')
+      have hG0' := Classical.choose_spec (hT C2ᶜ C1 aux hC1' aux')
       exact hG0'.right.left
 
-    let F := fun x ↦ F h C1 C2 x
+    let F := fun x ↦ F hT C1 C2 x
 
-    let k := fun x ↦ k h C1 C2 x
+    let k := fun x ↦ k hT C1 C2 x
 
-    have claim1 :  ∀ (p : ℚ), ∀ x ∈ Closure (H h C1 C2 p), k x ≤ ↑p
-    exact fun p x a ↦ claim1 h C1 C2 hC1' aux aux' p x a
+    have claim1 :  ∀ (p : ℚ), ∀ x ∈ Closure (H hT C1 C2 p), k x ≤ ↑p
+    exact fun p x a ↦ claim1 hT C1 C2 hC1' aux aux' p x a
 
-    have claim2 : ∀ (p : ℚ), ∀ x ∉ H h C1 C2 p, k x ≥ ↑p
-    exact fun p x a ↦ claim2 h C1 C2 hC1' aux aux' p x a
+    have claim2 : ∀ (p : ℚ), ∀ x ∉ H hT C1 C2 p, k x ≥ ↑p
+    exact fun p x a ↦ claim2 hT C1 C2 hC1' aux aux' p x a
 
 
 
     have k_prop : ∀ x : X, (k x) ∈ Y
     · rw [hY]
-      exact fun x ↦ k_in_01 h C1 C2 x
+      exact fun x ↦ k_in_01 hT C1 C2 x
 
     let f : X → Y := fun x ↦ ⟨k x, k_prop x⟩
     use f
@@ -191,62 +184,46 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             1. CONTINUITY OF f
     -/
 
-    · let fB : ℝ × ℝ → Set ℝ := fun (a, b) ↦ Set.Ioo a b
-      have hfB : ∀ a b : ℝ, fB (a, b) = Set.Ioo a b
-      exact fun a b ↦ rfl
-      let B : (Set (Set ℝ)) := fB '' (Set.univ)
-      have B_def : B = fB '' (Set.univ) := by rfl
-      have hB : isTopoBase B := by exact BaseOfRealTopo hT' fB hfB
-
-      rw [@continuousInSubspace_iff_trueForBase X ℝ Y T T' R hR f B hB]
+    · rw [@continuousInSubspace_iff_trueForBase
+        X ℝ Y T T' R hR f
+        {s | ∃ a b : ℝ, s = Set.Ioo a b}
+        (by exact BaseOfRealTopo' hT')]
 
       intro W hW
+      simp at hW
+      obtain ⟨a, b, hW⟩ := hW
+
       rw [characterization_of_open]
       intro x hx
-
-      simp at hx
-
-
-      have basicW : ∃ a b : ℝ, W = {x : ℝ | a < x ∧ x < b}
-      · rw [B_def] at hW
-        simp at hW
-        cases' hW with a hW
-        cases' hW with b hW
-        use a
-        use b
-        rw [← hW]
-        exact hfB a b
-
-      cases' basicW with a basicW
-      cases' basicW with b basicW
-
-      simp [basicW] at hx
+      rw [Set.mem_preimage, hW] at hx
 
 
       -- paso 1. encontrar p, q racionales con `a < p < f(x) < q < b`
-      have hp : ∃ p : ℚ, a < p ∧ p < k x
+
+      have hp : ∃ p : ℚ, a < p ∧ p < Subtype.val (f x)
       exact exists_rat_btwn hx.left
-      have hq : ∃ q : ℚ, k x < q ∧ q < b
+      have hq : ∃ q : ℚ, Subtype.val (f x) < q ∧ q < b
       exact exists_rat_btwn hx.right
 
-      cases' hp with p hp
-      cases' hq with q hq
+      obtain ⟨p, hp⟩ := hp
+      obtain ⟨q, hq⟩ := hq
+
 
       -- paso 2.1. probar: `x ∉ Closure (G p)`
-      have yanose1 : x ∉ Closure (G p)
-      by_contra c
-      specialize claim1 p x c
-      apply not_lt.mpr claim1
-      exact hp.right
+      have aux1 : x ∉ Closure (G p)
+      · by_contra c
+        specialize claim1 p x c
+        apply not_lt.mpr claim1
+        exact hp.right
 
       -- paso 2.1. probar: `x ∈ G q`
-      have yanose2 : x ∈ G q
+      have aux2 : x ∈ G q
       by_contra c
       specialize claim2 q x c
       apply not_lt.mpr claim2
       exact hq.left
 
-      -- paso 3. tomamos el abierto `V = U_q \ Adh(U_p)`
+      -- paso 3. tomamos el abierto `V = U_q \ Closure (U_p)`
       use (G q) ∩ (Closure (G p))ᶜ
 
 
@@ -257,17 +234,17 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       · constructor
         · -- probar que `x ∈ V`
           constructor
-          · exact yanose2
-          · exact yanose1
+          · exact aux2
+          · exact aux1
         · -- probar que `V` es abierto
           apply IsOpen.inter
           · exact hG_open q
           · rw [isOpen_compl_iff]
-            exact closure_is_closed (G p) --exact? looks for my lemma
+            exact closure_is_closed (G p)
 
       -- paso 5. probar que `f(V) ⊆ U`
       · intro y hy
-        simp [basicW]
+        simp [hW]
         constructor
         · cases' hy with _ hy
           have hy : y ∉ G p
@@ -281,6 +258,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           apply set_inside_closure at hy
           specialize claim1 q y hy
           linarith
+
 
     constructor
 

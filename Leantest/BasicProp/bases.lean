@@ -88,3 +88,28 @@ lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology)
         specialize h x
         apply h
         exact hx
+
+
+#check isTopoBase
+lemma BaseOfRealTopo' [T : TopologicalSpace ℝ]
+    (hT : T = UsualTopology) :
+    isTopoBase {s | ∃ a b : ℝ, s = Set.Ioo a b} := by
+  let f : ℝ × ℝ → Set ℝ := fun (a, b) ↦ Set.Ioo a b
+  have aux : {s | ∃ a b : ℝ, s = Set.Ioo a b} = f '' Set.univ
+  · ext x
+    constructor
+    · intro hx
+      simp at hx
+      obtain ⟨a, b, hx⟩ := hx
+      use (a, b)
+      rw [hx]
+      simp
+    · intro hx
+      simp at hx
+      obtain ⟨a, b, hx⟩ := hx
+      use a
+      use b
+      exact id (Eq.symm hx)
+  rw [aux]
+
+  exact @BaseOfRealTopo T hT f (by exact fun a b ↦ rfl)
