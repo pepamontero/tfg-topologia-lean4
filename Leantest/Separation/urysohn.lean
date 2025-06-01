@@ -21,7 +21,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     C1 ∩ C2 = ∅ →
     ∃ f : X → Y,
     ContinuousPepa f ∧
-    f '' C1 = ({0} : Set ℝ) ∧ f '' C2 = ({1} : Set ℝ) := by
+    f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧ f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by
 
   constructor
   swap
@@ -46,6 +46,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     intro h
     rw [NormalTopoSpace] -- `1`
+    rw [hT'] at hR
     intro C1 C2 hC1 hC2 hinter -- `2`
 
     -- `3`
@@ -64,31 +65,22 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases2
 
     -- `4`
-    specialize h C1 C2 hcases1 hcases2 hC1 hC2 hinter
 
-    let f := Classical.choose h
-    let hf := Classical.choose_spec h
+    obtain ⟨f, hf⟩ := h C1 C2 hcases1 hcases2 hC1 hC2 hinter
 
-    have fdef : f = Classical.choose h
-    rfl
+    let U : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
+    let V : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
 
-    rw [← fdef] at hf
-
-    let u : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
-    let v : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
-
-    use f ⁻¹' u
-    use f ⁻¹' v
+    use f ⁻¹' U
+    use f ⁻¹' V
 
     -- * is `f⁻¹( [0, 1/2) )` Open?
     constructor
     apply hf.left -- aplicar def. de f continua
     apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
-    · rw [hT'] at hR
-      exact hR
-    · simp
-      norm_num
+    · exact hR
+    · norm_num
 
 
     -- * is `f⁻¹( (1/2, 0] )` Open?
@@ -96,67 +88,33 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     apply hf.left -- aplicar def. de f continua
     apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
-    · rw [hT'] at hR
-      exact hR
-    · simp
-      norm_num
+    · exact hR
+    · norm_num
 
 
     -- * is `C1 ⊆ U1` ?
     constructor
-    intro x hx
+    rw [← Set.image_subset_iff, hf.right.left]
     simp
-
-    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C1)
-    · simp
-      use x
-
-    rw [hf.right.left] at aux
-
-    have aux': Subtype.val (f x) = 0
-    trivial
-
     constructor
-    rw [aux']
-    rw [aux']
-    norm_num
-
-    -- NOTA . PROBABLEMENTE SE PUEDE SINTETIZAR
-
+    all_goals try norm_num
 
     -- * is `C2 ⊆ U2` ?
+
     constructor
-    intro x hx
+    rw [← Set.image_subset_iff, hf.right.right]
     simp
-
-    have aux : Subtype.val (f x) ∈ Subtype.val '' (f '' C2)
-    · simp
-      use x
-
-    rw [hf.right.right] at aux
-
-    have aux': Subtype.val (f x) = 1
-    trivial
-
     constructor
-    rw [aux']
-    norm_num
-    rw [aux']
+    all_goals try norm_num
 
 
     -- * is `U1 ∩ U2 = ∅` ?
-    ext x
-    constructor
-    all_goals intro hx
-
-    · simp at hx
-      cases' hx with hxu hxv
-      cases' hxu with hxu1 hxu2
-      cases' hxv with hxv1 hxv2
-      linarith
-
-    · by_contra
-      exact hx
+    by_contra c
+    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at c
+    obtain ⟨x, hxu, hxv⟩ := c
+    have hxu' := hxu.right
+    have hxv' := hxv.left
+    linarith
 
 
 
