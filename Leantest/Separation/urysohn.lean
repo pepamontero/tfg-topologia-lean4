@@ -162,13 +162,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     let k := fun x ↦ k hT C1 C2 x
 
-    have claim1 :  ∀ (p : ℚ), ∀ x ∈ Closure (H hT C1 C2 p), k x ≤ ↑p
-    exact fun p x a ↦ claim1 hT C1 C2 hC1' aux aux' p x a
-
-    have claim2 : ∀ (p : ℚ), ∀ x ∉ H hT C1 C2 p, k x ≥ ↑p
-    exact fun p x a ↦ claim2 hT C1 C2 hC1' aux aux' p x a
-
-
 
     have k_prop : ∀ x : X, (k x) ∈ Y
     · rw [hY]
@@ -183,6 +176,14 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     /-
             1. CONTINUITY OF f
     -/
+
+    have claim1 :  ∀ (p : ℚ), ∀ x ∈ Closure (H hT C1 C2 p),
+    Subtype.val (f x) ≤ p
+    · exact fun p x a ↦ claim1 hT C1 C2 hC1' aux aux' p x a
+
+    have claim2 : ∀ (p : ℚ), ∀ x ∉ H hT C1 C2 p,
+    Subtype.val (f x) ≥ p
+    · exact fun p x a ↦ claim2 hT C1 C2 hC1' aux aux' p x a
 
     · rw [@continuousInSubspace_iff_trueForBase
         X ℝ Y T T' R hR f
@@ -209,27 +210,24 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       obtain ⟨q, hq⟩ := hq
 
 
-      -- paso 2.1. probar: `x ∉ Closure (G p)`
+      -- paso 2.1. probar: `x ∉ Closure (U_p)`
       have aux1 : x ∉ Closure (G p)
       · by_contra c
         specialize claim1 p x c
-        apply not_lt.mpr claim1
-        exact hp.right
+        linarith
 
-      -- paso 2.1. probar: `x ∈ G q`
+      -- paso 2.1. probar: `x ∈ U_q`
       have aux2 : x ∈ G q
-      by_contra c
-      specialize claim2 q x c
-      apply not_lt.mpr claim2
-      exact hq.left
+      · by_contra c
+        specialize claim2 q x c
+        linarith
 
       -- paso 3. tomamos el abierto `V = U_q \ Closure (U_p)`
       use (G q) ∩ (Closure (G p))ᶜ
 
-
       constructor
 
-      -- paso 4. probar que `V` es entorno abierto de `x
+      -- paso 4. probar que `V` es entorno abierto de `x`
 
       · constructor
         · -- probar que `x ∈ V`
@@ -244,17 +242,16 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
       -- paso 5. probar que `f(V) ⊆ U`
       · intro y hy
-        simp [hW]
+        rw [hW]
         constructor
-        · cases' hy with _ hy
-          have hy : y ∉ G p
+        · have hy : y ∉ G p
           · by_contra c
             apply set_inside_closure at c
-            exact hy c
+            exact hy.right c
           specialize claim2 p y hy
           linarith
 
-        · cases' hy with hy _
+        · have hy := hy.left
           apply set_inside_closure at hy
           specialize claim1 q y hy
           linarith
