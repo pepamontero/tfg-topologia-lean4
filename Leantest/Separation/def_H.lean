@@ -11,6 +11,7 @@ def H {X : Type} [T : TopologicalSpace X]
   else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
   else Set.univ
 
+
 lemma H_value1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
 
@@ -158,3 +159,32 @@ example {X : Type} [T : TopologicalSpace X]
       H_value0 hT C1 C2 hC1 hC2 hC1C2,
       H_isOpen hT C1 C2 hC1 hC2 hC1C2,
       H_isOrdered hT C1 C2 hC1 hC2 hC1C2⟩
+
+
+----------------- OTRAS PROPIEDADES
+
+lemma H_C1_in_H0 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : C1 ⊆ H hT C1 C2 0 := by
+
+  rw [H_value0 hT C1 C2 hC1 hC2 hC1C2]
+  exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.left
+
+lemma H_ClosureH0_in_C2c {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : Closure (H hT C1 C2 0) ⊆ C2ᶜ := by
+
+  rw [H_value0 hT C1 C2 hC1 hC2 hC1C2]
+  exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.right

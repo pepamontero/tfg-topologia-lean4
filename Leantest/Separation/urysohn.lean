@@ -1,8 +1,7 @@
 import Leantest.Separation.normal
-import Leantest.MyDefs.my_inf
 import Leantest.MyDefs.sets
 import Leantest.Continuous.bases
-import Leantest.Separation.def_F
+import Leantest.Separation.def_K
 
 /-
       LEMA DE URYSOHN
@@ -122,54 +121,28 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
   · -- →
     intro hT C1 C2 hC1 hC2 hC1' hC2' hC1C2
 
+    have hC2'' : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
+    have hC1C2' : C1 ⊆ C2ᶜ := by exact ABdisjoint_iff_AsubsBc.mp hC1C2
+
     rw [characterization_of_normal] at hT
 
-    have aux : IsOpen C2ᶜ
-    exact IsClosed.isOpen_compl
-
-    have aux' : C1 ⊆ C2ᶜ
-    exact ABdisjoint_iff_AsubsBc.mp hC1C2
-
     let G := H hT C1 C2
-    have G_def : G = H hT C1 C2 := by rfl
 
-    -- PROPIEDADES DE G
-    have hG := H_Prop hT C1 C2 hC1' aux aux'
-    rw [← G_def] at hG
-    cases' hG with hG1 hG
-    cases' hG with hG0 hG
-    cases' hG with hG_open hG_pq
+    let g := fun x ↦ k hT C1 C2 x
 
-    have hG_empty : ∀ p < 0, G p = ∅
-    · intro p hp
-      simp [G, H, hp]
+    let f : X → Y := fun x ↦ ⟨g x, by
+      rw [hY]
+      exact k_in_01 hT C1 C2 x⟩
 
-    have hG_univ : ∀ p > 1, G p = Set.univ
-    · intro p hp
-      have aux : ¬ p < 0 := by linarith
-      have aux' : ¬ (0 ≤ p ∧ p ≤ 1)
-      · simp at aux
-        simp [aux]
-        linarith
-      simp [G, H, aux, aux']
-
-    have aux'' : C1 ⊆ G 0
-    · rw [hG0]
-      have hG0' := Classical.choose_spec (hT C2ᶜ C1 aux hC1' aux')
-      exact hG0'.right.left
-
-    let F := fun x ↦ F hT C1 C2 x
-
-    let k := fun x ↦ k hT C1 C2 x
-
-
-    have k_prop : ∀ x : X, (k x) ∈ Y
-    · rw [hY]
-      exact fun x ↦ k_in_01 hT C1 C2 x
-
-    let f : X → Y := fun x ↦ ⟨k x, k_prop x⟩
     use f
 
+    --- definiciones
+    have G_def : G = H hT C1 C2 := by rfl
+    have g_def : g = k hT C1 C2 := by rfl
+
+    -- propiedades
+
+    have G_isOpen := H_isOpen hT C1 C2 hC1' hC2'' hC1C2'
 
     constructor
 
@@ -177,13 +150,16 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             1. CONTINUITY OF f
     -/
 
-    have claim1 :  ∀ (p : ℚ), ∀ x ∈ Closure (H hT C1 C2 p),
-    Subtype.val (f x) ≤ p
-    · exact fun p x a ↦ claim1 hT C1 C2 hC1' aux aux' p x a
+    have claim1 := k_claim1 hT C1 C2
+      hC1' (by exact IsClosed.isOpen_compl)
+      (by exact ABdisjoint_iff_AsubsBc.mp hC1C2)
 
-    have claim2 : ∀ (p : ℚ), ∀ x ∉ H hT C1 C2 p,
-    Subtype.val (f x) ≥ p
-    · exact fun p x a ↦ claim2 hT C1 C2 hC1' aux aux' p x a
+    have claim2 := k_claim2 hT C1 C2
+      hC1' (by exact IsClosed.isOpen_compl)
+      (by exact ABdisjoint_iff_AsubsBc.mp hC1C2)
+
+    rw [← G_def, ← g_def] at claim1 claim2
+
 
     · rw [@continuousInSubspace_iff_trueForBase
         X ℝ Y T T' R hR f
@@ -236,7 +212,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           · exact aux1
         · -- probar que `V` es abierto
           apply IsOpen.inter
-          · exact hG_open q
+          · exact G_isOpen q
           · rw [isOpen_compl_iff]
             exact closure_is_closed (G p)
 
@@ -264,167 +240,17 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
             2. f(C1) = {0}
     -/
 
-    -- paso 1. ver que, si `x ∈ C1`, entonces `F x = {q : q ≥ 0}`
 
-    have hFC1 : ∀ x ∈ C1, F x = {q : ℚ | q ≥ 0}
-    · intro x hx
-      ext q
-      constructor
-      all_goals intro hq
-
-      -- show `F x ⊆ {q : ℚ | q ≥ 0}`
-      -- use: if `q < 0` then `U q = ∅`
-      · simp
-        by_contra hq'
-        simp at hq'
-        apply hG_empty at hq'
-        have hq' : x ∉ G q
-        · rw [hq']
-          simp
-        exact hq' hq
-
-      -- show `{q : ℚ | q ≥ 0} ⊆ F x`
-      · simp at hq
-        -- two possible cases: either `q > 0` or `q = 0`
-        -- in each case we want to see `x ∈ G q`
-
-        have h0 : x ∈ G 0
-        · apply aux'' -- apply `C1 ⊆ G 0`
-          exact hx
-
-        have hq : q = 0 ∨ q > 0  := by exact Or.symm (LE.le.gt_or_eq hq)
-        cases' hq with hq hq
-
-          -- case `q = 0`
-        · rw [hq] -- goal here is equivalent by def. to `⊢ x ∈ G 0`
-          exact h0
-
-          -- case `q > 0`
-        · apply hG_pq 0 q hq
-          apply set_inside_closure
-          exact h0
-
-    -- paso 2. ver que 0 es ínfimo de F x
-    have hF0 :  ∀ x ∈ C1, isMyInf 0 (F x)
-    · intro x hx
-      specialize hFC1 x hx
-      constructor
-      · intro p hp
-        simp [hFC1] at hp
-        simp
-        exact hp
-      · intro y hy
-        specialize hy 0
-        simp [hFC1] at hy
-        exact hy
-
-    have hFInf : ∀ x ∈ C1, hasMyInf (F x)
-    · intro x hx
-      use 0
-      exact hF0 x hx
-
-    -- paso 3. ver que k x = 0
-    have hkC1 : ∀ x ∈ C1, k x = 0
-    · intro x hx
-      specialize hFInf x hx
-      specialize hF0 x hx
-
-      let hspec := Classical.choose_spec hFInf
-      exact inf_is_unique (Classical.choose hFInf) 0 (F x) hspec hF0
-
-
-    -- paso 4. DEMO `f(C1) = {0}`
-
-    ext r
-    constructor
-    · simp
-      intro x hx hkx
-      rw [← hkx]
-      exact hkC1 x hx
-    · simp
-      intro hr
-      rw [hr]
-      apply nonempty_has_element at hC1
-      cases' hC1 with x hx
-      use x
-      constructor
-      · exact hx
-      · exact hkC1 x hx
-
-    /-
-            3. f(C2) = {1}
-    -/
-
-    -- paso 1. ver que, si `x ∈ C1`, entonces `F x = {q : q ≥ 0}`
-
-    have hFC2 : ∀ x ∈ C2, F x = {q : ℚ | q > 1}
-    · intro x hx
-      ext q
+    have aux' : ∀ A : Set X, f '' A = g '' A
+    · intro A
+      ext x
       simp
-      constructor
-      all_goals intro hq
 
-      · by_contra hc
-        simp at hc
-
-        -- let's show that if `q ≤ 1`, then `x ∈ G 1`
-        -- which is a contradiction since `G 1 = C2ᶜ`
-        have h1 : x ∈ G 1
-        · have hc : q = 1 ∨ q < 1 := by exact Or.symm (Decidable.lt_or_eq_of_le hc)
-          cases' hc with hc hc
-          · -- if `q = 1`, by definition of F
-            rw [hc] at hq
-            exact hq
-          · -- if `q < 1`, by property of G (hG2)
-            apply hG_pq q 1 hc
-            apply set_inside_closure
-            exact hq
-        rw [hG1] at h1
-        exact h1 hx
-
-      · have aux : x ∈ G q
-        · rw [hG_univ q hq]
-          trivial
-        exact aux
-
-    -- paso 2. ver que 1 es ínfimo de F x
-    have hF1 :  ∀ x ∈ C2, isMyInf 1 (F x)
-    · intro x hx
-      specialize hFC2 x hx
-      constructor
-      · intro p hp
-        rw [hFC2] at hp
-        simp at hp
-        have hp : 1 ≤ p
-        · exact le_of_lt hp
-        exact_mod_cast hp -- exact_mod_cast deals with coercions
-      · intro y hy
-        rw [isMyLowerBound] at hy
-        by_contra hc
-        simp at hc
-        have hq : ∃ q : ℚ, 1 < q ∧ q < y
-        · exact_mod_cast exists_rat_btwn hc
-        cases' hq with q hq
-        cases' hq with hq1 hq2
-        have hq' : q ∈ F x
-        · simp [hFC2]
-          exact hq1
-        specialize hy q hq'
-        linarith
-
-    have hFInf : ∀ x ∈ C2, hasMyInf (F x)
-    · intro x hx
-      use 1
-      exact hF1 x hx
-
-    -- paso 3. ver que k x = 1
-    have hkC1 : ∀ x ∈ C2, k x = 1
-    · intro x hx
-      specialize hFInf x hx
-      specialize hF1 x hx
-
-      let hspec := Classical.choose_spec hFInf
-      exact inf_is_unique (Classical.choose hFInf) 1 (F x) hspec hF1
+    apply Set.image_val_inj.mp
+    rw [aux' C1]
+    simp
+    rw [g_def]
+    exact k_in_C1_is_0' hT C1 C2 hC1' hC2'' hC1C2' hC1
 
 
     -- paso 4. DEMO `f(C2) = {1}`

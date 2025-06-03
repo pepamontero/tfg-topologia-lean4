@@ -1,5 +1,5 @@
 import Leantest.Separation.def_H
-
+import Leantest.MyDefs.my_inf
 
 def F {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -51,6 +51,61 @@ lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
   linarith
 
 
+-------- COMPORTAMIENTO DE F EN C1
+
+
+lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C1 → F hT C1 C2 x = {q : ℚ | q ≥ 0} := by
+
+  intro x hx
+  ext q
+  constructor
+  all_goals intro hq
+
+  · by_contra c
+    simp at c
+    apply hFx_non_neg hT C1 C2 x at c
+    exact c hq
+
+  · cases' Decidable.lt_or_eq_of_le hq with hq hq
+
+    · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq
+      apply set_inside_closure
+      exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
+
+    · rw [← hq]
+      exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
+
+
+lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C1 → IsGLB (F hT C1 C2 x) 0 := by
+
+  intro x hx
+  constructor
+
+  · intro y hy
+    exact_mod_cast hFx_has_lb_0 hT C1 C2 x y hy
+
+  · intro y hy
+    rw [F_at_C1 hT C1 C2 hC1 hC2 hC1C2] at hy
+    exact hy rfl
+    exact hx
+
+
 -- a partir de F quiero describir I que tome el infimo de F
 
 
@@ -64,7 +119,41 @@ def F_Real {X : Type} [T : TopologicalSpace X]
 
     fun x ↦ inclQR '' (F hT C1 C2 x)
 
-#check Real.exists_isGLB
+
+lemma relF_F_Real {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+
+    : ∀ x : X,
+    F_Real hT C1 C2 x = {q : ℝ | ∃ p : ℚ, q = p ∧ p ∈ F hT C1 C2 x}
+    := by
+
+  intro x
+  ext r
+  constructor
+  all_goals intro hr
+
+  · simp
+    rw [F_Real] at hr
+    obtain ⟨p, hp⟩ := hr
+    use p
+    constructor
+    · rw [inclQR] at hp
+      exact Eq.symm hp.right
+    · exact hp.left
+
+  · simp at hr
+    rw [F_Real]
+    obtain ⟨p, hp⟩ := hr
+    use p
+    constructor
+    · exact hp.right
+    · rw [inclQR]
+      exact Eq.symm hp.left
+
+
+------ GLB
 
 lemma F_Real_Nonempty {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -127,165 +216,32 @@ lemma F_Real_1inf {X : Type} [T : TopologicalSpace X]
   · rfl
 
 
-noncomputable def k {X : Type} [T : TopologicalSpace X]
+lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
     (C1 C2 : Set X)
-
-    : X → ℝ :=
-    fun x ↦ Classical.choose (F_Real_has_inf hT C1 C2 x)
-
-lemma k_prop {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-    (C1 C2 : Set X)
-
-    : ∀ x, IsGLB (F_Real hT C1 C2 x) (k hT C1 C2 x) := by
-
-  intro x
-  rw [k]
-  exact Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-
-example (a b : ℝ) : a < b → ¬ (b ≤ a) := by exact fun a_1 ↦ not_le_of_lt a_1
-
-lemma k_in_01 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-    (C1 C2 : Set X)
-
-    : ∀ x : X, (k hT C1 C2 x) ∈ Set.Icc 0 1 := by
-
-  intro x
-  have h := k_prop hT C1 C2 x
-  constructor
-  · exact h.right (F_Real_0_is_LB hT C1 C2 x)
-  · by_contra c
-    simp [k] at c
-    let inf := Classical.choose (F_Real_has_inf hT C1 C2 x)
-    have inf_def : inf = Classical.choose (F_Real_has_inf hT C1 C2 x) := by rfl
-    have inf_prop := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-    rw [← inf_def] at inf_prop c
-    simp [IsGLB, IsGreatest] at inf_prop
-    cases' inf_prop with inf_lb inf_glb
-
-    let hr := exists_rat_btwn c
-    cases' hr with r r_prop
-
-    have r_lb : inclQR r ∈ F_Real hT C1 C2 x
-    · apply F_Real_1inf hT C1 C2 x r
-      exact_mod_cast r_prop.left
-
-    have aux : inclQR r < inf
-    · simp [inclQR]
-      exact r_prop.right
-
-    simp [lowerBounds] at inf_lb
-    specialize inf_lb r_lb
-    apply not_le_of_lt at aux
-    exact aux inf_lb
-
-
-lemma claim1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-    (C1 C2 : Set X)
-
     (hC1 : IsClosed C1)
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    : ∀ p : ℚ, ∀ x : X, x ∈ Closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by
+    : ∀ x : X, x ∈ C1 → IsGLB (F_Real hT C1 C2 x) 0 := by
 
-  intro p x hx
-  by_contra c
-  simp at c
+  intro x hx
+  rw [relF_F_Real]
+  have aux := F_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
+  obtain ⟨h1, _⟩ := aux
 
-  simp [k] at c
-  let inf := Classical.choose (F_Real_has_inf hT C1 C2 x)
-  have inf_def : inf = Classical.choose (F_Real_has_inf hT C1 C2 x) := by rfl
-  have inf_prop := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-  rw [← inf_def] at inf_prop c
-  simp [IsGLB, IsGreatest] at inf_prop
-  cases' inf_prop with inf_lb inf_glb
+  constructor
+  · intro r hr
+    obtain ⟨p, hp1, hp2⟩ := hr
+    specialize h1 hp2
+    rw [hp1]
+    exact_mod_cast h1
 
-  let hq := exists_rat_btwn c
-  cases' hq with q hq
-
-  have h := (H_Prop hT C1 C2 hC1 hC2 hC1C2).right.right.right p q
-    (by exact_mod_cast hq.left)
-  apply h at hx
-
-  have aux : inclQR q ∈ F_Real hT C1 C2 x
-  · simp [F_Real]
-    use q
+  · intro r hr
+    simp [lowerBounds] at hr
+    specialize @hr (0 : ℝ) (0 : ℚ) (by exact Eq.symm Rat.cast_zero)
+    apply hr
+    rw [F_at_C1 hT C1 C2 hC1 hC2 hC1C2]
     simp
     exact hx
-
-  simp [lowerBounds] at inf_lb
-  specialize inf_lb aux
-  have aux' : inf > q
-  · exact_mod_cast hq.right
-  apply not_le_of_lt at aux'
-  exact aux' inf_lb
-
-
-
-lemma claim2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-    (C1 C2 : Set X)
-
-    (hC1 : IsClosed C1)
-    (hC2 : IsOpen C2ᶜ)
-    (hC1C2 : C1 ⊆ C2ᶜ)
-
-    : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) → (k hT C1 C2 x) ≥ p := by
-
-  intro p x hx
-
-  have h : ∀ q : ℚ, q ≤ p → q ∉ (F hT C1 C2 x)
-  · intro q hq
-    have cases : q = p ∨ q < p := by exact Or.symm (Decidable.lt_or_eq_of_le hq)
-    cases' cases with hq hq
-    · rw [hq]
-      exact hx
-    · by_contra c
-      simp [F] at c
-      have h := (H_Prop hT C1 C2 hC1 hC2 hC1C2).right.right.right q p hq
-      apply set_inside_closure at c
-      apply h at c
-      exact hx c
-
-  have h : ∀ q : ℚ, q ∈ (F hT C1 C2 x) → p < q
-  · intro q hq
-    by_contra c
-    simp at c
-    apply h at c
-    exact c hq
-
-  simp [k]
-  let inf := Classical.choose (F_Real_has_inf hT C1 C2 x)
-  have inf_def : inf = Classical.choose (F_Real_has_inf hT C1 C2 x) := by rfl
-  have inf_prop := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-  rw [← inf_def] at *
-  simp [IsGLB, IsGreatest] at inf_prop
-  cases' inf_prop with inf_lb inf_glb
-
-  by_contra c
-  simp at c
-
-  have p_inf : inclQR p ∈ lowerBounds (F_Real hT C1 C2 x)
-  · intro y hy
-    simp [F_Real] at hy
-    cases' hy with r hy
-    cases' hy with hr hy
-    apply h at hr
-    rw [← hy]
-    simp [inclQR]
-    exact le_of_lt hr
-
-  specialize inf_glb p_inf
-  apply not_le_of_lt at c
-  exact c inf_glb
-
-
-noncomputable def K {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
-    (C1 C2 : Set X)
-
-    : X → ((Set.Icc 0 1) : Set ℝ) := fun x ↦ ⟨k hT C1 C2 x, k_in_01 hT C1 C2 x⟩
