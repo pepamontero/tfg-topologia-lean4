@@ -14,7 +14,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     {R : TopologicalSpace Y}
     {hY : Y = Set.Icc 0 1}
     {hR : R = TopoSubspace T' Y} :
-    NormalTopoSpace T ↔ ∀ C1 : Set X, ∀ C2 : Set X,
+    NormalSpace X ↔ ∀ C1 : Set X, ∀ C2 : Set X,
     C1 ≠ ∅ → C2 ≠ ∅ →
     IsClosed C1 → IsClosed C2 →
     C1 ∩ C2 = ∅ →
@@ -44,7 +44,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -/
 
     intro h
-    rw [NormalTopoSpace] -- `1`
+    rw [normal_space_def] -- `1`
     rw [hT'] at hR
     intro C1 C2 hC1 hC2 hinter -- `2`
 

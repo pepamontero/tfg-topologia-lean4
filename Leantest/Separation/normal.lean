@@ -4,11 +4,34 @@ import Leantest.BasicProp.closure
       DEF: ESPACIO NORMAL
 -/
 
-def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
-    ∀ C : Set X, ∀ D : Set X,
+#check NormalSpace
+
+lemma normal_space_def {X : Type} (T : TopologicalSpace X) :
+  NormalSpace X ↔ ∀ C : Set X, ∀ D : Set X,
     IsClosed C → IsClosed D → C ∩ D = ∅ →
     ∃ U : Set X, ∃ V : Set X, IsOpen U ∧ IsOpen V ∧
-    C ⊆ U ∧ D ⊆ V ∧ U ∩ V = ∅
+    C ⊆ U ∧ D ⊆ V ∧ U ∩ V = ∅ := by
+  constructor
+  · intro h
+    have h := h.normal
+    intro s t hs ht hst
+    specialize h s t hs ht (by exact Set.disjoint_iff_inter_eq_empty.mpr hst)
+    obtain ⟨U, V, hU, hV, h1, h2, h3⟩ := h
+    use U
+    use V
+    exact ⟨hU, hV, h1, h2, by exact Set.disjoint_iff_inter_eq_empty.mp h3⟩
+
+  · intro h
+    exact { normal := by
+      {
+        intro s t hs ht hst
+        specialize h s t hs ht (by exact Set.disjoint_iff_inter_eq_empty.mp hst)
+        obtain ⟨U, V, hU, hV, h1, h2, h3⟩ := h
+        use U
+        use V
+        exact ⟨hU, hV, h1, h2, by exact Set.disjoint_iff_inter_eq_empty.mpr h3⟩
+      }
+    }
 
 
 /-
@@ -18,25 +41,16 @@ def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
     `∃ V ⊆ X` open,, `C ⊆ V ⊆ Closure(V) ⊆ U`
 -/
 
-example {X : Type} :  ¬ (Set.Nonempty (∅ : Set X))  := by refine Set.not_nonempty_empty
-
-example {X : Type} (A : Set X) : A.Nonempty ↔ A ≠ ∅ := by exact Set.nonempty_iff_ne_empty
-example {X : Type} (A : Set X) : ¬ A.Nonempty ↔ A = ∅ := by exact Set.not_nonempty_iff_eq_empty
-#check Set.disjoint_iff_inter_eq_empty
-example {X : Type} (A B : Set X) : Disjoint A B ↔ Disjoint B A := by exact disjoint_comm
-
-example {X : Type} (A B : Set X) : A ⊆ Bᶜ ↔ B ⊆ Aᶜ := by exact Set.subset_compl_comm
-example {X : Type} (A B : Set X) : A ∩ B = B ∩ A := by exact Set.inter_comm A B
-
 
 lemma characterization_of_normal {X : Type}
     (T : TopologicalSpace X) :
-    NormalTopoSpace T ↔
+    NormalSpace X ↔
     ∀ U : Set X, ∀ C : Set X,
     IsOpen U → IsClosed C → C ⊆ U →
     ∃ V : Set X, IsOpen V ∧
     C ⊆ V ∧ (Closure V) ⊆ U := by
 
+  rw [normal_space_def]
   constructor
   · intro hT U C hU hC hCU
 
