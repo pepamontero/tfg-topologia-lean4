@@ -19,7 +19,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     IsClosed C1 → IsClosed C2 →
     C1 ∩ C2 = ∅ →
     ∃ f : X → Y,
-    ContinuousPepa f ∧
+    Continuous f ∧
     f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧ f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by
 
   constructor
@@ -65,7 +65,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- `4`
 
-    obtain ⟨f, hf⟩ := h C1 C2 hcases1 hcases2 hC1 hC2 hinter
+    obtain ⟨f, hf, hfC1, hfC2⟩ := h C1 C2 hcases1 hcases2 hC1 hC2 hinter
+    rw [continuous_def] at hf
 
     let U : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
     let V : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
@@ -75,7 +76,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- * is `f⁻¹( [0, 1/2) )` Open?
     constructor
-    apply hf.left -- aplicar def. de f continua
+    apply hf -- aplicar def. de f continua
     apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
     · exact hR
@@ -84,7 +85,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- * is `f⁻¹( (1/2, 0] )` Open?
     constructor
-    apply hf.left -- aplicar def. de f continua
+    apply hf -- aplicar def. de f continua
     apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
     · exact hY
     · exact hR
@@ -93,7 +94,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- * is `C1 ⊆ U1` ?
     constructor
-    rw [← Set.image_subset_iff, hf.right.left]
+    rw [← Set.image_subset_iff, hfC1]
     simp
     constructor
     all_goals try norm_num
@@ -101,7 +102,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -- * is `C2 ⊆ U2` ?
 
     constructor
-    rw [← Set.image_subset_iff, hf.right.right]
+    rw [← Set.image_subset_iff, hfC2]
     simp
     constructor
     all_goals try norm_num

@@ -11,8 +11,9 @@ import Leantest.Continuous.subspaces
 lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
     [T' : TopologicalSpace Y] (f : X → Y)
     (B : Set (Set Y)) (hB : isTopoBase B) :
-    ContinuousPepa f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U) := by
+    Continuous f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U) := by
 
+  rw [continuous_def]
   constructor
   all_goals intro h
   · intro U hU
@@ -41,7 +42,7 @@ lemma continuousInSubspace_iff_trueForBase {X Y : Type} {Z : Set Y}
     [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
     (f : X → Z)
     (B : Set (Set Y)) (hB : isTopoBase B) :
-    ContinuousPepa f ↔ ∀ U : Set Y, U ∈ B → IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
+    Continuous f ↔ ∀ U : Set Y, U ∈ B → IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
 
   constructor
   all_goals intro h

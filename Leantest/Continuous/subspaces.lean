@@ -12,8 +12,9 @@ lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
     [TX : TopologicalSpace X] [TY : TopologicalSpace Y]
     [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
     (f : X → Z) :
-    ContinuousPepa f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
+    Continuous f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
 
+  rw [continuous_def]
   constructor
   all_goals intro h U hU
 
