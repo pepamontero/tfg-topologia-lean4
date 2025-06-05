@@ -208,3 +208,50 @@ lemma k_in_C1_is_0' {X : Type} [T : TopologicalSpace X]
     · have aux := F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
       have aux' := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
       exact IsGLB.unique aux' aux
+
+lemma k_in_C2_is_1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C2 → k hT C1 C2 x = 1 := by
+
+  intro x hx
+  have k_prop := k_prop hT C1 C2 x
+  have aux := F_Real_1_GLB_in_C2 hT C1 C2 hC1 hC2 hC1C2 x hx
+  exact IsGLB.unique k_prop aux
+
+
+lemma k_in_C2_is_1' {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+    (hC2_nonempty : C2 ≠ ∅)
+
+    : k hT C1 C2 '' C2 = {1} := by
+
+  ext r
+  constructor
+  · intro hr
+    obtain ⟨x, hx⟩ := hr
+    have aux := k_in_C2_is_1 hT C1 C2 hC1 hC2 hC1C2 x hx.left
+    rw [← hx.right]
+    exact aux
+
+  · intro hr
+    simp at hr
+    rw [hr]
+    simp [k]
+    obtain ⟨x, hx⟩ := nonempty_has_element C2 hC2_nonempty
+    use x
+    constructor
+    · exact hx
+    · have aux := F_Real_1_GLB_in_C2 hT C1 C2 hC1 hC2 hC1C2 x hx
+      have aux' := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
+      exact IsGLB.unique aux' aux

@@ -188,3 +188,17 @@ lemma H_ClosureH0_in_C2c {X : Type} [T : TopologicalSpace X]
 
   rw [H_value0 hT C1 C2 hC1 hC2 hC1C2]
   exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.right
+
+
+lemma H_at_bt1_is_univ {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    : ∀ q > 1, H hT C1 C2 q = Set.univ := by
+  intro q hq
+  have aux1 : ¬ q < 0 := by linarith
+  have aux2 : ¬ (0 ≤ q ∧ q ≤ 1)
+  · by_contra c
+    cases' c with c c
+    · exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hq c
+  simp [H, aux1, aux2]

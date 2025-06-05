@@ -83,6 +83,64 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
     · rw [← hq]
       exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
 
+lemma F_at_C2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C2 → F hT C1 C2 x = {q : ℚ | q > 1} := by
+
+  intro x hx
+  ext q
+  constructor
+  all_goals intro hq
+
+  · by_contra c
+    simp at c
+
+    have aux : x ∈ (H hT C1 C2 1)
+    · cases' (Decidable.lt_or_eq_of_le c) with c c
+      · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 q 1 c
+        apply set_inside_closure
+        exact hq
+      · rw [c] at hq
+        exact hq
+
+    rw [H_value1 hT C1 C2] at aux
+    exact aux hx
+
+  · simp at hq
+    simp [F]
+    rw [H_at_bt1_is_univ hT C1 C2]
+    trivial
+    exact hq
+
+lemma F_1_LB_in_C2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C2 → 1 ∈ lowerBounds (F hT C1 C2 x) := by
+
+  intro x hx q hq
+
+  by_contra c
+  simp at c
+
+  rw [←  Set.not_mem_compl_iff, ← H_value1 hT C1 C2] at hx
+  have aux : H hT C1 C2 q ⊆ H hT C1 C2 1
+  · trans Closure (H hT C1 C2 q)
+    · exact set_inside_closure (H hT C1 C2 q)
+    · exact H_isOrdered hT C1 C2 hC1 hC2 hC1C2 q 1 c
+  apply aux at hq
+  exact hx hq
+
 
 lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
@@ -104,6 +162,38 @@ lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     rw [F_at_C1 hT C1 C2 hC1 hC2 hC1C2] at hy
     exact hy rfl
     exact hx
+
+lemma F_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C2 → IsGLB (F hT C1 C2 x) 1 := by
+
+  intro x hx
+
+  constructor
+  · exact F_1_LB_in_C2 hT C1 C2 hC1 hC2 hC1C2 x hx
+
+  · intro q hq
+    simp [lowerBounds] at hq
+
+    by_contra hc
+    simp at hc
+
+    have hp : ∃ p : ℚ, 1 < p ∧ p < q
+    · exact_mod_cast exists_rat_btwn hc
+
+    obtain ⟨p, hp1, hpq⟩ := hp
+
+    have hp' : p ∈ F hT C1 C2 x
+    · rw [F_at_C2 hT C1 C2 hC1 hC2 hC1C2 x hx]
+      exact hp1
+    specialize hq hp'
+    linarith
 
 
 -- a partir de F quiero describir I que tome el infimo de F
@@ -228,8 +318,7 @@ lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
 
   intro x hx
   rw [relF_F_Real]
-  have aux := F_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
-  obtain ⟨h1, _⟩ := aux
+  obtain ⟨h1, _⟩ := F_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
 
   constructor
   · intro r hr
@@ -245,3 +334,44 @@ lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     rw [F_at_C1 hT C1 C2 hC1 hC2 hC1C2]
     simp
     exact hx
+
+example (a b : ℝ) (h : a < b) : ¬ a ≥ b := by exact not_le_of_lt h
+
+lemma F_Real_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C2 → IsGLB (F_Real hT C1 C2 x) 1 := by
+
+  intro x hx
+  rw [relF_F_Real]
+  obtain ⟨h1, _⟩ := F_1_GLB_in_C2 hT C1 C2 hC1 hC2 hC1C2 x hx
+
+  constructor
+  · intro r hr
+    obtain ⟨p, hp1, hp2⟩ := hr
+    specialize h1 hp2
+    rw [hp1]
+    exact_mod_cast h1
+
+  · intro r hr
+    have aux : ∀ p ∈ F hT C1 C2 x, r ≤ p
+    · intro p hp
+      simp [lowerBounds] at hr
+      specialize @hr (inclQR p) p rfl hp
+      exact hr
+
+    by_contra c
+    simp at c
+    have aux'' : ∃ p : ℚ, 1 < p ∧ p < r
+    · exact_mod_cast exists_rat_btwn c
+    obtain ⟨p, hp1, hpr⟩ := aux''
+    have hp : p ∈ F hT C1 C2 x
+    · exact hF_contains_bt1 hT C1 C2 x p hp1
+    specialize aux p hp
+    apply not_le_of_lt at hpr
+    exact hpr aux
