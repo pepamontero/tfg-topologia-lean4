@@ -5,6 +5,7 @@ import Leantest.BasicProp.closure
 -/
 
 #check NormalSpace
+#print NormalSpace.normal -- Def. espacio normal
 
 lemma normal_space_def {X : Type} (T : TopologicalSpace X) :
   NormalSpace X ↔ ∀ C : Set X, ∀ D : Set X,
