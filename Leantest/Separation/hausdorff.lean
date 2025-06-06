@@ -130,7 +130,7 @@ theorem Hausdorff_imp_singletones_closed {X : Type} [T : TopologicalSpace X]
 
   intro x
   have h' : IsOpen {x}ᶜ
-  · rw [A_open_iff_is_heighbourhood_of_all]
+  · rw [A_open_iff_neighbourhood_of_all]
     intro y hy
     have hxy : x ≠ y
     · by_contra c
