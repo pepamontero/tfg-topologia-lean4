@@ -2,6 +2,7 @@ import Leantest.Separation.normal
 import Leantest.MyDefs.sets
 import Leantest.Continuous.bases
 import Leantest.Separation.def_K
+import Leantest.BasicProp.interior
 
 /-
       LEMA DE URYSOHN
@@ -184,8 +185,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       obtain ⟨q, hq⟩ := hq
 
 
-      -- paso 2.1. probar: `x ∉ Closure (U_p)`
-      have aux1 : x ∉ Closure (G p)
+      -- paso 2.1. probar: `x ∉ closure (U_p)`
+      have aux1 : x ∉ closure (G p)
       · by_contra c
         specialize claim1 p x c
         linarith
@@ -196,8 +197,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
         specialize claim2 q x c
         linarith
 
-      -- paso 3. tomamos el abierto `V = U_q \ Closure (U_p)`
-      use (G q) ∩ (Closure (G p))ᶜ
+      -- paso 3. tomamos el abierto `V = U_q \ closure (U_p)`
+      use (G q) ∩ (closure (G p))ᶜ
 
       constructor
 
@@ -212,7 +213,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           apply IsOpen.inter
           · exact G_isOpen q
           · rw [isOpen_compl_iff]
-            exact closure_is_closed (G p)
+            exact isClosed_closure
 
       -- paso 5. probar que `f(V) ⊆ U`
       · intro y hy
@@ -220,13 +221,13 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
         constructor
         · have hy : y ∉ G p
           · by_contra c
-            apply set_inside_closure at c
+            apply subset_closure at c
             exact hy.right c
           specialize claim2 p y hy
           linarith
 
         · have hy := hy.left
-          apply set_inside_closure at hy
+          apply subset_closure at hy
           specialize claim1 q y hy
           linarith
 
