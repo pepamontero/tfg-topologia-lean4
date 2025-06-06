@@ -55,7 +55,7 @@ lemma univ_is_Neighb {X : Type} [TopologicalSpace X]
 
 lemma left_empty_implies_disjoint_open_neighbourhoods
     {X : Type} {T : TopologicalSpace X} (C1 : Set X) (C2 : Set X) (hempty : C1 = ∅) : ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
-    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅ := by
+    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ Disjoint U1 U2 := by
 
   use ∅
   use Set.univ
@@ -66,13 +66,13 @@ lemma left_empty_implies_disjoint_open_neighbourhoods
   constructor
   exact Set.subset_empty_iff.mpr hempty
   constructor
-  exact fun ⦃a⦄ a ↦ trivial
-  exact Set.empty_inter Set.univ
+  exact fun a _ ↦ trivial
+  exact fun x a _ ↦ a
 
 
 lemma right_empty_implies_disjoint_open_neighbourhoods
     {X : Type} {T : TopologicalSpace X} (C1 : Set X) (C2 : Set X) (hempty : C2 = ∅) : ∃ U1 : Set X, ∃ U2 : Set X, IsOpen U1 ∧ IsOpen U2 ∧
-    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ U1 ∩ U2 = ∅ := by
+    C1 ⊆ U1 ∧ C2 ⊆ U2 ∧ Disjoint U1 U2 := by
 
   use Set.univ
   use ∅
@@ -81,7 +81,7 @@ lemma right_empty_implies_disjoint_open_neighbourhoods
   constructor
   exact isOpen_empty
   constructor
-  exact fun ⦃a⦄ a ↦ trivial
+  exact fun a _ ↦ trivial
   constructor
   exact Set.subset_empty_iff.mpr hempty
-  exact Set.inter_empty Set.univ
+  exact fun x _ a ↦ a

@@ -20,7 +20,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       ∀ C1 : Set X, ∀ C2 : Set X,
       C1 ≠ ∅ → C2 ≠ ∅ →
       IsClosed C1 → IsClosed C2 →
-      C1 ∩ C2 = ∅ →
+      Disjoint C1 C2 →
       ∃ f : X → Y,
         Continuous f ∧
         f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
@@ -109,20 +109,18 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- * is `U1 ∩ U2 = ∅` ?
     by_contra c
-    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at c
+    rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq, ← Set.nonempty_iff_ne_empty] at c
     obtain ⟨x, hxu, hxv⟩ := c
     have hxu' := hxu.right
     have hxv' := hxv.left
     linarith
 
 
-
-
   · -- →
     intro hT C1 C2 hC1 hC2 hC1' hC2' hC1C2
 
     have hC2'' : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
-    have hC1C2' : C1 ⊆ C2ᶜ := by exact ABdisjoint_iff_AsubsBc.mp hC1C2
+    have hC1C2' : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left (id (Disjoint.symm hC1C2))
 
     rw [characterization_of_normal] at hT
 
@@ -152,11 +150,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     have claim1 := k_claim1 hT C1 C2
       hC1' (by exact IsClosed.isOpen_compl)
-      (by exact ABdisjoint_iff_AsubsBc.mp hC1C2)
+      (by exact hC1C2')
 
     have claim2 := k_claim2 hT C1 C2
       hC1' (by exact IsClosed.isOpen_compl)
-      (by exact ABdisjoint_iff_AsubsBc.mp hC1C2)
+      (by exact hC1C2')
 
     rw [← G_def, ← g_def] at claim1 claim2
 
