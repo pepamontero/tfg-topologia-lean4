@@ -1,15 +1,15 @@
 import Leantest.Separation.def_H
 import Leantest.MyDefs.my_inf
 
-def F {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+def F {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
 
     : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ H hT C1 C2 p}
 
 lemma hF_non_empty {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     :  ∀ x : X, (F hT C1 C2 x).Nonempty := by
@@ -18,7 +18,7 @@ lemma hF_non_empty {X : Type} [T : TopologicalSpace X]
   simp [F, H]
 
 lemma hFx_non_neg {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, ∀ p : ℚ, p < 0 → p ∉ F hT C1 C2 x := by
@@ -27,7 +27,7 @@ lemma hFx_non_neg {X : Type} [T : TopologicalSpace X]
   simp [F, H, hp]
 
 lemma hFx_has_lb_0 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, ∀ p, p ∈ F hT C1 C2 x → 0 ≤ p := by
@@ -39,7 +39,7 @@ lemma hFx_has_lb_0 {X : Type} [T : TopologicalSpace X]
   exact c hp
 
 lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, ∀ p > 1, p ∈ F hT C1 C2 x := by
@@ -55,7 +55,7 @@ lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
 
 
 lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -77,14 +77,14 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
   · cases' Decidable.lt_or_eq_of_le hq with hq hq
 
     · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq
-      apply set_inside_closure
+      apply subset_closure
       exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
 
     · rw [← hq]
       exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
 
 lemma F_at_C2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -104,7 +104,7 @@ lemma F_at_C2 {X : Type} [T : TopologicalSpace X]
     have aux : x ∈ (H hT C1 C2 1)
     · cases' (Decidable.lt_or_eq_of_le c) with c c
       · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 q 1 c
-        apply set_inside_closure
+        apply subset_closure
         exact hq
       · rw [c] at hq
         exact hq
@@ -119,7 +119,7 @@ lemma F_at_C2 {X : Type} [T : TopologicalSpace X]
     exact hq
 
 lemma F_1_LB_in_C2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -135,15 +135,15 @@ lemma F_1_LB_in_C2 {X : Type} [T : TopologicalSpace X]
 
   rw [←  Set.not_mem_compl_iff, ← H_value1 hT C1 C2] at hx
   have aux : H hT C1 C2 q ⊆ H hT C1 C2 1
-  · trans Closure (H hT C1 C2 q)
-    · exact set_inside_closure (H hT C1 C2 q)
+  · trans closure (H hT C1 C2 q)
+    · exact subset_closure
     · exact H_isOrdered hT C1 C2 hC1 hC2 hC1C2 q 1 c
   apply aux at hq
   exact hx hq
 
 
 lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -164,7 +164,7 @@ lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     exact hx
 
 lemma F_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -201,8 +201,8 @@ lemma F_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
 
 def inclQR : ℚ → ℝ := fun q ↦ q
 
-def F_Real {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+def F_Real {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : X → Set ℝ :=
@@ -211,7 +211,7 @@ def F_Real {X : Type} [T : TopologicalSpace X]
 
 
 lemma relF_F_Real {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
 
@@ -246,7 +246,7 @@ lemma relF_F_Real {X : Type} [T : TopologicalSpace X]
 ------ GLB
 
 lemma F_Real_Nonempty {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, (F_Real hT C1 C2 x).Nonempty := by
@@ -256,7 +256,7 @@ lemma F_Real_Nonempty {X : Type} [T : TopologicalSpace X]
   exact hF_non_empty hT C1 C2 x
 
 lemma F_Real_0_is_LB {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, 0 ∈ lowerBounds (F_Real hT C1 C2 x) := by
@@ -272,7 +272,7 @@ lemma F_Real_0_is_LB {X : Type} [T : TopologicalSpace X]
   exact Rat.cast_nonneg.mpr aux
 
 lemma F_Real_BddBelow {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, BddBelow (F_Real hT C1 C2 x) := by
@@ -283,7 +283,7 @@ lemma F_Real_BddBelow {X : Type} [T : TopologicalSpace X]
 
 
 lemma F_Real_has_inf {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, ∃ r : ℝ, IsGLB (F_Real hT C1 C2 x) r := by
@@ -294,7 +294,7 @@ lemma F_Real_has_inf {X : Type} [T : TopologicalSpace X]
   exact F_Real_BddBelow hT C1 C2 x
 
 lemma F_Real_1inf {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, ∀ p : ℚ, p > 1 → inclQR p ∈ F_Real hT C1 C2 x := by
@@ -307,7 +307,7 @@ lemma F_Real_1inf {X : Type} [T : TopologicalSpace X]
 
 
 lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -338,7 +338,7 @@ lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
 example (a b : ℝ) (h : a < b) : ¬ a ≥ b := by exact not_le_of_lt h
 
 lemma F_Real_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
