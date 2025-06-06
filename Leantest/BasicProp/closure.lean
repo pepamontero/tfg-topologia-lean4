@@ -4,7 +4,7 @@ import Leantest.BasicProp.interior
 #check closure
 
 -- DEFINICIÓN DE CLAUSURA DE UN CONJUNTO
-def Closure {X : Type} [T : TopologicalSpace X] (A : Set X) : Set X :=
+def Closure {X : Type} [TopologicalSpace X] (A : Set X) : Set X :=
     {x : X | ∀ V : Set X, Neighbourhood V x → V ∩ A ≠ ∅}
 
 lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = closure A := by
@@ -42,6 +42,8 @@ lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = 
 
 
 -- T: A está contenido en su clausura
+
+#check subset_closure
 lemma set_inside_closure {X : Type} [T : TopologicalSpace X] (A : Set X) :
     A ⊆ Closure A := by
 
@@ -59,7 +61,7 @@ lemma set_inside_closure {X : Type} [T : TopologicalSpace X] (A : Set X) :
   rw [hc] at hc'
   exact hc'
 
--- me sorprende que esto no esté en la librería de mathlib
+#check Set.subset_compl_iff_disjoint_right
 lemma ABdisjoint_iff_AsubsBc {X : Type} {A B : Set X} :
     A ∩ B = ∅ ↔ A ⊆ Bᶜ := by
 
@@ -84,6 +86,8 @@ lemma ABdisjoint_iff_AsubsBc {X : Type} {A B : Set X} :
     · by_contra
       exact hx
 
+
+#check interior_compl
 lemma compl_of_closure_is_interior_of_compl
     {X : Type} [T : TopologicalSpace X] (A : Set X) :
     (Closure A)ᶜ = Interior (Aᶜ) := by
@@ -121,7 +125,7 @@ lemma compl_of_closure_is_interior_of_compl
     exact hx hU'
 
 
-
+#check isClosed_closure
 lemma closure_is_closed {X : Type} [T : TopologicalSpace X] (A : Set X) :
     IsClosed (Closure A) := by
 
@@ -130,7 +134,7 @@ lemma closure_is_closed {X : Type} [T : TopologicalSpace X] (A : Set X) :
   rw [compl_of_closure_is_interior_of_compl]
   exact interior_is_open Aᶜ
 
-
+#check closure_empty
 lemma closure_of_empty {X : Type} [T : TopologicalSpace X] : Closure (∅ : Set X) = ∅ := by
   simp [Closure]
   ext x
@@ -140,7 +144,7 @@ lemma closure_of_empty {X : Type} [T : TopologicalSpace X] : Closure (∅ : Set 
 
 
 
-def Boundary {X : Type} [T : TopologicalSpace X] (A : Set X) : Set X :=
+def Boundary {X : Type} [TopologicalSpace X] (A : Set X) : Set X :=
     {x : X | ∀ V : Set X, Neighbourhood V x → V ∩ A ≠ ∅ ∧ V ∩ Aᶜ ≠ ∅}
 
 lemma closure_is_set_union_boundary {X : Type} [T : TopologicalSpace X]
@@ -184,6 +188,7 @@ lemma closure_is_set_union_boundary {X : Type} [T : TopologicalSpace X]
       specialize h2 V hV
       exact h2.left
 
+#check SeparatedNhds.disjoint_closure_left
 lemma disjointU_V_then_disjointClosureU_V {X : Type}
     [T : TopologicalSpace X] {U V : Set X}
     (hV : IsOpen V) (h : U ∩ V = ∅) :
