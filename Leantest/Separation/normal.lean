@@ -1,4 +1,4 @@
-import Leantest.BasicProp.closure
+import Mathlib.Tactic
 
 /-
       DEF: ESPACIO NORMAL
@@ -37,7 +37,7 @@ lemma normal_space_def {X : Type} (T : TopologicalSpace X) :
       CHARACTERIZATION OF NORMAL
   `(X, T)` is a Normal topological space iff
     `∀ U ⊆ X` open, `∀ C ⊆ X` closed with `C ⊆ U`,
-    `∃ V ⊆ X` open,, `C ⊆ V ⊆ Closure(V) ⊆ U`
+    `∃ V ⊆ X` open,, `C ⊆ V ⊆ closure(V) ⊆ U`
 -/
 
 lemma characterization_of_normal {X : Type}
@@ -46,7 +46,7 @@ lemma characterization_of_normal {X : Type}
     ∀ U : Set X, ∀ C : Set X,
     IsOpen U → IsClosed C → C ⊆ U →
     ∃ V : Set X, IsOpen V ∧
-    C ⊆ V ∧ (Closure V) ⊆ U := by
+    C ⊆ V ∧ (closure V) ⊆ U := by
 
   rw [normal_space_def]
   constructor
@@ -65,7 +65,6 @@ lemma characterization_of_normal {X : Type}
     · exact hCV
     · apply Disjoint.closure_left at hV
       specialize hV V2_open
-      rw [my_closure]
       apply Set.subset_compl_iff_disjoint_right.mpr at hV
       trans V2ᶜ
       · exact hV
@@ -79,12 +78,12 @@ lemma characterization_of_normal {X : Type}
       C2_closed
       (by rw [Set.subset_compl_iff_disjoint_left]; exact hC)
 
-    use (Closure V)ᶜ
+    use (closure V)ᶜ
     use V
 
     constructor
-    · simp
-      exact closure_is_closed V
+    · apply isOpen_compl_iff.mpr
+      exact isClosed_closure
     constructor
     · exact V_open
     constructor
@@ -93,4 +92,4 @@ lemma characterization_of_normal {X : Type}
     constructor
     · exact hV.left
     · rw [← Set.subset_compl_iff_disjoint_left, compl_compl]
-      exact set_inside_closure V
+      exact subset_closure
