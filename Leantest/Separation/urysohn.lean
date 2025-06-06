@@ -7,6 +7,8 @@ import Leantest.Separation.def_K
       LEMA DE URYSOHN
 -/
 
+#check (inferInstance : TopologicalSpace ℝ)
+
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X)
     [T' : TopologicalSpace ℝ]
@@ -14,13 +16,15 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     {R : TopologicalSpace Y}
     {hY : Y = Set.Icc 0 1}
     {hR : R = TopoSubspace T' Y} :
-    NormalSpace X ↔ ∀ C1 : Set X, ∀ C2 : Set X,
-    C1 ≠ ∅ → C2 ≠ ∅ →
-    IsClosed C1 → IsClosed C2 →
-    C1 ∩ C2 = ∅ →
-    ∃ f : X → Y,
-    Continuous f ∧
-    f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧ f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by
+    NormalSpace X ↔
+      ∀ C1 : Set X, ∀ C2 : Set X,
+      C1 ≠ ∅ → C2 ≠ ∅ →
+      IsClosed C1 → IsClosed C2 →
+      C1 ∩ C2 = ∅ →
+      ∃ f : X → Y,
+        Continuous f ∧
+        f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
+        f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by
 
   constructor
   swap
@@ -49,18 +53,13 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     intro C1 C2 hC1 hC2 hinter -- `2`
 
     -- `3`
-    have hcases1 : C1 = ∅ ∨ C1 ≠ ∅
-    · exact eq_or_ne C1 ∅
-    have hcases2 : C2 = ∅ ∨ C2 ≠ ∅
-    · exact eq_or_ne C2 ∅
-
-    cases' hcases1 with hcases1 hcases1
+    cases' eq_or_ne C1 ∅ with hcases1 hcases1
 
     -- si C1 es vacío
     exact left_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases1
 
     -- si C2 es vacío
-    cases' hcases2 with hcases2 hcases2
+    cases' eq_or_ne C2 ∅ with hcases2 hcases2
     exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases2
 
     -- `4`
