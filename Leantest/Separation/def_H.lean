@@ -1,7 +1,7 @@
 import Leantest.Separation.def_G
 
 def H {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
 
@@ -13,7 +13,7 @@ def H {X : Type} [T : TopologicalSpace X]
 
 
 lemma H_value1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
 
@@ -28,7 +28,7 @@ lemma H_value1 {X : Type} [T : TopologicalSpace X]
 
 
 lemma H_value0 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -49,7 +49,7 @@ lemma H_value0 {X : Type} [T : TopologicalSpace X]
 
 
 lemma H_isOpen {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -83,14 +83,14 @@ lemma H_isOpen {X : Type} [T : TopologicalSpace X]
 
 
 lemma H_isOrdered {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    : (∀ p q : ℚ, p < q → Closure (H hT C1 C2 p) ⊆ H hT C1 C2 q) := by
+    : (∀ p q : ℚ, p < q → closure (H hT C1 C2 p) ⊆ H hT C1 C2 q) := by
 
   intro p q hpq
 
@@ -100,7 +100,6 @@ lemma H_isOrdered {X : Type} [T : TopologicalSpace X]
   · -- q < 0 -> p < q < 0 -> H p = H q = ∅
     have aux : p < 0 := by linarith
     simp [H, aux, hq]
-    exact closure_of_empty
 
   have cases : q ≤ 1 ∨ q > 1 := by exact le_or_lt q 1
   have aux : ¬ q < 0 := by linarith
@@ -112,7 +111,7 @@ lemma H_isOrdered {X : Type} [T : TopologicalSpace X]
     cases' cases with hp hp
 
     · -- p < 0 -> H p = ∅ (trivial)
-      simp [H, hp, closure_of_empty]
+      simp [H, hp]
 
     have cases : p ≤ 1 ∨ p > 1 := by exact le_or_lt p 1
     have aux' : ¬ p < 0 := by linarith
@@ -141,7 +140,7 @@ lemma H_isOrdered {X : Type} [T : TopologicalSpace X]
     simp [H, aux, aux', hq, hq']
 
 example {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -153,7 +152,7 @@ example {X : Type} [T : TopologicalSpace X]
     H hT C1 C2 1 = C2ᶜ ∧
     H hT C1 C2 0 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2) ∧
     (∀ q, IsOpen (H hT C1 C2 q)) ∧
-    (∀ p q : ℚ, p < q → Closure (H hT C1 C2 p) ⊆ H hT C1 C2 q)
+    (∀ p q : ℚ, p < q → closure (H hT C1 C2 p) ⊆ H hT C1 C2 q)
 
     := by exact ⟨H_value1 hT C1 C2,
       H_value0 hT C1 C2 hC1 hC2 hC1C2,
@@ -164,7 +163,7 @@ example {X : Type} [T : TopologicalSpace X]
 ----------------- OTRAS PROPIEDADES
 
 lemma H_C1_in_H0 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -177,21 +176,21 @@ lemma H_C1_in_H0 {X : Type} [T : TopologicalSpace X]
   exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.left
 
 lemma H_ClosureH0_in_C2c {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    : Closure (H hT C1 C2 0) ⊆ C2ᶜ := by
+    : closure (H hT C1 C2 0) ⊆ C2ᶜ := by
 
   rw [H_value0 hT C1 C2 hC1 hC2 hC1C2]
   exact (Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)).right.right
 
 
 lemma H_at_bt1_is_univ {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     : ∀ q > 1, H hT C1 C2 q = Set.univ := by
