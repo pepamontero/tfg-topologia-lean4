@@ -1,9 +1,44 @@
 import Leantest.BasicProp.basic
 import Leantest.BasicProp.interior
 
+#check closure
+
 -- DEFINICIÓN DE CLAUSURA DE UN CONJUNTO
 def Closure {X : Type} [T : TopologicalSpace X] (A : Set X) : Set X :=
     {x : X | ∀ V : Set X, Neighbourhood V x → V ∩ A ≠ ∅}
+
+lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = closure A := by
+  ext x
+  constructor
+
+  · intro h
+    rw [mem_closure_iff]
+    simp [Closure] at h
+    intro V hV hVx
+    have h' : Neighbourhood V x
+    · rw [Neighbourhood]
+      use V
+      simp
+      rw [OpenNeighbourhood]
+      exact ⟨hVx, hV⟩
+    specialize h V h'
+    exact Set.nonempty_iff_ne_empty.mpr h
+
+  · intro h
+    rw [mem_closure_iff] at h
+    rw [Closure]
+    simp
+    intro V hV
+    rw [Neighbourhood] at hV
+    obtain ⟨U , hU⟩ := hV
+    rw [OpenNeighbourhood] at hU
+    specialize h U hU.right.right hU.right.left
+    have aux : U ∩ A ⊆ V ∩ A
+    · exact Set.inter_subset_inter hU.left fun ⦃a⦄ a ↦ a
+    have aux : (V ∩ A).Nonempty
+    · exact Set.Nonempty.mono aux h
+    exact Set.nonempty_iff_ne_empty.mp aux
+
 
 
 -- T: A está contenido en su clausura
