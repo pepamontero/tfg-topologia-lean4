@@ -2,8 +2,8 @@ import Leantest.Separation.def_F
 import Leantest.MyDefs.sets
 
 
-noncomputable def k {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+noncomputable def k {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : X → ℝ :=
@@ -11,7 +11,7 @@ noncomputable def k {X : Type} [T : TopologicalSpace X]
 
 
 lemma k_prop {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x, IsGLB (F_Real hT C1 C2 x) (k hT C1 C2 x) := by
@@ -23,7 +23,7 @@ lemma k_prop {X : Type} [T : TopologicalSpace X]
 
 
 lemma k_in_01 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, (k hT C1 C2 x) ∈ Set.Icc 0 1 := by
@@ -59,14 +59,14 @@ lemma k_in_01 {X : Type} [T : TopologicalSpace X]
 
 
 lemma k_claim1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     (hC1 : IsClosed C1)
     (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
 
-    : ∀ p : ℚ, ∀ x : X, x ∈ Closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by
+    : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by
 
   intro p x hx
   by_contra c
@@ -103,7 +103,7 @@ lemma k_claim1 {X : Type} [T : TopologicalSpace X]
 
 
 lemma k_claim2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     (hC1 : IsClosed C1)
@@ -123,7 +123,7 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
     · by_contra c
       simp [F] at c
       have h := H_isOrdered hT C1 C2 hC1 hC2 hC1C2 q p hq
-      apply set_inside_closure at c
+      apply subset_closure at c
       apply h at c
       exact hx c
 
@@ -164,7 +164,7 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
 
 
 lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     (hC1 : IsClosed C1)
@@ -179,7 +179,7 @@ lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
   exact IsGLB.unique k_prop aux
 
 lemma k_in_C1_is_0' {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     (hC1 : IsClosed C1)
@@ -210,7 +210,7 @@ lemma k_in_C1_is_0' {X : Type} [T : TopologicalSpace X]
       exact IsGLB.unique aux' aux
 
 lemma k_in_C2_is_1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     (hC1 : IsClosed C1)
@@ -226,7 +226,7 @@ lemma k_in_C2_is_1 {X : Type} [T : TopologicalSpace X]
 
 
 lemma k_in_C2_is_1' {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     (hC1 : IsClosed C1)
