@@ -28,14 +28,14 @@ let (U, C) a Pair. Let V = from_normality (U, C)
 
 * `from_normality_prop2`
   if (U, C) is a Normal Pair, then
-  C ⊆ V ⊆ Closure V ⊆ U
+  C ⊆ V ⊆ closure V ⊆ U
 -/
 
 def normal_pair {X : Type} [T : TopologicalSpace X]
     : (Set X × Set X) → Prop := fun (U, C) ↦ (IsOpen U ∧ IsClosed C ∧ C ⊆ U)
 
 noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     : (Set X × Set X) → Set X :=
 
     fun (U, C) ↦
@@ -53,7 +53,7 @@ noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
 
 
 lemma from_normality_prop1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (U C : Set X)
     :
     normal_pair (U, C) → IsOpen (from_normality hT (U, C)) := by
@@ -65,10 +65,10 @@ lemma from_normality_prop1 {X : Type} [T : TopologicalSpace X]
   exact h.left
 
 lemma from_normality_prop2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (U C : Set X)
     :
-    normal_pair (U, C) → C ⊆ (from_normality hT (U, C)) ∧ Closure (from_normality hT (U, C)) ⊆ U := by
+    normal_pair (U, C) → C ⊆ (from_normality hT (U, C)) ∧ closure (from_normality hT (U, C)) ⊆ U := by
 
   intro hUC
   simp [from_normality, hUC]
@@ -89,12 +89,12 @@ Después poder demostrar que se cumplen las condiciones.
 Def: `G : ℕ → Set X`
   * `0 ↦ C2ᶜ`
   * `1 ↦ from_normality (C2ᶜ, C1)`
-  * `n ↦ from_normality (G (s n), Closure (G (r n)))`
+  * `n ↦ from_normality (G (s n), closure (G (r n)))`
 -/
 
 
 def G {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
 
@@ -105,7 +105,7 @@ def G {X : Type} [T : TopologicalSpace X]
       else if n = 1 then from_normality hT (C2ᶜ, C1)
       else if n > 1 then
         let U := G hT C1 C2 (s n)
-        let C := Closure (G hT C1 C2 (r n))
+        let C := closure (G hT C1 C2 (r n))
         from_normality hT (U, C)
       else ∅
 
@@ -134,7 +134,7 @@ Para cada n ∈ ℕ, G n es Abierto.
 -/
 
 lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -174,9 +174,9 @@ lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
     simp [hn, aux, aux']
 
     have cases :
-      normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n))) ∨
-      ¬ normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n)))
-      := by exact Classical.em (normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n))))
+      normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))) ∨
+      ¬ normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
+      := by exact Classical.em (normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))))
 
     cases' cases with op1 op2
 
@@ -189,12 +189,12 @@ lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
 /-
 `G_Prop2`
 Para cada n > 1, se tiene:
-  1. `Closure (G (r n)) ⊆ G n`
-  2. `Closure (G n) ⊆ G (s n)`
+  1. `closure (G (r n)) ⊆ G n`
+  2. `closure (G n) ⊆ G (s n)`
 -/
 
 lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -203,8 +203,8 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
 
     :
 
-    ∀ n > 1, Closure (G hT C1 C2 (r n)) ⊆ (G hT C1 C2 n)
-      ∧ Closure (G hT C1 C2 n) ⊆ (G hT C1 C2 (s n)) := by
+    ∀ n > 1, closure (G hT C1 C2 (r n)) ⊆ (G hT C1 C2 n)
+      ∧ closure (G hT C1 C2 n) ⊆ (G hT C1 C2 (s n)) := by
 
   intro n hn
 
@@ -235,13 +235,13 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
       rw [G] at U_def
       simp [hn, aux, aux'] at U_def
 
-      have some : normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n)))
+      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
       · constructor
         · apply G_Prop1
           exact hC1; exact hC2; exact hC1C2
         constructor
 
-        · exact closure_is_closed (G hT C1 C2 (r n))
+        · exact isClosed_closure
 
         · have h : normal_pair (C2ᶜ, C1)
           · constructor
@@ -271,13 +271,13 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
       rw [G] at U_def
       simp [hn, aux, aux'] at U_def
 
-      have some : normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n)))
+      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
       · constructor
         · apply G_Prop1
           exact hC1; exact hC2; exact hC1C2
         constructor
 
-        · exact closure_is_closed (G hT C1 C2 (r n))
+        · exact isClosed_closure
 
         · have hsn := (s_prop n hn).left
           simp at hsn
@@ -307,13 +307,13 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
       rw [G] at U_def
       simp [hn, aux, aux'] at U_def
 
-      have some : normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n)))
+      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
       · constructor
         · apply G_Prop1
           exact hC1; exact hC2; exact hC1C2
         constructor
 
-        · exact closure_is_closed (G hT C1 C2 (r n))
+        · exact isClosed_closure
 
         · have hrn := (r_prop n hn).left
           simp at hrn
@@ -338,13 +338,13 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
       rw [G] at U_def
       simp [hn, aux, aux'] at U_def
 
-      have some : normal_pair (G hT C1 C2 (s n), Closure (G hT C1 C2 (r n)))
+      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
       · constructor
         · apply G_Prop1
           exact hC1; exact hC2; exact hC1C2
         constructor
 
-        · exact closure_is_closed (G hT C1 C2 (r n))
+        · exact isClosed_closure
 
         · have hrn := (r_prop n hn).left
           have hsn := (s_prop n hn).left
@@ -377,7 +377,7 @@ resumen
 -/
 
 example {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -391,8 +391,8 @@ example {X : Type} [T : TopologicalSpace X]
         (G 0 = C2ᶜ) ∧
         (G 1 = Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)) ∧
         (∀ n, IsOpen (G n)) ∧
-        (∀ n > 1, Closure (G (r n)) ⊆ G n
-          ∧ Closure (G n) ⊆ G (s n))
+        (∀ n > 1, closure (G (r n)) ⊆ G n
+          ∧ closure (G n) ⊆ G (s n))
       )
 
     := by
@@ -421,11 +421,11 @@ example {X : Type} [T : TopologicalSpace X]
 Ahora quiero ver que la propiedad se extiende, es decir:
 `G_Prop2_ext`
 Para cada n, m ∈ ℕ con `f n < f m`
-se tiene `Closure (G n) ⊆ G m`
+se tiene `closure (G n) ⊆ G m`
 -/
 
 lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ Closure V ⊆ U)
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
     (hC1 : IsClosed C1)
@@ -434,11 +434,11 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
 
     :
 
-    ∀ n m, f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by
+    ∀ n m, f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by
 
   intro n m
-  let P : ℕ × ℕ → Prop := fun (n, m) ↦ (f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m)
-  have P_def : P (n, m) = (f n < f m → Closure (G hT C1 C2 n) ⊆ G hT C1 C2 m) := by rfl
+  let P : ℕ × ℕ → Prop := fun (n, m) ↦ (f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m)
+  have P_def : P (n, m) = (f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m) := by rfl
   rw [← P_def]
   apply WellFounded.induction lt_pair_wf
   simp [P]
@@ -508,10 +508,10 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
           exact (G_Prop2 n hn1).right
 
         · -- caso s(n) > 1
-          trans Closure (G hT C1 C2 (s n))
+          trans closure (G hT C1 C2 (s n))
           · trans G hT C1 C2 (s n)
             · exact (G_Prop2 n hn1).right
-            · exact set_inside_closure (G hT C1 C2 (s n))
+            · exact subset_closure
 
           · have s_prop := (s_prop n hn1).left
             simp at s_prop
@@ -566,8 +566,8 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
                 simp [c] at hr1
               exact hi (r m) r_prop aux hr1
 
-            · trans Closure (G hT C1 C2 (r m))
-              · exact set_inside_closure (G hT C1 C2 (r m))
+            · trans closure (G hT C1 C2 (r m))
+              · exact subset_closure
               · exact (G_Prop2 m hm1).left
 
 
@@ -581,10 +581,10 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
           cases' cases with h h
 
           · -- si f (s n) < f m
-            trans Closure (G hT C1 C2 (s n))
+            trans closure (G hT C1 C2 (s n))
             · trans G hT C1 C2 (s n)
               · exact (G_Prop2 n hn1).right
-              · exact set_inside_closure (G hT C1 C2 (s n))
+              · exact subset_closure
             · exact hi (s n) m (by left; exact s_prop.left) h
 
           have cases : f m = f (s n) ∨ f m < f (s n)  := by exact (lt_or_eq_of_le h).symm
@@ -603,8 +603,8 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
             · -- si f n < f (r m)
               trans G hT C1 C2 (r m)
               · exact hi n (r m) (by right; simp; exact r_prop.left) h'
-              · trans Closure (G hT C1 C2 (r m))
-                · exact set_inside_closure (G hT C1 C2 (r m))
+              · trans closure (G hT C1 C2 (r m))
+                · exact subset_closure
                 · exact (G_Prop2 m hm1).left
 
 
