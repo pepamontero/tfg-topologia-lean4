@@ -1,4 +1,3 @@
-import Leantest.BasicProp.basic
 import Leantest.BasicProp.interior
 
 #check closure

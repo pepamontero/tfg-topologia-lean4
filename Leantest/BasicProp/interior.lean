@@ -1,5 +1,3 @@
-import Mathlib.Tactic
-import Leantest.BasicProp.basic
 import Leantest.BasicProp.open
 
 
