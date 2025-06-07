@@ -14,14 +14,15 @@ def Interior {X : Type} [T : TopologicalSpace X] (A : Set X) : Set X :=
 lemma interior_is_open {X : Type} [T : TopologicalSpace X] (A : Set X) :
     IsOpen (Interior A) := by
 
-  refine (characterization_of_open (Interior A)).mpr ?_
+  apply A_open_iff_neighbourhood_of_all.mpr
+  simp [Neighbourhood]
+
   intro x hx
   rw [Interior] at hx
   simp at hx
   cases' hx with U hU
   use U
   constructor
-  · exact hU.left
   · intro y hy
     rw [Interior]
     simp
@@ -31,3 +32,30 @@ lemma interior_is_open {X : Type} [T : TopologicalSpace X] (A : Set X) :
       · exact hy
       · exact hU.left.right
     · exact hU.right
+  · exact hU.left
+
+#check interior_subset
+example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+    interior A ⊆ A := by
+  intro a ha
+  obtain ⟨U, hU⟩ := ha
+  apply hU.left.right
+  exact hU.right
+
+#check interior_eq_iff_isOpen
+example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+    IsOpen A ↔ interior A = A:= by
+
+  constructor
+  all_goals intro h
+  · apply Set.Subset.antisymm
+    · exact interior_subset
+    · intro a ha
+      use A
+      constructor
+      · simp
+        exact h
+      · exact ha
+
+  · rw [← h]
+    exact isOpen_interior

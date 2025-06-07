@@ -134,6 +134,22 @@ lemma closure_is_closed {X : Type} [T : TopologicalSpace X] (A : Set X) :
   rw [compl_of_closure_is_interior_of_compl]
   exact interior_is_open Aᶜ
 
+
+
+#check closure_eq_iff_isClosed
+example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+    IsClosed A ↔ closure A = A := by
+  constructor
+  all_goals intro h
+  · rw [← compl_compl A, isClosed_compl_iff, ← interior_eq_iff_isOpen, interior_compl] at h
+    rw [← compl_compl A, ← h, compl_compl]
+    exact closure_closure
+
+  · rw [← compl_compl A, isClosed_compl_iff, ← h]
+    rw [← interior_compl]
+    exact isOpen_interior
+
+
 #check closure_empty
 lemma closure_of_empty {X : Type} [T : TopologicalSpace X] : Closure (∅ : Set X) = ∅ := by
   simp [Closure]

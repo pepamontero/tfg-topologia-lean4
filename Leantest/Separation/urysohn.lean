@@ -169,7 +169,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       simp at hW
       obtain ⟨a, b, hW⟩ := hW
 
-      rw [characterization_of_open]
+      rw [A_open_iff_neighbourhood_of_all]
       intro x hx
       rw [Set.mem_preimage, hW] at hx
 
@@ -204,18 +204,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
       -- paso 4. probar que `V` es entorno abierto de `x`
 
-      · constructor
-        · -- probar que `x ∈ V`
-          constructor
-          · exact aux2
-          · exact aux1
-        · -- probar que `V` es abierto
-          apply IsOpen.inter
-          · exact G_isOpen q
-          · rw [isOpen_compl_iff]
-            exact isClosed_closure
-
-      -- paso 5. probar que `f(V) ⊆ U`
       · intro y hy
         rw [hW]
         constructor
@@ -230,6 +218,20 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           apply subset_closure at hy
           specialize claim1 q y hy
           linarith
+
+      · constructor
+        · -- probar que `x ∈ V`
+          constructor
+          · exact aux2
+          · exact aux1
+        · -- probar que `V` es abierto
+          apply IsOpen.inter
+          · exact G_isOpen q
+          · rw [isOpen_compl_iff]
+            exact isClosed_closure
+
+      -- paso 5. probar que `f(V) ⊆ U`
+
 
     /-
             IMAGE OF f
