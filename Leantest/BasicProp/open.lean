@@ -3,7 +3,7 @@ import Leantest.BasicProp.basic
 
 /-
   CHARACTERIZATION OF OPEN
-U ⊆ X is Open in X if it's Open Neighbourhood of all its points
+U ⊆ X is Open in X if it is Neighbourhood of all its points
 -/
 
 lemma A_open_iff_neighbourhood_of_all
@@ -23,22 +23,18 @@ lemma A_open_iff_neighbourhood_of_all
     exact h
 
   · -- ←
-    -- classical choose?
-    have h : ∀ a : X, a ∈ A → ∃ Ua : Set X, (Ua ⊆ A ∧ OpenNeighbourhood Ua a)
-    · exact h
 
-    have aux : A = ∅ ∨ ¬ (A = ∅)
-    exact Classical.em (A = ∅)
+    simp [Neighbourhood] at h
 
-    cases' aux with h1 h2
+    cases' Classical.em (A = ∅) with h1 h2
 
     · -- A is empty
       rw [h1]
       exact isOpen_empty
 
     · -- A is not empty
-      --let g : A → Set X := fun a : A ↦ Classical.choose (h a a.property)
 
+      -- show A = the union of all neighbourhoods
       have hUnion : A = ⋃ a : A, Classical.choose (h a a.property)
       · ext x ; constructor <;> intro hx
         · let hx' := Classical.choose_spec (h x hx)
@@ -61,33 +57,3 @@ lemma A_open_iff_neighbourhood_of_all
         exact ha.right.right
 
       exact isOpen_iUnion hOpen
-
-
--- CARACTERIZACIÓN DE CONJUNTO ABIERTO
--- (A abierto sii todos sus puntos tienen un entorno abierto contenido en A)
-lemma characterization_of_open {X : Type} [T : TopologicalSpace X]
-    (A : Set X):
-    IsOpen A ↔
-    ∀ x ∈ A, ∃ U : Set X, OpenNeighbourhood U x ∧ U ⊆ A := by
-
-  have n_def : ∀ x ∈ A, (Neighbourhood A x ↔ ∃ U : Set X, OpenNeighbourhood U x ∧ U ⊆ A )
-  · intro x hx
-    simp [Neighbourhood]
-    sorry
-
-
-  constructor
-  all_goals intro h
-  · -- ->
-    intro x hx
-    rw [A_open_iff_neighbourhood_of_all] at h
-    obtain ⟨U, hU⟩ := h x hx
-    use U
-    exact And.symm hU
-
-  · -- <-
-    rw [A_open_iff_neighbourhood_of_all]
-    intro x hx
-    obtain ⟨U, hU⟩ := h x hx
-    use U
-    exact And.symm hU

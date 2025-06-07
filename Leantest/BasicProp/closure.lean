@@ -44,8 +44,8 @@ lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = 
 -- T: A está contenido en su clausura
 
 #check subset_closure
-lemma set_inside_closure {X : Type} [T : TopologicalSpace X] (A : Set X) :
-    A ⊆ Closure A := by
+example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+    A ⊆ closure A := by
 
   intro x hx
   intro V hV
@@ -54,85 +54,51 @@ lemma set_inside_closure {X : Type} [T : TopologicalSpace X] (A : Set X) :
   have hc' : x ∈ V ∩ A
   constructor
   · cases' hV with U hU
-    apply hU.left
-    exact hU.right.left
+    apply hU
+    exact hx
   · exact hx
 
-  rw [hc] at hc'
-  exact hc'
-
-#check Set.subset_compl_iff_disjoint_right
-lemma ABdisjoint_iff_AsubsBc {X : Type} {A B : Set X} :
-    A ∩ B = ∅ ↔ A ⊆ Bᶜ := by
-
-  constructor
-  · intro h y hy
-    by_contra hy'
-    simp at hy'
-    have hy'' : y ∈ A ∩ B
-    constructor
-    · exact hy
-    · exact hy'
-    rw [h] at hy''
-    exact hy''
-  · intro h
-    ext x
-    constructor
-    all_goals intro hx
-    · cases' hx with hxA hxB
-      apply h at hxA
-      simp at hxA
-      exact hxA hxB
-    · by_contra
-      exact hx
+  obtain ⟨hc', _⟩ := hc'
+  exact hc hc'
 
 
 #check interior_compl
-lemma compl_of_closure_is_interior_of_compl
+example
     {X : Type} [T : TopologicalSpace X] (A : Set X) :
-    (Closure A)ᶜ = Interior (Aᶜ) := by
+    (closure A)ᶜ = interior (Aᶜ) := by
 
   ext x
   constructor
   all_goals intro hx
 
   · simp at hx
-    rw [Closure] at hx
+    simp [closure] at hx
+    obtain ⟨V, hV, hVA, hx⟩ := hx
 
-    have hx' : ∃ (V : Set X), Neighbourhood V x ∧ V ∩ A = ∅
-    exact Filter.frequently_principal.mp hx --exact?
-
-    cases' hx' with V hV
-    cases' hV.left with U hU
+    let U := Vᶜ
     use U
     constructor
-    · exact hU.right
-    · trans V
-      exact hU.left
-      rw [← ABdisjoint_iff_AsubsBc]
-      exact hV.right
+    · constructor
+      · apply isOpen_compl_iff.mpr at hV
+        exact hV
+      · exact Set.compl_subset_compl_of_subset hVA
+    · exact hx
 
   · simp
-    cases' hx with U hU
+    obtain ⟨U, hU, hUx⟩ := hx
+    obtain ⟨hU, hUA⟩ := hU
     by_contra hx
-    rw [Closure] at hx
-    simp at hx
-
-    specialize hx U (by exact OpenNeighb_is_Neighb U x hU.left)
-
-    cases' hU with hU hU'
-    rw [← ABdisjoint_iff_AsubsBc] at hU'
-    exact hx hU'
+    simp [closure] at hx
+    specialize hx Uᶜ (by exact isClosed_compl_iff.mpr hU) (by exact Set.subset_compl_comm.mp hUA)
+    exact hx hUx
 
 
 #check isClosed_closure
-lemma closure_is_closed {X : Type} [T : TopologicalSpace X] (A : Set X) :
-    IsClosed (Closure A) := by
-
-  refine { isOpen_compl := ?isOpen_compl } --apply?
-
-  rw [compl_of_closure_is_interior_of_compl]
-  exact interior_is_open Aᶜ
+example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+    IsClosed (closure A) := by
+  apply isOpen_compl_iff.mp
+  rw [← interior_compl]
+  exact isOpen_interior
 
 
 
@@ -151,15 +117,11 @@ example {X : Type} [T : TopologicalSpace X] (A : Set X) :
 
 
 #check closure_empty
-lemma closure_of_empty {X : Type} [T : TopologicalSpace X] : Closure (∅ : Set X) = ∅ := by
-  simp [Closure]
-  ext x
+lemma closure_of_empty {X : Type} [T : TopologicalSpace X] : closure (∅ : Set X) = ∅ := by
   simp
-  use Set.univ
-  exact univ_is_Neighb x
 
 
-
+/-
 def Boundary {X : Type} [TopologicalSpace X] (A : Set X) : Set X :=
     {x : X | ∀ V : Set X, Neighbourhood V x → V ∩ A ≠ ∅ ∧ V ∩ Aᶜ ≠ ∅}
 
@@ -239,3 +201,4 @@ lemma disjointU_V_then_disjointClosureU_V {X : Type}
 
   · by_contra
     exact hx
+-/
