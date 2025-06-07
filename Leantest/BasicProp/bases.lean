@@ -1,12 +1,11 @@
 import Leantest.TopoSpaces.usual
-set_option linter.unusedVariables false
 
 
 /-
     DEF: Given B ⊆ P(X), is B a Base for X?
 -/
 
-def isTopoBase {X : Type} [T : TopologicalSpace X]
+def isTopoBase {X : Type} [TopologicalSpace X]
     (B : Set (Set X)) : Prop :=
   (∀ U ∈ B, IsOpen U) ∧
   (∀ V : Set X, IsOpen V → ∃ UB ⊆ B, V = ⋃₀ UB)
@@ -90,7 +89,6 @@ lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology)
         exact hx
 
 
-#check isTopoBase
 lemma BaseOfRealTopo' [T : TopologicalSpace ℝ]
     (hT : T = UsualTopology) :
     isTopoBase {s | ∃ a b : ℝ, s = Set.Ioo a b} := by
