@@ -107,7 +107,7 @@ Introducción al trabajo.
 
 A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones formales es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.
 
-Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de "verificación", y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite[Sección~1]{avigad2024theorem}.
+Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de \quotes{verificación}, y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite[Sección~1]{avigad2024theorem}.
 
 En este trabajo nos centraremos en el uso de \textbf{Lean Theorem Prover}, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar subproblemas sencillos al sistema
 
@@ -337,7 +337,7 @@ Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequ
 
 Hasta ahora, hemos explorado la teoría de tipos dependientes sobre la que se construye Lean, así como los fundamentos que garantizan la corrección de sus demostraciones. Pasamos por tanto a un enfoque más práctico: ¿cómo escribimos matemáticas en Lean?
 
-Recordemos que formalizar un resultado en Lean no consiste solo en escribir su enunciado, sino también en construir una demostración paso a paso, sin omiciones y con total precisión. Aquí, nunca nos basta con escribir "trivial" cuando creamos que algo ya deberíamos poder saberlo: necesitamos convencer al sistema de que cada paso es válido.
+Recordemos que formalizar un resultado en Lean no consiste solo en escribir su enunciado, sino también en construir una demostración paso a paso, sin omiciones y con total precisión. Aquí, nunca nos basta con escribir \quotes{trivial} cuando creamos que algo ya deberíamos poder saberlo: necesitamos convencer al sistema de que cada paso es válido.
 
 Esta sección está dedicada a aprender a escribir demostraciones en Lean. Veremos cómo introducir nuevos objetos en nuestros contexto, como enunciar proposiciones y cómo construir demostraciones interactuando con Lean. También presentaremos algunas herramientas de automatización y métodos para poder apoyarnos en la librería de Mathlib.
 
@@ -353,7 +353,7 @@ Podemos introducir nueva información en el contexto de distintas formas. Distin
   \item \textbf{Axiomas}\footnote{En Lean 3, a este tipo de declaraciones se les llamaba \textit{constantes} y utilizaban el comando \bluecode{constant}.}
 \end{itemize}
 
-Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que "x es de tipo X" es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos\footnote{En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. \code{inductive Nat} se puede ver como una versión extructurada de \code{axiom Nat : Type}, \code{axiom zero : Nat}, \code{axiom succ : Nat to Nat}, etc.}. Por ejemplo:
+Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que x \quotes{es de tipo X} es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos\footnote{En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. \code{inductive Nat} se puede ver como una versión extructurada de \code{axiom Nat : Type}, \code{axiom zero : Nat}, \code{axiom succ : Nat to Nat}, etc.}. Por ejemplo:
 
 \begin{lstlisting}
   axiom P : Prop
@@ -528,7 +528,7 @@ FIN ELEGIR FORMATO
 \vspace{1em}
 \noindent\textbf{\bluecode{intro}}
 
-La táctica \bluecode{intro} introduce un nuevo objeto en el contexto, de manera similar a escribir "\quotes{Supongamos que...} o \quotes{Sea...} en una demostración informal.
+La táctica \bluecode{intro} introduce un nuevo objeto en el contexto, de manera similar a escribir \quotes{Supongamos que...} o \quotes{Sea...} en una demostración informal.
 
 Es útil cuando el objetivo tiene la forma de una implicación o un cuantificador universal: transformamos la primera parte de la tesis en una nueva hipótesis y la segunda en la nueva tesis. Por ejemplo, para la implicación:
 
@@ -1058,6 +1058,8 @@ Sin embargo, apoyarse en Mathlib no siempre es directo: los resultados pueden te
 Por ejemplo, un resultado tan simple como: \quotes{Si $a, b, c$ son números reales tales que $a < b$ y $c < 0$, entonces $a + c < b$} (que en una prueba informal considereíamos casi trivial), aparece en Mathlib con el nombre \code{add\_lt\_of\_lt\_of\_neg'}. En la práctica, recordar todos estos nombres resulta inviable, incluso para resultados elementales.
 
 En esta sección introduciremos la táctica \bluecode{exact?}, que permite resolver objetivos simples de manera inmediata, y dos herramientas externas que podemos utilizar para localizar resultados en Mathlib. Además, veremos la forma en la que integrar estas herramientas en nuestro proceso de demostración de resultados.
+
+\redcode{Nota: considerar añadir simp a esta seccion}
 
 \vspace{1em}
 \noindent\textbf{La táctica \bluecode{exact?}}
