@@ -2,23 +2,188 @@
 
 Explicar algunos ejemplos de definiciones y demostraciones, no a modo de explicación completa de los prerrequisitos de topología sino para tener un primer acercamiento sencillo a la topología en Lean.
 
+Nota: toda esta sección se basa en el Willard en principio (para la teoría).
+
 \subsection{Espacios topológicos}
 
-\begin{definition}
-    Espacio Topológico
+\begin{definition}[\textbf{Espacio topológico}]
+    Sea $X$ un conjunto y $\mathcal{T}$ una colección de subconjuntos de $X$ de forma que
+    \begin{enumerate}
+      \item Los conjuntos $\emptyset$ y $X$ pertenecen a $\mathcal{T}$.
+      \item Cualquier intersección finita de elementos de $\mathcal{T}$ pertenece a $\mathcal{T}$.
+      \item Cualquier unión arbitraria de elementos de $\mathcal{T}$ pertenece a $\mathcal{T}$.
+    \end{enumerate}
+    Entonces diremos que $\mathcal{T}$ es una \textnormal{topología} sobre $X$, que $(X, \mathcal{T})$ es un \textnormal{espacio topológico} y que los elementos de $\mathcal{T}$ son \textnormal{abiertos} en este espacio.
 \end{definition}
 
-\begin{example}
-    Topología discreta (TopoSpaces - discrete)
-\end{example}
+En Lean, esta definición se escribe como una estructura que consta de cuatro elementos:
+
+\begin{lstlisting}
+  class TopologicalSpace (X : Type u) where
+    IsOpen : Set X → Prop
+    isOpen_univ : IsOpen Set.univ
+    isOpen_inter : ∀ s t, IsOpen s → IsOpen t → IsOpen (s ∩ t)
+    isOpen_sUnion : ∀ s, (∀ t ∈ s, IsOpen t) → IsOpen (⋃₀ s)
+\end{lstlisting}
+
+El primer elemento, \code{IsOpen}, es una función que lleva cada conjunto de $X$ en una proposición, es decir, es una descripción de los elementos de $\mathcal{T}$ como el conjunto \code{\{U $\in$ Set (X) | IsOpen U\}}. Los otros tres elementos son demostraciones de las propiedades de la definición.
+
+Veamos algunos ejemplos y sus demostraciones en Lean.
 
 \begin{example}
-    Topología trivial (TopoSpaces - trivial)
+    Sea $X$ un conjunto cualquiera. Consideremos la colección $\mathcal{T}$ de todos los subconjuntos de $\mathcal{T}$. Entonces $\mathcal{T}$ es una topología sobre $X$, a la que llamamos \textnormal{topología discreta}.
 \end{example}
 
+\begin{proof}
+  Podemos describir $\mathcal T$ como \code{\{U $\in$ Set (X) | True\}}, porque \code{IsOpen} es cierto para cualquier $U$.
+
+  \begin{lstlisting}
+  def DiscreteTopo (X : Type) : TopologicalSpace X where
+    IsOpen (_ : Set X) := true \end{lstlisting}
+  
+  Ahora, demostrar el resto de propiedades es sencillo:
+
+  \begin{minipage}[t]{0.58\textwidth}
+\begin{lstlisting}[language=lean]
+    isOpen_univ := by
+  ~
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\begin{lstlisting}[language=infoview]
+  ⊢ (fun x ↦ true = true) Set.univ
+\end{lstlisting}
+\end{minipage}
+
+Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna siempre \code{true}, por tanto basta con usar \bluecode{trivial}.
+
+\begin{lstlisting}
+  def DiscreteTopo (X : Type) : TopologicalSpace X where
+    IsOpen (_ : Set X) := true
+    isOpen_univ := by
+      trivial
+    isOpen_inter := by
+      intros
+      trivial
+    isOpen_sUnion := by
+      intros
+      trivial
+\end{lstlisting}
+
+\end{proof}
+
+
 \begin{example}
-    Topología usual (TopoSpaces - usual)
+    Sea $X$ un conjunto cualquiera. Consideremos la colección $\mathcal{T}=\{\emptyset, X\}$. Entonces $\mathcal{T}$ es una topología sobre $X$, a la que llamamos \textnormal{topología trivial}.
 \end{example}
+
+\begin{proof}
+  Podemos describir $\mathcal{T}$ como \code{\{U $\in$ Set (X) | U = X $\lor$ U = $\emptyset$\}}.
+
+  \begin{lstlisting}
+  def TrivialTopology (X : Type) : TopologicalSpace X where
+    IsOpen (s : Set X) := s = Set.univ ∨ s = ∅ \end{lstlisting}
+
+  La primera condición se cumple trivialmente: queremos ver $X = X \lor X = \emptyset$.
+
+  \begin{lstlisting}
+    isOpen_univ := by
+      left
+      rfl\end{lstlisting}
+
+  Consideremos ahora dos abiertos (\bluecode{intro}). Diferenciamos en casos:
+
+  \begin{lstlisting}
+    isOpen_inter := by
+      intro s t hs ht
+      cases' hs with hs_univ hs_empty
+      cases' ht with ht_univ ht_empty \end{lstlisting}
+
+  Si ambos son $X$, la intersección será $X$ y por tanto abierta. Si uno de los dos es vacío, entonces la intersección es vacía, también abierta.
+
+  \begin{lstlisting}
+      · left -- s, t = Set.univ, ¿s ∩ t = Set.univ?
+        rw [hs_univ, ht_univ]
+        simp
+      · right -- t = ∅, ¿s ∩ t = ∅?
+        rw [ht_empty]
+        simp
+      · right -- s = ∅, ¿s ∩ t = ∅?
+        rw [hs_empty]
+        simp \end{lstlisting}
+
+  Consideremos finalmente una colección arbitraria $S$ de abiertos. Para ver si la unión es abierta, consideramos dos casos distintos: o bien $X$ está en $S$, en cuyo caso la unión en $X$, o bien no lo está, en cuyo caso todos los conjuntos son vacíos y la unión también lo es.
+
+  \begin{lstlisting}
+    isOpen_sUnion := by
+      intro S hS
+      cases' Classical.em (Set.univ ∈ S) with h1 h2
+
+      · left -- h1 : Set.univ ∈ S, ¿⋃₀S = Set.univ?
+        ext s
+        constructor
+        · intro hs -- hs : s ∈ S, ¿s ∈ Set.univ?
+          trivial
+        · intro hs -- hs : s ∈ Set.univ, ¿s ∈ S?
+          use Set.univ -- utiliza h1 implicitamente
+
+      · right -- h2 : Set.univ ∉ S, ¿⋃₀S = ∅?
+        simp -- ¿∀ s ∈ S, s = ∅?
+        intro s hs
+        specialize hS s hs -- aplicar definicion de abierto
+        cases' hS with hS hS -- dividir en casos
+        · by_contra -- si s = Set.univ, contradiccion
+          rw [hS] at hs 
+          exact h2 hs -- porque s ∈ S, pero Set.univ ∉ S
+        · exact hS -- si s = ∅ \end{lstlisting}
+\end{proof}
+
+
+\begin{example}
+
+  Consideremos la recta real y consideremos la definición usual de conjunto abierto en $\mathbb{R}$, es decir, $A \subseteq \mathbb{R}$ es abierto si y solo si para cada punto $x \in A$ existe una bola abierta centrada en $x$ enteramente contenida en $A$. Sea $\mathcal{T}$ la colección de estos abiertos. Entonces $\mathcal{T}$ es una topología sobre $\mathbb{R}^2$, a la que llamamos \textnormal{topología usual}.
+\end{example}
+
+\begin{proof}
+  En Lean, podemos describir este espacio topológico dando sus elementos de la siguiente forma, donde cada objeto esta definido anteriormente.
+
+  
+  \begin{lstlisting}
+  def UsualTopology : TopologicalSpace ℝ where
+    IsOpen := Real.IsOpen
+    isOpen_univ := Real.isOpen_univ
+    isOpen_inter := Real.isOpen_inter
+    isOpen_sUnion := Real.isOpen_sUnion \end{lstlisting}
+  
+  La definición de abierto se puede escribir así:
+
+  \begin{lstlisting}
+  def Real.IsOpen (s : Set ℝ) : Prop :=
+    ∀ x ∈ s, ∃ δ > 0, ∀ y : ℝ, x - δ < y ∧ y < x + δ → y ∈ s \end{lstlisting}
+
+  Damos la demostración para la intersección finita. El resto utilizan mecanismos parecidos.
+
+  Sean por tanto dos subconjuntos $s$ y $t$ de $\mathcal{T}$. Sea $x \in t \cap s$ y queremos ver que existe una bola abierta centrada en $x$ y contenida en $t \cap s$.
+
+  \begin{lstlisting}
+  lemma Real.isOpen_inter (s t : Set ℝ)
+      (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := by
+    intro x hx -- x ∈ s ∩ t, ¿∃ δ > 0, ∀ (y : ℝ), ... → y ∈ s ∩ t \end{lstlisting}
+
+  Puesto que $x \in s$, existe un $\delta_1$ de forma que $B_{\delta_1}(x) \subseteq s$. Análogamente, existe un $\delta_2$ de forma que $B_{\delta_2}(x) \subseteq t$. Basta con tomar $\delta = \min \{\delta_1, \delta_2\}$.
+
+  \begin{lstlisting}
+    obtain ⟨δ1, hδ1⟩ := hs x hx.left
+    obtain ⟨δ2, hδ2⟩ := ht x hx.right
+    use min δ1 δ2 \end{lstlisting}
+
+  Trivialmente $\delta > 0$. Para ver que $B_\delta (x) \subseteq s \cap t$, consideramos $y \in B_\delta(x)$ y queremos ver que $y \in s$ y que $y \in t$. Usamos que $\delta_1 \leq $
+    
+
+  
+\end{proof}
+
 
 \subsubsection{Conjuntos abiertos}
 
@@ -160,7 +325,7 @@ En Lean, escribimos esta definición de la siguiente forma.
 
 Ahora queremos dar una caracterización para este tipo de espacios, que nos facilitará el trabajo más adelante.
 
-\begin{proposition}[Caracterización de la normalidad]
+\begin{proposition}[\textbf{Caracterización de la normalidad}]
   Sea $X$ un espacio topológico. $X$ es normal si y sólo si para cada abierto $U$ y cada cerrado $C$ de $X$ tales que $C \subseteq U$, existe un abierto $V \subset X$ de forma que $C \subseteq V \subseteq \overline{V} \subseteq U$.
 \end{proposition}
 
