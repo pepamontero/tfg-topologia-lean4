@@ -19,26 +19,21 @@ lemma Real.isOpen_univ : IsOpen (Set.univ : Set ℝ) := by
 
 lemma Real.isOpen_inter (s t : Set ℝ) (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := by
   intro x hx
-  specialize hs x hx.left
-  specialize ht x hx.right
-  cases' hs with δ1 hδ1
-  cases' ht with δ2 hδ2
+  obtain ⟨δ1, hδ1, hs⟩ := hs x hx.left
+  obtain ⟨δ2, hδ2, ht⟩ := ht x hx.right
   use min δ1 δ2
   constructor
-  · exact lt_min hδ1.left hδ2.left
+  · exact lt_min hδ1 hδ2
   · intro y hy
-    cases' hy with hy1 hy2
     constructor
-    · apply hδ1.right
-      have h1 : min δ1 δ2 ≤ δ1
-      exact min_le_left δ1 δ2
+    · apply hs
+      have hδ := min_le_left δ1 δ2
       constructor
-      <;> linarith
-    · apply hδ2.right
-      have h2 : min δ1 δ2 ≤ δ2
-      exact min_le_right δ1 δ2
+      all_goals linarith
+    · apply ht
+      have hδ := min_le_right δ1 δ2
       constructor
-      <;> linarith
+      all_goals linarith
 
 
 lemma Real.isOpen_sUnion (F : Set (Set ℝ)) (hF : ∀ s ∈ F, IsOpen s) : IsOpen (⋃₀ F) := by
