@@ -203,7 +203,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
 \end{proof}
 
 
-\subsubsection{Entornos abiertos}
+\subsubsection{Conjuntos abiertos}
 
 Como hemos dicho, los conjuntos abiertos en un espacio topológico son los elementos de la topología. En Lean, es una función \code{TopologicalSpace.IsOpen} de tipo \code{Set X $\to$ \blue{Prop}}. Podemos utilizar esta definición directamente para demostrar que un abierto lo es.
 
@@ -215,6 +215,22 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
   example (X : Type) [T : TopologicalSpace X] : T.IsOpen Set.univ := by
     exact TopologicalSpace.isOpen_univ \end{lstlisting}
 
+\begin{example}
+  En la Definición \ref{def:espacio-topologico}, requeríamos que el vacío es abierto. Sin embargo, en la definición de Mathlib no hemos pedido la misma condición.
+
+  Se puede probar que el vacío es abierto a partir del resto de condiciones: podemos escribir $\emptyset$ como $\emptyset = \bigcup_{x \in \emptyset} \{x\}$. Aplicando que la unión arbitraria de abiertos es abierta, bastaría ver que $\forall x \in \emptyset$, $\{x\}$ es un conjunto abierto. Lo cual es trivial.
+\end{example}
+
+\begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] :
+      IsOpen (∅ : Set X) := by
+    rw [← Set.sUnion_empty] -- ∅ = ⋃₀ ∅
+    apply isOpen_sUnion
+    intro t ht -- ∀ t ∈ ∅, IsOpen t ?
+    exfalso
+    exact ht -- t ∈ ∅ = False
+\end{lstlisting}
+  
 \begin{definition}[\textbf{Entorno abierto}]
   Sea $(X, \mathcal{T})$ un espacio topológico y $x \in X$. Un \textnormal{entorno abierto} de $x$ en $X$ es un conjunto abierto $U \in \mathcal{T}$ de forma que $x \in U$.
 \end{definition}
@@ -327,16 +343,11 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
 \paragraph{Interior}
 
 \begin{definition}
-    Sea $(X, \mathcal{T})$ un espacio topológico, $A \subseteq X$ y $x \in X$. Decimos que $x$ es un punto \textnormal{interior} de $A$ si $A$ es entorno de $x$.
-
-    El \textnormal{interior} de $A$ es el conjunto de los puntos interiores de $A$, y se denota por $\overset{\circ}{A}$.
+    Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Definimos el \textnormal{interior} como el conjunto
+    $$
+    \overset{\circ}{A} = \bigcup \left\{ U \subseteq X | U \text{ es abierto y } U \subseteq A \right\}
+    $$
 \end{definition}
-
-Podemos describir el anterior conjunto como
-$$
-\overset{\circ}{A} = \bigcup \left\{ U \subseteq X | U \text{ es abierto y } U \subseteq A \right\}
-$$
-En Mathlib, el interior de un conjunto está definido de la misma forma.
 
 \begin{lstlisting}
   def interior (s : Set X) : Set X :=
@@ -426,22 +437,51 @@ En Mathlib, este resultado recibe el nombre de \code{interior\_eq\_iff\_isOpen}
 \subsubsection{Conjuntos cerrados}
 
 \begin{definition}[\textbf{Conjunto cerrado}]
-  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Decimos que
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Decimos que $A$ es \textnormal{cerrado} en $X$ si $A^c$ es abierto en $X$.
 \end{definition}
 
-\begin{example}
-    El universo es cerrado
-\end{example}
+\begin{lstlisting}
+  class IsClosed (s : Set X) : Prop where
+    isOpen_compl : IsOpen sᶜ
+\end{lstlisting}
 
 \begin{example}
-    La intersección arbitraria de cerrados es cerrada
+  El universo es cerrado, porque el vacío es abierto. El vacío es cerrado, porque el universo es cerrado.
 \end{example}
+
+\begin{lstlisting}
+  example (X : Type) [TopologicalSpace X] :
+      IsClosed (Set.univ : Set X) := by
+    rw [← isOpen_compl_iff] -- IsOpen Xᶜ ?
+    rw [Set.compl_univ] -- IsOpen ∅ ?
+    exact isOpen_empty
+\end{lstlisting}
+
+\begin{example}
+  La intersección arbitraria de cerrados es cerrada. La unión finita de cerrados es cerrada. Ambas se deducen de manera sencilla de la definición de espacio topológico y de conjunto cerrado.
+\end{example}
+
+\begin{lstlisting}
+  example (X : Type) [TopologicalSpace X] (A B : Set X) (hA : IsClosed A)
+      (hB : IsClosed B) : IsClosed (A ∪ B) := by
+  rw [← isOpen_compl_iff] at *
+  rw [Set.compl_union] -- usar (A ∪ B)ᶜ = (Aᶜ ∩ Bᶜ)
+  apply TopologicalSpace.isOpen_inter
+  exact hA
+  exact hB
+\end{lstlisting}
+
 
 \paragraph{Clausura}
 
 \begin{definition}
-    Clausura
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Definimos la \textnormal{clausura} de $A$ como el conjunto
+  $$
+  \overline{A} = \bigcap \{K \subseteq X | K \text{ es cerrado y } A \subseteq K\}
+  $$
 \end{definition}
+
+Veamos algunas propiedades de la clausura de un conjunto.
 
 \begin{proposition}
     El conjunto está en la clausura

@@ -18,17 +18,17 @@
 \contentsline {subsubsection}{\numberline {2.3.6}Noncomputable y el axioma de elección}{28}{}%
 \contentsline {section}{\numberline {3}Espacios topológicos en Lean}{30}{}%
 \contentsline {subsection}{\numberline {3.1}Espacios topológicos}{30}{}%
-\contentsline {subsubsection}{\numberline {3.1.1}Entornos abiertos}{34}{}%
+\contentsline {subsubsection}{\numberline {3.1.1}Conjuntos abiertos}{34}{}%
 \contentsline {paragraph}{Interior}{36}{}%
 \contentsline {subsubsection}{\numberline {3.1.2}Conjuntos cerrados}{38}{}%
-\contentsline {paragraph}{Clausura}{38}{}%
+\contentsline {paragraph}{Clausura}{39}{}%
 \contentsline {subsection}{\numberline {3.2}Bases}{39}{}%
-\contentsline {subsection}{\numberline {3.3}Topología relativa}{39}{}%
-\contentsline {subsection}{\numberline {3.4}Continuidad}{39}{}%
-\contentsline {subsection}{\numberline {3.5}Separación}{39}{}%
-\contentsline {subsubsection}{\numberline {3.5.1}Espacios de Hausdorff}{39}{}%
-\contentsline {subsubsection}{\numberline {3.5.2}Espacios normales}{40}{}%
-\contentsline {section}{\numberline {4}El Lema de Urysohn}{43}{}%
-\contentsline {subsection}{\numberline {4.1}El recíproco}{43}{}%
-\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{43}{}%
-\contentsline {subsection}{\numberline {4.3}Una parte}{43}{}%
+\contentsline {subsection}{\numberline {3.3}Topología relativa}{40}{}%
+\contentsline {subsection}{\numberline {3.4}Continuidad}{40}{}%
+\contentsline {subsection}{\numberline {3.5}Separación}{40}{}%
+\contentsline {subsubsection}{\numberline {3.5.1}Espacios de Hausdorff}{40}{}%
+\contentsline {subsubsection}{\numberline {3.5.2}Espacios normales}{41}{}%
+\contentsline {section}{\numberline {4}El Lema de Urysohn}{44}{}%
+\contentsline {subsection}{\numberline {4.1}El recíproco}{44}{}%
+\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{44}{}%
+\contentsline {subsection}{\numberline {4.3}Una parte}{44}{}%
