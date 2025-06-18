@@ -30,7 +30,6 @@ lemma OpenNeighb_is_Neighb {X : Type} [TopologicalSpace X]
     (U : Set X) (x : X) : OpenNeighbourhood U x →
     Neighbourhood U x := by
   intro hU
-  rw [Neighbourhood]
   use U
 
 
@@ -38,8 +37,8 @@ lemma OpenNeighb_is_Neighb {X : Type} [TopologicalSpace X]
 lemma univ_is_OpenNeighb {X : Type} [TopologicalSpace X]
     (x : X) : OpenNeighbourhood Set.univ x := by
   constructor
-  trivial
-  exact isOpen_univ
+  · trivial
+  · exact isOpen_univ
 
 lemma univ_is_Neighb {X : Type} [TopologicalSpace X]
     (x : X) : Neighbourhood Set.univ x := by
