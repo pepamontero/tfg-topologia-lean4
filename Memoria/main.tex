@@ -82,7 +82,7 @@
 \newcommand{\rat}{\mathbb{Q}}
 
 % Other commands
-\newcommand{\refpep}[1]{(\ref{#1})}
+\newcommand{\pref}[1]{(\ref{#1})}
 \newcommand{\quotes}[1]{``#1''}
 
 % Theorem environments
@@ -1487,7 +1487,7 @@ Supongamos que $f(s(n)) < f(m)$.
 \textit{Caso 4.2.} $m < n$
 
 
-Supongamos primero que $n = 1$ y $m = 0$. Entonces conocemos los valores de $G(n)$ y $G(m)$, y la expresión \refpep{cond_G} que queremos probar pasa a ser
+Supongamos primero que $n = 1$ y $m = 0$. Entonces conocemos los valores de $G(n)$ y $G(m)$, y la expresión \pref{cond_G} que queremos probar pasa a ser
 
 $$
   \overline{V} \subseteq X \backslash C_2
@@ -1495,7 +1495,7 @@ $$
 
 que es cierto por hipótesis.
 
-Supongamos ahora que $n, m >1$. Entonces ambas satisfacen \refpep{cond_Grs}. Vamos a probar
+Supongamos ahora que $n, m >1$. Entonces ambas satisfacen \pref{cond_Grs}. Vamos a probar
 
 \begin{equation} \label{cond_G_inductive}
   \forall n, m > 1, f(n) < f(m) \implies \overline{G(n)} \subseteq G(m)
@@ -1519,7 +1519,7 @@ Inducción sobre $n$.
   
 Como $n=2$, y se tiene $r(n) < n$ y $s(n) < n$, podemos asegurar que $r(n), r(s) \in \{0, 1\}$.
 
-En particular, para que se cumpla \refpep{cond_rs}, necesariamente tiene que ser $$0 = f(1) < f(2) < f(0) = 1$$ y por tanto $r(n) = 1$ y $s(n) = 0.$
+En particular, para que se cumpla \pref{cond_rs}, necesariamente tiene que ser $$0 = f(1) < f(2) < f(0) = 1$$ y por tanto $r(n) = 1$ y $s(n) = 0.$
 
 Sea entonces un $m > 1$ fijo pero arbitrario. Sabemos que $m \neq 2$ por ser $f$ inyectiva.
 
@@ -1530,7 +1530,7 @@ Inducción sobre $m$
   \item[$\circ$] \textit{Caso base} ($n = 2, m= 3$)
 \end{itemize}
 
-Como $f(n) < f(m)$, se tiene $$0 < f(1) < f(2) < f(3) < f(0) = 1.$$ Por tanto, $r(m) = 2 = n$ y $s(m) = 0$. De \refpep{cond_Grs}, se obtiene:
+Como $f(n) < f(m)$, se tiene $$0 < f(1) < f(2) < f(3) < f(0) = 1.$$ Por tanto, $r(m) = 2 = n$ y $s(m) = 0$. De \pref{cond_Grs}, se obtiene:
 
 $$
 \overline{G(n)} = \overline{G(r(m))} \subseteq G(m),
@@ -1557,9 +1557,9 @@ Veamos primero que se tiene que dar $r(m) > 1$.
 \end{itemize}
 
 
-Luego $r(m)> 1$ y podemos aplicar \refpep{cond_G_ind_m} a $l=r(m)<m$, obteniendo $$\overline{G(2)} \subseteq G(r(m)).$$
+Luego $r(m)> 1$ y podemos aplicar \pref{cond_G_ind_m} a $l=r(m)<m$, obteniendo $$\overline{G(2)} \subseteq G(r(m)).$$
 
-Por otro lado, por \refpep{cond_Grs}, sabemos que $$\overline{G(r(m))} \subseteq G(m).$$ Mediante las propiedades de la adherencia, unimos las expresiones
+Por otro lado, por \pref{cond_Grs}, sabemos que $$\overline{G(r(m))} \subseteq G(m).$$ Mediante las propiedades de la adherencia, unimos las expresiones
 
 $$
 \overline{G(2)} \subseteq G(r(m)) \subseteq \overline{G(r(m))} \subseteq G(m),
@@ -1578,15 +1578,15 @@ Hipótesis de inducción:
 
 Tenemos que diferenciar dos casos: $s(n) = 0$ y $s(n) > 1$ (no puede ser $s(n) = 1$ porque en ese caso tendríamos $f(n) < f(s(n)) = f(1) = 0$, que es imposible).
 
-Supongamos primero que $s(n) = 0$. Entonces, como $f(n) < f(m)$ y $s(n)$ es la mejor elección, tenemos que $f(s(n)) \leq f(m)$. Sin embargo, en realidad no puede darse $f(s(n)) < f(m)$, porque tendríamos $1 = f(0) = f(s(n)) < f(m)$, que es imposible. Luego en caso de que $s(n)=0$, necesariamente se tiene $f(s(n)) = f(m)$, y por inyectividad de $f$, $s(n) = m$. Entonces el resultado se sigue trivialmente de \refpep{cond_Grs} aplicado a $n>1$:
+Supongamos primero que $s(n) = 0$. Entonces, como $f(n) < f(m)$ y $s(n)$ es la mejor elección, tenemos que $f(s(n)) \leq f(m)$. Sin embargo, en realidad no puede darse $f(s(n)) < f(m)$, porque tendríamos $1 = f(0) = f(s(n)) < f(m)$, que es imposible. Luego en caso de que $s(n)=0$, necesariamente se tiene $f(s(n)) = f(m)$, y por inyectividad de $f$, $s(n) = m$. Entonces el resultado se sigue trivialmente de \pref{cond_Grs} aplicado a $n>1$:
 
 $$
   \overline{G(n)} \subseteq G(s(n)) = G(m).
 $$
 
-Si suponemos ahora que $s(n)>1$, podemos aplicar \refpep{cond_G_ind_n} a $k = s(n) < n$, obteniendo $$\overline{G(s(n))} \subseteq G(m).$$
+Si suponemos ahora que $s(n)>1$, podemos aplicar \pref{cond_G_ind_n} a $k = s(n) < n$, obteniendo $$\overline{G(s(n))} \subseteq G(m).$$
 
-Además, por \refpep{cond_Grs}, como $n > 1$, se tiene $$\overline{G(n)} \subseteq G(s(n)),$$ y, por las propiedades de la adherencia, podemos unir ambas expresiones $$\overline{G(n)} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(m)$$ obteniendo el resultado que buscábamos.
+Además, por \pref{cond_Grs}, como $n > 1$, se tiene $$\overline{G(n)} \subseteq G(s(n)),$$ y, por las propiedades de la adherencia, podemos unir ambas expresiones $$\overline{G(n)} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(m)$$ obteniendo el resultado que buscábamos.
 
 
 \end{proof}

@@ -6,7 +6,7 @@ Nota: toda esta sección se basa en el Willard en principio (para la teoría).
 
 \subsection{Espacios topológicos}
 
-\begin{definition}[\textbf{Espacio topológico}]
+\begin{definition}[\textbf{Espacio topológico}]\label{def:espacio-topologico}
     Sea $X$ un conjunto y $\mathcal{T}$ una colección de subconjuntos de $X$ de forma que
     \begin{enumerate}
       \item Los conjuntos $\emptyset$ y $X$ pertenecen a $\mathcal{T}$.
@@ -191,46 +191,140 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
       constructor
       · apply hs -- x - δ1 < y ∧ y < x + δ1 ? \end{lstlisting}
 
-  En realidad, esta condición se reduce a dos inecuaciones, que se pueden probar utilizando \bluecode{linarith} si se cuenta con la hipótesis \code{h$\delta : \delta \leq \delta1$}.
+  En realidad, esta condición se reduce a dos inecuaciones, que son fáciles de probar contando con que $\delta \leq \delta_1$ (\code{h$\delta$}).
 
   \begin{lstlisting}
       have hδ := min_le_left δ1 δ2
       constructor
       all_goals linarith \end{lstlisting}
 
-
-
-    
-  
+  Probar que $y \in t$ es análogo.
   
 \end{proof}
 
 
-\subsubsection{Conjuntos abiertos}
+\subsubsection{Entornos abiertos}
 
-\begin{definition}
-    Abiertos (en Lean)
-\end{definition}
+Como hemos dicho, los conjuntos abiertos en un espacio topológico son los elementos de la topología. En Lean, es una función \code{TopologicalSpace.IsOpen} de tipo \code{Set X $\to$ \blue{Prop}}. Podemos utilizar esta definición directamente para demostrar que un abierto lo es.
 
-\begin{example}
-    El universo es abierto
+\begin{example} 
+    Por ejemplo, por definición, el universo, $X$, siempre es abierto. En efecto:
 \end{example}
 
-\begin{definition}
-    Entornos abiertos
+\begin{lstlisting}
+  example (X : Type) [T : TopologicalSpace X] : T.IsOpen Set.univ := by
+    exact TopologicalSpace.isOpen_univ \end{lstlisting}
+
+\begin{definition}[\textbf{Entorno abierto}]
+  Sea $(X, \mathcal{T})$ un espacio topológico y $x \in X$. Un \textnormal{entorno abierto} de $x$ en $X$ es un conjunto abierto $U \in \mathcal{T}$ de forma que $x \in U$.
 \end{definition}
 
-\begin{definition}
-    Entornos
-\end{definition}
+\begin{lstlisting}
+  def OpenNeighbourhood {X : Type} [TopologicalSpace X]
+    (U : Set X) (x : X) : Prop :=
+    x ∈ U ∧ IsOpen U
+\end{lstlisting}
 
 \begin{example}
-    Univ es entorno abierto de todo punto
+  El universo es entorno abierto de cualquier punto $x \in X$. En efecto:
 \end{example}
 
-\begin{proposition}
-    A es abierto si es entorno de todos sus puntos
+\begin{lstlisting}
+  example {X : Type} [TopologicalSpace X] (x : X) :
+      OpenNeighbourhood Set.univ x := by
+    constructor
+    · trivial -- x ∈ Set.univ ?
+    · exact isOpen_univ -- IsOpen Set.univ ? \end{lstlisting}
+
+\begin{definition}[\textbf{Entorno}]
+  Sea $(X, \mathcal{T})$ un espacio topológico y $x \in X$. Un \textnormal{entorno} de $x$ en $X$ es un conjunto $V \subseteq X$ de forma que existe un entorno abierto de $x$, $U \in \mathcal{T}$, con $U \subseteq V$.
+\end{definition}
+
+\begin{lstlisting}
+  def Neighbourhood {X : Type} [TopologicalSpace X]
+    (V : Set X) (x : X) : Prop :=
+    ∃ U : Set X, U ⊆ V ∧ OpenNeighbourhood U x
+\end{lstlisting}
+
+\begin{example}
+  Un entorno abierto es también un entorno. En efecto:
+\end{example}
+
+\begin{lstlisting}
+  example {X : Type} [TopologicalSpace X] (U : Set X) (x : X) :
+      OpenNeighbourhood U x → Neighbourhood U x := by
+    intro hU
+    use U -- usamos el propio U como abierto
+\end{lstlisting}
+
+\begin{lstlisting}
+  Nota: deberia marcar de alguna forma cuando una demostracion esta terminada en Lean??? porque aqui parece que no pero realmente esta terminada
+\end{lstlisting}
+
+\begin{proposition}[\textbf{Caracterización de conjuntos abiertos}]
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq U$ un conjunto cualquiera. $A$ es abierto si y solo si es entorno de todos sus puntos.
 \end{proposition}
+
+\begin{lstlisting}
+  lemma A_open_iff_neighbourhood_of_all {X : Type}
+      [T : TopologicalSpace X] {A : Set X} :
+      IsOpen A ↔ ∀ x ∈ A, Neighbourhood A x
+\end{lstlisting}
+
+\begin{proof}
+  Demostramos cada implicación separadamente.
+
+  \begin{lstlisting}
+      := by
+    constructor; all_goals intro h \end{lstlisting}
+
+  $(\implies)$ La primera implicación es sencilla: si $A$ es abierto, para cada $x \in A$ basta tomar $A$ como entorno de $x$.
+
+  \begin{lstlisting}
+    · intro x hx -- hx : x ∈ A
+      use A
+      constructor
+      · trivial -- A ⊆ A ?
+      · constructor
+        · exact hx -- x ∈ A ?
+        · exact h -- IsOpen A ? \end{lstlisting}
+
+  $(\impliedby)$ El recíproco es más complicado. Sabemos que para cada $a \in A$ existe $U_a$ entorno de $a$. Primero probaremos que
+  $$
+  A = \bigcup_{a \in A} U_a
+  $$
+  \begin{lstlisting}
+    · have hUnion : A = ⋃ x : A, Classical.choose (h x x.property) \end{lstlisting}
+  Para ello, probamos ambas inclusiones. Si $x \in A$, entonces por nuestra hipótesis existe un entorno de $x$, $U_x$. Y por la definición de entorno, eso quiere decir que $x \in U_x$. Luego $x \in \bigcup_{a}U_a$.
+
+  \begin{lstlisting}
+      · ext x; constructor; all_goals intro hx
+        · have ⟨_, hUx⟩  := Classical.choose_spec (h x hx)
+           -- hUx : OpenNeigh. Ux x
+          simp -- ∃ a ∈ A, x ∈ Ua ?
+          use x, hx
+          exact hUx.left \end{lstlisting}
+
+  Ahora, si $x \in \bigcup_{a}U_a$, entonces existe un $a \in A$ con $x \in U_a$ y $U_a$ entorno abierto de $a$ con $U_a \subseteq A$. Luego $x \in U_a \subseteq A$.
+
+  \begin{lstlisting}
+        · simp at hx
+          obtain ⟨a, ha, hx⟩ := hx -- hx : x ∈ Ua
+          have ⟨ha', _⟩ := Classical.choose_spec (h a ha)
+          apply ha'
+          exact hx \end{lstlisting}
+  
+  Entonces hemos probado que $A$ se expresa como una unión de conjuntos $U_a$. Pero sabemos que todos estos conjuntos son entornos abiertos, luego son abiertos. Basta aplicar que la unión de abiertos es abierta.
+
+  \begin{lstlisting}
+      rw [hUnion]
+      apply isOpen_iUnion
+      intro a
+      exact (Classical.choose_spec (h a a.property)).right.right \end{lstlisting}
+\end{proof}
+
+
+
 
 
 \paragraph{Interior}
