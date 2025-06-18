@@ -261,7 +261,7 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
   Nota: deberia marcar de alguna forma cuando una demostracion esta terminada en Lean??? porque aqui parece que no pero realmente esta terminada
 \end{lstlisting}
 
-\begin{proposition}[\textbf{Caracterización de conjuntos abiertos}]
+\begin{proposition}[\textbf{Caracterización de conjuntos abiertos}]\label{caracterizacion-abierto}
   Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq U$ un conjunto cualquiera. $A$ es abierto si y solo si es entorno de todos sus puntos.
 \end{proposition}
 
@@ -324,31 +324,109 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
 \end{proof}
 
 
-
-
-
 \paragraph{Interior}
 
 \begin{definition}
-    interior
+    Sea $(X, \mathcal{T})$ un espacio topológico, $A \subseteq X$ y $x \in X$. Decimos que $x$ es un punto \textnormal{interior} de $A$ si $A$ es entorno de $x$.
+
+    El \textnormal{interior} de $A$ es el conjunto de los puntos interiores de $A$, y se denota por $\overset{\circ}{A}$.
 \end{definition}
 
-\begin{proposition}
-    el interior está dentro del conjunto
-\end{proposition}
+Podemos describir el anterior conjunto como
+$$
+\overset{\circ}{A} = \bigcup \left\{ U \subseteq X | U \text{ es abierto y } U \subseteq A \right\}
+$$
+En Mathlib, el interior de un conjunto está definido de la misma forma.
+
+\begin{lstlisting}
+  def interior (s : Set X) : Set X :=
+    ⋃₀ { t | IsOpen t ∧ t ⊆ s }
+\end{lstlisting}
+
+Veamos varias propiedades del interior de un conjunto.
 
 \begin{proposition}
-    el interior es abierto
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces
+  $$
+  \overset{\circ}{A} \subseteq A
+  $$
 \end{proposition}
 
+En Mathlib, este resultado recibe el nombre de \code{interior\_subset}.
+
+\begin{proof}
+  Sea $a \in \overset{\circ}{A}$. Entonces $A$ es entorno de $a$ y existe un abierto con $a \in U \subseteq A$. Luego $a \in A$.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      interior A ⊆ A := by
+    intro a ha
+    obtain ⟨U, hU, ha⟩ := ha -- hU : IsOpen U ∧ U ⊆ A, ha : a ∈ U
+    apply hU.right
+    exact ha \end{lstlisting}
+\end{proof}
+
 \begin{proposition}
-    A es abierto si y solo si es igual a su interior
+    Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $\overset{\circ}{A}$ es un conjunto abierto.
 \end{proposition}
+
+En Mathlib, este resultado recibe el nombre de \code{isOpen\_interior}
+
+\begin{proof}
+  Por la caracterización de conjuntos abiertos \pref{caracterizacion-abierto}, basta ver que dado un $a \in \overset{\circ}{A}$, $\overset{\circ}{A}$ es entorno de $a$.
+  
+  Si $a \in \overset{\circ}{A}$, entonces existe abierto $U$ con $a \in U \subseteq A$. Usamos este $U$ para demostrar que $\overset{\circ}{A}$ es entorno de $a$.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      IsOpen (interior A) := by
+    apply A_open_iff_neighbourhood_of_all.mpr
+    intro a ha
+    obtain ⟨U, hU, ha⟩ := ha -- hU : IsOpen U ∧ U ⊆ A, ha : a ∈ U
+    use U
+    constructor
+    · intro x hx -- U ⊆ interior A ?
+      use U
+    · constructor
+      · exact ha -- a ∈ U ?
+      · exact hU.left -- IsOpen U ?\end{lstlisting}
+\end{proof}
+
+
+\begin{proposition}
+    Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $A$ es abierto si y solo si $A$ es igual a su interior.
+\end{proposition}
+
+En Mathlib, este resultado recibe el nombre de \code{interior\_eq\_iff\_isOpen}
+
+\begin{proof}
+  El recíproco es trivial, pues ya hemos visto que el interior de un conjunto es abierto.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      IsOpen A ↔ interior A = A:= by
+    constructor; swap; all_goals intro h
+    · rw [← h]
+      exact isOpen_interior \end{lstlisting}
+
+  Ahora, supongamos que $A$ es abierto. Ya hemos visto que $\overset{\circ}{A} \subseteq A$, luego basta ver el otro contenido. Sea $a \in A$. Como $A$ es abierto, es un entorno abierto de $a$ con $A \subseteq A$. Luego $a \in \overset{\circ}{A}$.
+  
+  \begin{lstlisting}
+    · apply Set.Subset.antisymm
+      · exact interior_subset
+      · intro a ha
+        use A
+        constructor
+        · simp
+          exact h
+        · exact ha \end{lstlisting}
+\end{proof}
+
 
 \subsubsection{Conjuntos cerrados}
 
-\begin{definition}
-    Cerrado
+\begin{definition}[\textbf{Conjunto cerrado}]
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Decimos que
 \end{definition}
 
 \begin{example}
