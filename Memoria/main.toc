@@ -18,17 +18,17 @@
 \contentsline {subsubsection}{\numberline {2.3.6}Noncomputable y el axioma de elección}{28}{}%
 \contentsline {section}{\numberline {3}Espacios topológicos en Lean}{30}{}%
 \contentsline {subsection}{\numberline {3.1}Espacios topológicos}{30}{}%
-\contentsline {subsubsection}{\numberline {3.1.1}Conjuntos abiertos}{30}{}%
-\contentsline {paragraph}{Interior}{30}{}%
-\contentsline {subsubsection}{\numberline {3.1.2}Conjuntos cerrados}{30}{}%
-\contentsline {paragraph}{Clausura}{31}{}%
-\contentsline {subsection}{\numberline {3.2}Bases}{31}{}%
-\contentsline {subsection}{\numberline {3.3}Topología relativa}{31}{}%
-\contentsline {subsection}{\numberline {3.4}Continuidad}{31}{}%
-\contentsline {subsection}{\numberline {3.5}Separación}{31}{}%
-\contentsline {subsubsection}{\numberline {3.5.1}Espacios de Hausdorff}{31}{}%
-\contentsline {subsubsection}{\numberline {3.5.2}Espacios normales}{32}{}%
-\contentsline {section}{\numberline {4}El Lema de Urysohn}{35}{}%
-\contentsline {subsection}{\numberline {4.1}El recíproco}{35}{}%
-\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{35}{}%
-\contentsline {subsection}{\numberline {4.3}Una parte}{35}{}%
+\contentsline {subsubsection}{\numberline {3.1.1}Conjuntos abiertos}{34}{}%
+\contentsline {paragraph}{Interior}{34}{}%
+\contentsline {subsubsection}{\numberline {3.1.2}Conjuntos cerrados}{34}{}%
+\contentsline {paragraph}{Clausura}{34}{}%
+\contentsline {subsection}{\numberline {3.2}Bases}{35}{}%
+\contentsline {subsection}{\numberline {3.3}Topología relativa}{35}{}%
+\contentsline {subsection}{\numberline {3.4}Continuidad}{35}{}%
+\contentsline {subsection}{\numberline {3.5}Separación}{35}{}%
+\contentsline {subsubsection}{\numberline {3.5.1}Espacios de Hausdorff}{35}{}%
+\contentsline {subsubsection}{\numberline {3.5.2}Espacios normales}{36}{}%
+\contentsline {section}{\numberline {4}El Lema de Urysohn}{39}{}%
+\contentsline {subsection}{\numberline {4.1}El recíproco}{39}{}%
+\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{39}{}%
+\contentsline {subsection}{\numberline {4.3}Una parte}{39}{}%

@@ -103,13 +103,13 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
   Si ambos son $X$, la intersección será $X$ y por tanto abierta. Si uno de los dos es vacío, entonces la intersección es vacía, también abierta.
 
   \begin{lstlisting}
-      · left -- s, t = Set.univ, ¿s ∩ t = Set.univ?
+      · left -- s, t = Set.univ, s ∩ t = Set.univ ?
         rw [hs_univ, ht_univ]
         simp
-      · right -- t = ∅, ¿s ∩ t = ∅?
+      · right -- t = ∅, s ∩ t = ∅ ?
         rw [ht_empty]
         simp
-      · right -- s = ∅, ¿s ∩ t = ∅?
+      · right -- s = ∅, s ∩ t = ∅ ?
         rw [hs_empty]
         simp \end{lstlisting}
 
@@ -120,16 +120,16 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
       intro S hS
       cases' Classical.em (Set.univ ∈ S) with h1 h2
 
-      · left -- h1 : Set.univ ∈ S, ¿⋃₀S = Set.univ?
+      · left -- h1 : Set.univ ∈ S, ⋃₀S = Set.univ ?
         ext s
         constructor
-        · intro hs -- hs : s ∈ S, ¿s ∈ Set.univ?
+        · intro hs -- hs : s ∈ S, s ∈ Set.univ ?
           trivial
-        · intro hs -- hs : s ∈ Set.univ, ¿s ∈ S?
+        · intro hs -- hs : s ∈ Set.univ, s ∈ S ?
           use Set.univ -- utiliza h1 implicitamente
 
-      · right -- h2 : Set.univ ∉ S, ¿⋃₀S = ∅?
-        simp -- ¿∀ s ∈ S, s = ∅?
+      · right -- h2 : Set.univ ∉ S, ⋃₀S = ∅ ?
+        simp -- ∀ s ∈ S, s = ∅ ?
         intro s hs
         specialize hS s hs -- aplicar definicion de abierto
         cases' hS with hS hS -- dividir en casos
@@ -169,18 +169,39 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
   \begin{lstlisting}
   lemma Real.isOpen_inter (s t : Set ℝ)
       (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := by
-    intro x hx -- x ∈ s ∩ t, ¿∃ δ > 0, ∀ (y : ℝ), ... → y ∈ s ∩ t \end{lstlisting}
+    intro x hx -- x ∈ s ∩ t, ∃ δ > 0, ∀ (y : ℝ), ... → y ∈ s ∩ t ? \end{lstlisting}
 
-  Puesto que $x \in s$, existe un $\delta_1$ de forma que $B_{\delta_1}(x) \subseteq s$. Análogamente, existe un $\delta_2$ de forma que $B_{\delta_2}(x) \subseteq t$. Basta con tomar $\delta = \min \{\delta_1, \delta_2\}$.
+  Puesto que $x \in s$, existe un $\delta_1>0$ (\code{h$\delta$1}) de forma que $B_{\delta_1}(x) \subseteq s$ (\code{hs}). Análogamente, existe un $\delta_2>0$ (\code{h$\delta$2}) de forma que $B_{\delta_2}(x) \subseteq t$ (\code{ht}). Basta con tomar $\delta = \min \{\delta_1, \delta_2\}$.
 
   \begin{lstlisting}
-    obtain ⟨δ1, hδ1⟩ := hs x hx.left
-    obtain ⟨δ2, hδ2⟩ := ht x hx.right
+    obtain ⟨δ1, hδ1, hs⟩ := hs x hx.left
+    obtain ⟨δ2, hδ2, ht⟩ := ht x hx.right
     use min δ1 δ2 \end{lstlisting}
 
-  Trivialmente $\delta > 0$. Para ver que $B_\delta (x) \subseteq s \cap t$, consideramos $y \in B_\delta(x)$ y queremos ver que $y \in s$ y que $y \in t$. Usamos que $\delta_1 \leq $
-    
+  Trivialmente $\delta > 0$.
+  
+  \begin{lstlisting}
+    constructor
+    · exact lt_min hδ1 hδ2 \end{lstlisting}
 
+  Para ver que $B_\delta (x) \subseteq s \cap t$, consideramos $y \in B_\delta(x)$ y queremos ver que $y \in s$ y que $y \in t$. Para ver $y \in s$, como $B_{\delta_1}(x) \subseteq s$ (\code{hs}), basta ver $y \in B_{\delta_1}(x)$.
+
+  \begin{lstlisting}
+    · intro y hy
+      constructor
+      · apply hs -- x - δ1 < y ∧ y < x + δ1 ? \end{lstlisting}
+
+  En realidad, esta condición se reduce a dos inecuaciones, que se pueden probar utilizando \bluecode{linarith} si se cuenta con la hipótesis \code{h$\delta : \delta \leq \delta1$}.
+
+  \begin{lstlisting}
+      have hδ := min_le_left δ1 δ2
+      constructor
+      all_goals linarith \end{lstlisting}
+
+
+
+    
+  
   
 \end{proof}
 
@@ -290,6 +311,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
 
 
 \subsection{Continuidad}
+
 
 
 
