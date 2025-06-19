@@ -716,21 +716,102 @@ En Mathlib, este resultado recibe el nombre de \code{isClosed\_closure}
 
   \begin{lstlisting}
         · obtain ⟨I, hI, hu⟩ := hu
-            obtain ⟨v, hI⟩ := hI
-            rw [hI] at hu
-            exact (δspec v).right u hu \end{lstlisting}
+          obtain ⟨v, hI⟩ := hI
+          rw [hI] at hu
+          exact (δspec v).right u hu \end{lstlisting}
   
 \end{proof}
 
 \subsection{Topología relativa}
 
-\begin{definition}
-  Topología del subespacio (TopoSubspace)
+\begin{definition}[\textbf{Topología relativa}]
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$ un subconjunto. Entonces la colección de conjuntos
+  $$
+  \mathcal{T}|_A = \{U \cap A | U \in \mathcal{T}\}
+  $$
+  es una topología sobre $A$, llamada la \textnormal{topología relativa} a $X$ de $A$.
+
+  Diremos que $(A, \mathcal{T}|_A)$ es un \textnormal{subespacio topológico} de $(X, \mathcal{T})$
 \end{definition}
 
+En Lean, para poder utilizar esta definición, tenemos que demostrar que este conjunto es, en efecto, una topología.
+
+\begin{proof}
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$ un subconjunto, y definimos la colección
+  $$
+  \mathcal{T}|_A = \{U \cap A | U \in \mathcal{T}\}
+  $$
+
+  \begin{lstlisting}
+  def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
+      TopologicalSpace Y where
+
+    IsOpen (V : Set Y) := ∃ U : Set X, T.IsOpen U ∧ V = U ∩ Y \end{lstlisting}
+  
+  (1) El universo es abierto. En efecto, pues $A = X \cap A$ y $X$ es abierto en $X$.
+  
+  \begin{lstlisting}
+    isOpen_univ := by
+      use (Set.univ : Set X)
+      constructor
+      · exact T.isOpen_univ
+      · simp \end{lstlisting}
+  
+  (2) Sean $V_1$ y $V_2$ abiertos en $A$. Entonces $V_1 = U_1 \cap A$ y $V_2 = U_2 \cap A$ con $U_1, U_2$ abiertos en $X$. Luego
+  $$
+  V_1 \cap V_2 = (U_1 \cap A) \cap (U_2 \cap A) = (U_1 \cap U_2) \cap A,
+  $$
+  y $U_1 \cap U_2$ es abierto en $X$ por la segunda propiedad.
+
+  \begin{lstlisting}
+    isOpen_inter := by
+      intro V1 V2 h1 h2
+      obtain ⟨U1, h1open, h1inter⟩ := h1
+      obtain ⟨U2, h2open, h2inter⟩ := h2
+      use U1 ∩ U2
+      constructor
+      · exact T.isOpen_inter U1 U2 h1open h2open
+      · simp
+        rw [h1inter, h2inter]
+        exact Eq.symm (Set.inter_inter_distrib_right U1 U2 Y) \end{lstlisting}
+  
+  (3) Sea $S = \{V_i\}_i$ una colección de abiertos en $A$. Entonces, para cada $V_i$ existe un $U_i$ abierto en $X$ de forma que $V_i = U_i \cap A$. Entonces
+  $$
+  \bigcup S = \bigcup_{i}V_i = \bigcup_{i}(U_i \cap A) = A \cap \bigcup_{i}U_i,
+  $$
+  y $\bigcup_{i}U_i$ es abierto en $X$ por la tercera propiedad.
+
+  Se deja la demostración en Lean para el anexo porque es más complicada.
+\end{proof}
+
 \begin{example}
-  La topología del subespacio [0, 1]; [0, b) es abierto en [0, 1] con la topología usual
+  Consideremos $\mathbb{R}$ con la topología usual y el intervalo $[0, 1] \subset \mathbb{R}$. En la topología de $[0, 1]$ inducida por la topología usual, los intervalos de la forma $[0, b)$ son abiertos para todo $0 < b \leq 1$ (aunque no lo sean en $\mathbb{R}$). También son abiertos los intervalos de la forma $(a, 1]$ para cada $0 \leq a < 1$.
 \end{example}
+
+\begin{proof}
+  Para cada $b > 0$, basta con usar por ejemplo el intervalo abierto $(-1, b)$. Ya hemos visto que los intervalos abiertos son abiertos en $\mathbb{R}$, y se tiene $(-1, b) \cap [0, 1] = [0, b)$. Luego $[0, b)$ es abierto en $[0, 1]$.
+
+  \begin{lstlisting}
+  lemma ico_open_in_Icc01 {Y : Set ℝ} {hY : Y = Set.Icc 0 1}
+      {R : TopologicalSpace Y} {hR : R = TopoSubspace UsualTopology Y}
+      (b : ℝ) (hb : 0 < b ∧ b < 1) :
+      R.IsOpen ({y | (y : ℝ) ∈ Set.Ico 0 b} : Set Y) := by
+
+  rw [hR] -- usar la topologia relativa
+  rw [UsualTopology] -- usar la def. de topologia usual
+  use ((Set.Ioo (-1) b) : Set ℝ) -- usar [-1, b)
+  constructor
+  · exact ioo_open_in_R (-1) b -- es abierto
+  · ext x; constructor -- (-1, b) ∩ [0, 1] = [0, b) ?
+    all_goals
+      intro hx
+      simp at * -- convertirlo todo a inecuaciones
+      constructor
+      · simp [hY] at hx
+        constructor
+        all_goals linarith
+      · exact hx.right \end{lstlisting}
+\end{proof}
 
 
 \subsection{Continuidad}
