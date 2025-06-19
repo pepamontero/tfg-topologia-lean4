@@ -16,98 +16,38 @@ Example:
   B = {(a, b) : a, b ∈ ℝ} is a Base for ℝ with the Usual Topology
 -/
 
-lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology)
-    (f : ℝ × ℝ → Set ℝ) (hf : ∀ a b : ℝ, f (a, b) = Set.Ioo a b) :
-    isTopoBase (f '' (Set.univ)) := by
-
-  constructor
-
-  · intro U hU
-    simp at hU
-    cases' hU with a hU
-    cases' hU with b hU
-    rw [hf a b] at hU
-    rw [← hU]
-    rw [hT]
-    apply ioo_open_in_R a b
-
-  · intro V hV
-    rw [hT] at hV
-
-    have aux : ∀ x ∈ V, ∃ δ > 0, ∀ (y : ℝ), x - δ < y ∧ y < x + δ → y ∈ V
-    exact fun x a ↦ hV x a
-
-    let g : V → ℝ := fun x : V ↦ Classical.choose (aux x x.property)
-
-
-    have g_spec : ∀ x : V, 0 < g x ∧ ∀ y : ℝ, ↑x - g x < y ∧ y < ↑x + g x → y ∈ V :=
-      fun x ↦ Classical.choose_spec (aux x (x.property))
-
-    let new_g : V → Set ℝ := fun x : V ↦ Set.Ioo (x - g x) (x + g x)
-    have new_g_def : ∀ x : V, new_g x = Set.Ioo (x - g x) (x + g x)
-    exact fun x ↦ rfl
-
-    -- new_g nos da, para cada x, el intervalo (x - δ, x + δ)
-    -- donde el δ sale de la definición de V abierto en ℝ aplicada en x
-
-    use new_g '' (Set.univ)
-    -- utilizamos la unión de estos conjuntos
-
-    constructor
-
-    · intro A hA
-      simp
-      simp at hA
-      cases' hA with a hA
-      cases' hA with ha hA
-      rw [new_g_def] at hA
-      use (a - g ⟨a, ha⟩)
-      use (a + g ⟨a, ha⟩)
-      specialize hf (a - g ⟨a, ha⟩) (a + g ⟨a, ha⟩)
-      rw [hf]
-      rw [← hA]
-
-    · ext x
-      constructor
-      all_goals intro hx
-      · simp
-        use x
-        use hx
-
-        rw [new_g_def]
-        simp
-        specialize g_spec ⟨x, hx⟩
-        exact g_spec.left
-      · simp at hx
-        cases' hx with y hy
-        cases' hy with hy hx
-
-        specialize g_spec ⟨y, hy⟩
-        cases' g_spec with hδ h
-        specialize h x
-        apply h
-        exact hx
-
-
-lemma BaseOfRealTopo' [T : TopologicalSpace ℝ]
+lemma BaseOfRealTopo [T : TopologicalSpace ℝ]
     (hT : T = UsualTopology) :
     isTopoBase {s | ∃ a b : ℝ, s = Set.Ioo a b} := by
-  let f : ℝ × ℝ → Set ℝ := fun (a, b) ↦ Set.Ioo a b
-  have aux : {s | ∃ a b : ℝ, s = Set.Ioo a b} = f '' Set.univ
-  · ext x
-    constructor
-    · intro hx
-      simp at hx
-      obtain ⟨a, b, hx⟩ := hx
-      use (a, b)
-      rw [hx]
-      simp
-    · intro hx
-      simp at hx
-      obtain ⟨a, b, hx⟩ := hx
-      use a
-      use b
-      exact id (Eq.symm hx)
-  rw [aux]
+  constructor
+  · intro U hU
+    obtain ⟨a, b, hU⟩ := hU
+    rw [hU, hT]
+    exact ioo_open_in_R a b
 
-  exact @BaseOfRealTopo T hT f (by exact fun a b ↦ rfl)
+  · intro U hUopen
+    rw [hT] at hUopen
+
+    let δ : U → ℝ := fun x ↦ Classical.choose (hUopen x x.property)
+    have δspec : ∀ x : U, 0 < δ x ∧ ∀ y : ℝ, ↑x - δ x < y ∧ y < ↑x + δ x → y ∈ U := fun x ↦ Classical.choose_spec (hUopen x (x.property))
+
+    use {s | ∃ x, s = Set.Ioo (x - δ x) (x + δ x)}
+
+    constructor
+
+    · intro V hV
+      obtain ⟨x, hV⟩ := hV
+      use (↑x - δ x), (↑x + δ x)
+
+    · ext u; constructor; all_goals intro hu
+      · use Set.Ioo (↑u - δ ⟨u, hu⟩) (↑u + δ ⟨u, hu⟩)
+        constructor
+        · simp
+          use u, hu
+        · simp
+          exact (δspec ⟨u, hu⟩).left
+
+      · obtain ⟨I, hI, hu⟩ := hu
+        obtain ⟨v, hI⟩ := hI
+        rw [hI] at hu
+        exact (δspec v).right u hu
