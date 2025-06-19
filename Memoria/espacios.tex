@@ -481,23 +481,124 @@ En Mathlib, este resultado recibe el nombre de \code{interior\_eq\_iff\_isOpen}
   $$
 \end{definition}
 
+\begin{lstlisting}
+  def closure (s : Set X) : Set X :=
+    ⋂₀ { t | IsClosed t ∧ s ⊆ t }
+\end{lstlisting}
+
 Veamos algunas propiedades de la clausura de un conjunto.
 
 \begin{proposition}
-    El conjunto está en la clausura
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces
+  $$
+  A \subseteq \overline{A}
+  $$
 \end{proposition}
 
-\begin{proposition}
-    La clausura es cerrada
-\end{proposition}
+En Mathlib, este resultado recibe el nombre de \code{subset\_closure}
+
+\begin{proof}
+  Sea $a \in A$ y queremos ver que $a \in \overline{A}$. Como $\overline{A}$ es una intersección, esto es equivalente a probar que para cada $K$ cerrado con $A \subseteq K$, $x \in K$. Pero esto es trivial porque, para cada uno de esos $K$, $x \in A \subseteq K$.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      A ⊆ closure A := by
+    intro x hx
+    intro K hK -- hK : IsClosed K ∧ A ⊆ K; x ∈ K ?
+    apply hK.right -- x ∈ A ?
+    exact hx \end{lstlisting}
+\end{proof}
 
 \begin{proposition}
-    El complementario de la clausura es el interior del complementario
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces
+  $$
+  (\overline{A})^c = \overset{\circ}{\overbrace{(A^c)}} 
+  $$
 \end{proposition}
 
+En Mathlib, este resultado recibe el nombre de \code{interior\_compl}
+
+\begin{proof}
+  Veamos ambos contenidos por separado.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      (closure A)ᶜ = interior (Aᶜ) := by
+    ext x; constructor; all_goals intro hx \end{lstlisting}
+  
+  $(\subseteq)$ Supongamos que $x \in (\overline{A})^c$, es decir $x \notin \overline{A}$. Esto quiere decir que existe un $K$ cerrado de forma que $A \subseteq K$ y $x \notin K$.
+
+  \begin{lstlisting}
+    · simp [closure] at hx
+      obtain ⟨K, hKclosed, hKA, hKx⟩ := hx -- hKx : x ∉ K \end{lstlisting}
+  
+  Para ver que $x$ está en el interior de $A^c$, queremos ver que existe un abierto contenido en $A^c$ que contiene a $x$. Consideremos el abierto $K^c$. Como $A \subseteq K$, se tiene $K^c \subseteq A^c$, y como $x \notin K$, se tiene $x \in K^c$
+
+  \begin{lstlisting}
+      use Kᶜ 
+      constructor
+      · constructor
+        · exact isOpen_compl_iff.mpr hKclosed -- IsOpen Kᶜ
+        · exact Set.compl_subset_compl_of_subset hKA -- Kᶜ ⊆ Aᶜ
+      · exact hKx -- x ∈ Kᶜ \end{lstlisting}
+
+  $(\supseteq)$ Sea $x$ en el interior de $A^c$. Entonces existe un abierto $U$ con $x \in U \subseteq A^c$. Para ver que $x$ está en el complementario de $\overline{A}$, supongamos, por reducción al absurdo, que $x \in \overline{A}$.
+
+  \begin{lstlisting}
+    · obtain ⟨U, hU, hUx⟩ := hx
+      obtain ⟨hUopen, hUA⟩ := hU
+      by_contra hx -- hx : x ∈ closure A \end{lstlisting}
+
+  En ese caso, para cada $K$ cerrado con $A \subseteq K$, se tiene $x \in K$. En particular, como $U^c$ es cerrado por ser $U$ abierto y tiene $A \subseteq U^c$ por ser $U \subseteq A^c$, se tiene que $x \in U^c$. Pero $x \in U$, lo cual es una contradicción.
+
+  \begin{lstlisting}
+      simp [closure] at hx
+      specialize hx Uᶜ
+        (by exact isClosed_compl_iff.mpr hUopen)
+        (by exact Set.subset_compl_comm.mp hUA)
+      exact hx hUx \end{lstlisting}
+\end{proof}
+
 \begin{proposition}
-    A es cerrado si y solo si es igual a su clausura
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $\overline{A}$ es un conjunto cerrado.
 \end{proposition}
+
+En Mathlib, este resultado recibe el nombre de \code{isClosed\_closure}
+
+\begin{proof}
+  La prueba es sencilla utilizando el resultado anterior: $\overline{A}$ es cerrado si $(\overline{A})^c$ es abierto. Pero hemos visto que $(\overline{A})^c = (A^c)^\circ$, y el interior de cualquier conjunto es abierto.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      IsClosed (closure A) := by
+    apply isOpen_compl_iff.mp -- IsOpen (closure A)ᶜ ?
+    rw [← interior_compl] -- IsOpen (interior Aᶜ) ?
+    exact isOpen_interior \end{lstlisting}
+\end{proof}
+
+\begin{proposition}
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $A$ es cerrado si y solo si es igual a su clausura.
+\end{proposition}
+
+\begin{proof}
+  El recíproco es trivial, pues ya hemos visto que la clausura de un conjunto es cerrada.
+
+  \begin{lstlisting}
+  example {X : Type} [T : TopologicalSpace X] (A : Set X) :
+      IsClosed A ↔ closure A = A := by
+    constructor; swap; all_goals intro h
+    · rw [← h]
+      exact isClosed_closure \end{lstlisting}
+
+  Ahora, supongamos que $A$ es cerrado. Entonces $A^c$ es abierto, luego es igual a su interior. Pero el interior de $A^c$ hemos visto que es $(\overline{A})^c$, luego $A^c = (\overline{A})^c$, de lo que se deduce $A = \overline{A}$.
+
+  \begin{lstlisting}
+    · rw [← isOpen_compl_iff, ← interior_eq_iff_isOpen, interior_compl] at h
+      rw [← compl_compl A, ← h, compl_compl]
+      exact closure_closure
+  \end{lstlisting}
+  
+\end{proof}
 
 
 

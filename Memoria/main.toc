@@ -22,13 +22,13 @@
 \contentsline {paragraph}{Interior}{36}{}%
 \contentsline {subsubsection}{\numberline {3.1.2}Conjuntos cerrados}{38}{}%
 \contentsline {paragraph}{Clausura}{39}{}%
-\contentsline {subsection}{\numberline {3.2}Bases}{39}{}%
-\contentsline {subsection}{\numberline {3.3}Topología relativa}{40}{}%
-\contentsline {subsection}{\numberline {3.4}Continuidad}{40}{}%
-\contentsline {subsection}{\numberline {3.5}Separación}{40}{}%
-\contentsline {subsubsection}{\numberline {3.5.1}Espacios de Hausdorff}{40}{}%
-\contentsline {subsubsection}{\numberline {3.5.2}Espacios normales}{41}{}%
-\contentsline {section}{\numberline {4}El Lema de Urysohn}{44}{}%
-\contentsline {subsection}{\numberline {4.1}El recíproco}{44}{}%
-\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{44}{}%
-\contentsline {subsection}{\numberline {4.3}Una parte}{44}{}%
+\contentsline {subsection}{\numberline {3.2}Bases}{42}{}%
+\contentsline {subsection}{\numberline {3.3}Topología relativa}{42}{}%
+\contentsline {subsection}{\numberline {3.4}Continuidad}{42}{}%
+\contentsline {subsection}{\numberline {3.5}Separación}{42}{}%
+\contentsline {subsubsection}{\numberline {3.5.1}Espacios de Hausdorff}{42}{}%
+\contentsline {subsubsection}{\numberline {3.5.2}Espacios normales}{43}{}%
+\contentsline {section}{\numberline {4}El Lema de Urysohn}{46}{}%
+\contentsline {subsection}{\numberline {4.1}El recíproco}{46}{}%
+\contentsline {subsection}{\numberline {4.2}Numerar los racionales}{46}{}%
+\contentsline {subsection}{\numberline {4.3}Una parte}{46}{}%
