@@ -45,50 +45,34 @@ lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = 
 #check subset_closure
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     A ⊆ closure A := by
-
   intro x hx
-  intro V hV
-  by_contra hc
-
-  have hc' : x ∈ V ∩ A
-  constructor
-  · cases' hV with U hU
-    apply hU
-    exact hx
-  · exact hx
-
-  obtain ⟨hc', _⟩ := hc'
-  exact hc hc'
+  intro K hK
+  apply hK.right
+  exact hx
 
 
 #check interior_compl
-example
-    {X : Type} [T : TopologicalSpace X] (A : Set X) :
+example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     (closure A)ᶜ = interior (Aᶜ) := by
 
-  ext x
-  constructor
-  all_goals intro hx
+  ext x; constructor; all_goals intro hx
 
-  · simp at hx
-    simp [closure] at hx
-    obtain ⟨V, hV, hVA, hx⟩ := hx
+  · simp [closure] at hx
+    obtain ⟨K, hKclosed, hKA, hKx⟩ := hx
 
-    let U := Vᶜ
-    use U
+    use Kᶜ
     constructor
     · constructor
-      · apply isOpen_compl_iff.mpr at hV
-        exact hV
-      · exact Set.compl_subset_compl_of_subset hVA
-    · exact hx
+      · exact isOpen_compl_iff.mpr hKclosed
+      · exact Set.compl_subset_compl_of_subset hKA
+    · exact hKx
 
-  · simp
-    obtain ⟨U, hU, hUx⟩ := hx
-    obtain ⟨hU, hUA⟩ := hU
+  · obtain ⟨U, hU, hUx⟩ := hx
+    obtain ⟨hUopen, hUA⟩ := hU
     by_contra hx
+
     simp [closure] at hx
-    specialize hx Uᶜ (by exact isClosed_compl_iff.mpr hU) (by exact Set.subset_compl_comm.mp hUA)
+    specialize hx Uᶜ (by exact isClosed_compl_iff.mpr hUopen) (by exact Set.subset_compl_comm.mp hUA)
     exact hx hUx
 
 
@@ -100,19 +84,17 @@ example {X : Type} [T : TopologicalSpace X] (A : Set X) :
   exact isOpen_interior
 
 
-
 #check closure_eq_iff_isClosed
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     IsClosed A ↔ closure A = A := by
-  constructor
-  all_goals intro h
-  · rw [← compl_compl A, isClosed_compl_iff, ← interior_eq_iff_isOpen, interior_compl] at h
+  constructor; swap; all_goals intro h
+  · rw [← h]
+    exact isClosed_closure
+  · rw [← isOpen_compl_iff, ← interior_eq_iff_isOpen, interior_compl] at h
     rw [← compl_compl A, ← h, compl_compl]
     exact closure_closure
 
-  · rw [← compl_compl A, isClosed_compl_iff, ← h]
-    rw [← interior_compl]
-    exact isOpen_interior
+
 
 
 #check closure_empty
