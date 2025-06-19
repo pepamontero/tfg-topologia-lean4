@@ -1,10 +1,8 @@
 import Mathlib.Tactic
-import Leantest.BasicProp.subspaces
 
 open TopologicalSpace
 
 /- DEFINITION OF CONTINUOUS FUNCTION -/
-
 
 example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' U) := by
@@ -30,10 +28,9 @@ Proposición: son equivalentes:
 3. ∀ C ⊆ Y con C cerrado en X, f⁻¹(C) es cerrado en Y
 -/
 
+#check continuous_iff_isClosed
 example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ C : Set Y, IsClosed C → IsClosed (f ⁻¹' C) := by
-  --exact continuous_iff_isClosed
-
   constructor <;> intro h
   · rw [continuous_def] at h
     intro C hC
@@ -48,22 +45,3 @@ example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     specialize h sᶜ hs
     simp at h
     exact h
-
-/-
-Proposición: Sean
-- f : X → Y continua
-- Z ⊆ X
-Entonces f : Z → Y es continua
--/
-
-#check Set.restrict
-
-example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y]
-    (f : X → Y) (Z : Set X) (hf : Continuous f) :
-    Continuous (Z.restrict f) := by
-
-  rw [continuous_def] at *
-  intro s hs
-  specialize hf s hs
-
-  sorry -- creo que paso pq usa muchas movidas de subespacios
