@@ -231,6 +231,45 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
     exact ht -- t ∈ ∅ = False
 \end{lstlisting}
   
+\begin{example}\label{ejemplo:intervalos-abiertos}
+  En la topología usual, $(\mathbb{R}, \mathcal{T}_u)$, los intervalos abiertos $I = (a, b)$ con $a < b$ son abiertos.
+\end{example}
+
+\begin{proof}
+  Consideremos un intervalo de la forma $(a, b)$ y queremos ver que es abierto. Para ello, sea $x \in (a, b)$, y veamos que existe un $\delta >0$ tal que $\forall y \in \mathbb{R}$, si $y \in B_\delta(x)$ entonces $y \in (a, b)$.
+
+  \begin{lstlisting}
+  lemma ioo_open_in_R (a b : ℝ) :
+      UsualTopology.IsOpen ((Set.Ioo a b) : Set ℝ) := by
+    rw [UsualTopology]
+    intro x hx \end{lstlisting}
+
+  Tomamos $\delta = min \{x-a, b-x\}$. Obviamente $\delta >0$ pues $a < x < b$.
+
+  \begin{lstlisting}
+    use min (x-a) (b-x)  -- nuestro δ
+    constructor
+    · simp
+      exact hx \end{lstlisting}
+
+  Sea ahora $y \in B_\delta(x)$ y queremos ver que $y \in (a, b)$. Hay dos posibles casos, según el valor que tome $\delta$. Si $\delta = x-a$, es decir, $x-a < b -x$, entonces se tiene
+  $$
+  y \in B_\delta(x) \implies x - (x - a) < y < x + (x - a) < x + (b - x) \implies a < y < b,
+  $$
+  luego $y \in (a, b)$. El caso $\delta = b -x$ es análogo.
+
+  \begin{lstlisting}
+    · intro y hy
+      have cases := lt_or_le (x - a) (b - x)
+      cases' cases with h h -- dividimos en casos
+      all_goals -- aunque en ambos casos se procede igual
+        try rw [min_eq_left_of_lt h] at hy
+        try rw [min_eq_right h] at hy
+        simp at hy
+        constructor
+        all_goals linarith \end{lstlisting}
+\end{proof}
+
 \begin{definition}[\textbf{Entorno abierto}]
   Sea $(X, \mathcal{T})$ un espacio topológico y $x \in X$. Un \textnormal{entorno abierto} de $x$ en $X$ es un conjunto abierto $U \in \mathcal{T}$ de forma que $x \in U$.
 \end{definition}
@@ -595,22 +634,93 @@ En Mathlib, este resultado recibe el nombre de \code{isClosed\_closure}
   \begin{lstlisting}
     · rw [← isOpen_compl_iff, ← interior_eq_iff_isOpen, interior_compl] at h
       rw [← compl_compl A, ← h, compl_compl]
-      exact closure_closure
-  \end{lstlisting}
+      exact closure_closure \end{lstlisting}
   
 \end{proof}
-
 
 
 \subsection{Bases}
 
 \begin{definition}
-  Base de una topología: isTopoBase
+  Sea $\mathcal{T}$ una topología. Una \textnormal{base de la topología} $\mathcal{T}$ es una colección de abiertos $\mathcal{B} \subset \mathcal{T}$ de forma que cada abierto de $\mathcal{T}$ es unión de abiertos de $\mathcal{B}$\footnote{Hay varias formas de dar esta definición, esta es la que yo he elegido para definirla en Lean, de manera independiente a Mathlib. Por tanto, los resultados de esta sección no se encuentran literalmente en Mathlib.}.
 \end{definition}
 
+\begin{lstlisting}
+  def isTopoBase {X : Type} [TopologicalSpace X]
+      (B : Set (Set X)) : Prop :=
+    (∀ U ∈ B, IsOpen U) ∧
+    (∀ V : Set X, IsOpen V → ∃ UB ⊆ B, V = ⋃₀ UB)
+\end{lstlisting}
+
 \begin{example}
-  BaseOfRealTopo
+  El conjunto de los intervalos abiertos en $\mathbb{R}$,
+  $$
+  \mathcal{B} = \left\{ I = (a, b) ~|~ a < b\right\},
+  $$
+  es una base de la topología usual $(\mathbb{R}, \mathcal{T}_u)$.
 \end{example}
+
+\begin{proof}
+
+  Hemos visto que los intervalos abiertos son abiertos en la topología usual (Ejemplo \ref{ejemplo:intervalos-abiertos}). Por tanto la primera parte de la definición de base ya la tenemos.
+
+  \begin{lstlisting}
+  lemma BaseOfRealTopo [T : TopologicalSpace ℝ] (hT : T = UsualTopology) :
+      isTopoBase {s | ∃ a b : ℝ, s = Set.Ioo a b} := by
+    constructor
+    · intro U hU -- sea U en el conjunto
+      obtain ⟨a, b, hU⟩ := hU -- hU : U = (a, b)
+      rw [hU, hT]
+      exact ioo_open_in_R a b -- aplicamos el resultado anterior \end{lstlisting}
+
+  Ahora, para la segunda parte, consideramos un $U \subseteq X$ cualquiera. Queremos ver que se escribe como unión de intervalos abiertos.
+
+  \begin{lstlisting}
+    · intro U hUopen
+      rw [hT] at hUopen \end{lstlisting}
+  
+  Para ello, consideremos para cada $x \in U$, el $\delta_u$ resultante de aplicar la definición de abierto, es decir, tal que $B_{\delta_x}(x) \subseteq U$. Queremos demostrar que $U = \bigcup \{B_{\delta_x}(x) | x \in U\}$, y que este es un subconjunto de $\mathcal{B}$.
+
+  \begin{lstlisting}
+      let δ : U → ℝ := fun x ↦ Classical.choose (hUopen x x.property)
+      have δspec : ∀ x : U, 0 < δ x
+          ∧ ∀ y : ℝ, ↑x - δ x < y ∧ y < ↑x + δ x → y ∈ U :=
+        fun x ↦ Classical.choose_spec (hUopen x (x.property))
+
+      use {s | ∃ x, s = Set.Ioo (x - δ x) (x + δ x)} \end{lstlisting}
+
+  Obviamente, es un subconjunto de $\mathcal{B}$ puesto que es un conjunto formado por intervalos abiertos.
+
+  \begin{lstlisting}
+      constructor
+      · intro V hV
+        obtain ⟨x, hV⟩ := hV
+        use (↑x - δ x), (↑x + δ x) \end{lstlisting}
+
+  Ahora, para ver que $U = \bigcup \{B_{\delta_x}(x) | x \in U\}$, demostramos las dos inclusiones de manera separada.
+
+  \begin{lstlisting}
+      · ext u; constructor; all_goals intro hu \end{lstlisting}
+
+  $(\subseteq)$ Sea $u \in U$. Entonces $u \in B_{\delta_u}$ trivialmente. Luego está en la unión.
+
+  \begin{lstlisting}
+        · use Set.Ioo (↑u - δ ⟨u, hu⟩) (↑u + δ ⟨u, hu⟩) -- = Bδu(u)
+          constructor
+          · simp -- Bδu(u) es un intervalo abierto ?
+            use u, hu
+          · simp -- u ∈ Bδu(u) ?
+            exact (δspec ⟨u, hu⟩).left \end{lstlisting}
+
+  $(\supseteq)$ Sea $u \in \bigcup \{B_{\delta_x}(x) | x \in U\}$. Entonces existe un $v \in U$ de forma que $u \in B_{\delta_v}(v) \subseteq U$. Luego $u \in U$.
+
+  \begin{lstlisting}
+        · obtain ⟨I, hI, hu⟩ := hu
+            obtain ⟨v, hI⟩ := hI
+            rw [hI] at hu
+            exact (δspec v).right u hu \end{lstlisting}
+  
+\end{proof}
 
 \subsection{Topología relativa}
 
