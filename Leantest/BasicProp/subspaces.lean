@@ -1,5 +1,3 @@
-
-
 import Leantest.BasicProp.basic
 import Leantest.TopoSpaces.usual
 
@@ -11,39 +9,36 @@ Note: needs proof that it is actually a topological space
 def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
   TopologicalSpace Y where
 
-  IsOpen (U : Set Y) := ∃ V : Set X, T.IsOpen V ∧ U = V ∩ Y
+  IsOpen (V : Set Y) := ∃ U : Set X, T.IsOpen U ∧ V = U ∩ Y
   isOpen_univ := by
     use (Set.univ : Set X)
     constructor
     · exact T.isOpen_univ
     · simp
   isOpen_inter := by
-    intro s t hs ht
-    cases' hs with u hu
-    cases' ht with v hv
-    use u ∩ v
+    intro V1 V2 h1 h2
+    obtain ⟨U1, h1open, h1inter⟩ := h1
+    obtain ⟨U2, h2open, h2inter⟩ := h2
+    use U1 ∩ U2
     constructor
-    · exact T.isOpen_inter u v hu.left hv.left
+    · exact T.isOpen_inter U1 U2 h1open h2open
     · simp
-      rw [hu.right, hv.right]
-      exact Eq.symm (Set.inter_inter_distrib_right u v Y)
+      rw [h1inter, h2inter]
+      exact Eq.symm (Set.inter_inter_distrib_right U1 U2 Y)
   isOpen_sUnion := by
     intro S hS
-    simp at hS
 
-    -- tomamos V = ∪_i V_i, los V_i de la def. de ab. para cada t_i ∈ S
+    -- tomamos S' = ∪_i V_i, los V_i de la def. de ab. para cada t_i ∈ S
     use ⋃ t : S, Classical.choose (hS t t.property)
     constructor
-    · -- 1. V es abierto
+    · -- 1. S' es abierto
       apply T.isOpen_sUnion
       simp
-      intro u t ht hu
-      let hu' := Classical.choose_spec (hS t ht)
-      cases' hu' with hu' _
-      rw [hu] at hu'
-      exact hu'
-    · -- 2. ⋃₀ S = V ∩ Y
-
+      intro _ V hU hV
+      obtain ⟨hUopen, _⟩ := Classical.choose_spec (hS V hU)
+      rw [hV] at hUopen
+      exact hUopen
+    · -- 2. ⋃₀ S = S' ∩ Y
       ext x ; constructor <;> intro hx
       · simp at hx
         cases' hx with t ht
@@ -96,31 +91,17 @@ lemma ico_open_in_Icc01 {Y : Set ℝ}
   use ((Set.Ioo (-1) b) : Set ℝ)
   constructor
   · exact ioo_open_in_R (-1) b
-  · ext x
-    constructor
-    all_goals intro hx
-    · simp
-      simp at hx
-      cases' hx with hx1 hx2
+  · ext x; constructor
+    all_goals
+      intro hx
+      simp at * -- convertirlo todo a inecuaciones
       constructor
-      · rw [hY] at hx2
-        simp at hx2
-        cases' hx2 with hx2 hx3
+      · simp [hY] at hx
         constructor
-        · linarith
-        · simp at hx3
-          linarith
-      · exact hx2
-    · simp
-      simp at hx
-      cases' hx with hx1 hx2
-      constructor
-      · rw [hY] at hx2
-        simp at hx2
-        constructor
-        · linarith
-        · linarith
-      · exact hx2
+        all_goals linarith
+      · exact hx.right
+
+
 
 lemma ioc_open_in_Icc01 {Y : Set ℝ}
     {hY : Y = Set.Icc 0 1}
@@ -132,30 +113,16 @@ lemma ioc_open_in_Icc01 {Y : Set ℝ}
   rw [hR] -- usar la topo. del subesp.
   rw [UsualTopology] -- usar la def. de T_u
   use ((Set.Ioo b 2) : Set ℝ)
+
+
   constructor
   · exact ioo_open_in_R b 2
-  · ext x
-    constructor
-    all_goals intro hx
-    · simp
-      simp at hx
-      cases' hx with hx1 hx2
+  · ext x; constructor
+    all_goals
+      intro hx
+      simp at * -- convertirlo todo a inecuaciones
       constructor
-      · rw [hY] at hx2
-        simp at hx2
-        cases' hx2 with hx2 hx3
+      · simp [hY] at hx
         constructor
-        · linarith
-        · simp at hx3
-          linarith
-      · exact hx2
-    · simp
-      simp at hx
-      cases' hx with hx1 hx2
-      constructor
-      · rw [hY] at hx2
-        simp at hx2
-        constructor
-        · linarith
-        · linarith
-      · exact hx2
+        all_goals linarith
+      · exact hx.right
