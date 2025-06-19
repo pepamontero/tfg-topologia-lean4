@@ -29,7 +29,9 @@ lemma BaseOfRealTopo [T : TopologicalSpace ℝ]
     rw [hT] at hUopen
 
     let δ : U → ℝ := fun x ↦ Classical.choose (hUopen x x.property)
-    have δspec : ∀ x : U, 0 < δ x ∧ ∀ y : ℝ, ↑x - δ x < y ∧ y < ↑x + δ x → y ∈ U := fun x ↦ Classical.choose_spec (hUopen x (x.property))
+    have δspec : ∀ x : U, 0 < δ x
+        ∧ ∀ y : ℝ, ↑x - δ x < y ∧ y < ↑x + δ x → y ∈ U :=
+      fun x ↦ Classical.choose_spec (hUopen x (x.property))
 
     use {s | ∃ x, s = Set.Ioo (x - δ x) (x + δ x)}
 

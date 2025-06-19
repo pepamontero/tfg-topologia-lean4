@@ -93,11 +93,10 @@ lemma ioo_open_in_R (a b : ℝ) :
 
   · -- (x - δ, x + δ) ⊆ (a, b) ?
     -- hay que diferenciar cuando δ = x-a y δ = b-x
-
+    intro y hy
     have cases := lt_or_le (x - a) (b - x)
     cases' cases with h h
     all_goals
-      intro y hy
       try rw [min_eq_left_of_lt h] at hy
       try rw [min_eq_right h] at hy
       simp at hy
