@@ -12,28 +12,16 @@ lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
     [T' : TopologicalSpace Y] (f : X → Y)
     (B : Set (Set Y)) (hB : isTopoBase B) :
     Continuous f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U) := by
-
   rw [continuous_def]
-  constructor
-  all_goals intro h
-  · intro U hU
-    cases' hB with hB _
-    specialize hB U hU
-    specialize h U hB
-    exact h
-
+  constructor; all_goals intro h
+  · exact fun U hU ↦ h U (hB.left U hU)
   · intro V hV
-    cases' hB with hB1 hB
-    specialize hB V hV
-    cases' hB with UB hUB
-    rw [hUB.right]
-    rw [Set.preimage_sUnion]
-
+    obtain ⟨UB, hUB⟩ := hB.right V hV
+    rw [hUB.right, Set.preimage_sUnion]
     apply isOpen_biUnion
     intro A hA
     apply h
-    apply hUB.left
-    exact hA
+    exact (hUB.left hA)
 
 
 
