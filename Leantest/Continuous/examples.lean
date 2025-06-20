@@ -10,7 +10,7 @@ import Leantest.TopoSpaces.sorgenfrey
 #check UsualTopology
 
 
-theorem continuous_from_discrete {X Y : Type}
+lemma continuous_from_discrete {X Y : Type}
     [T : TopologicalSpace X]
     [TopologicalSpace Y]
     (h : T = DiscreteTopo X)
@@ -21,13 +21,12 @@ theorem continuous_from_discrete {X Y : Type}
 
   -- aquí lo que hago es que le digo
   -- que estoy trabajando con la discreta
-  rw [h]
-  rw [DiscreteTopo]
+  rw [h, DiscreteTopo]
   -- (Aunque parezca que no hago nada)
   trivial
 
 
-theorem continuous_to_trivial {X Y : Type}
+lemma continuous_to_trivial {X Y : Type}
     [TopologicalSpace X]
     [T : TopologicalSpace Y]
     (h : T = TrivialTopology Y)
@@ -35,18 +34,15 @@ theorem continuous_to_trivial {X Y : Type}
 
   rw [continuous_def]
   intro U hU
-
-  rw [h] at hU
-  rw [TrivialTopology] at hU
-
-  cases' hU with hU hU
+  rw [h, TrivialTopology] at hU
+  cases' hU with hUuniv hUempty
 
   · -- si U = Y
-    rw [hU]
+    rw [hUuniv]
     exact isOpen_univ
 
   · -- si U = ∅
-    rw [hU]
+    rw [hUempty]
     exact isOpen_empty
 
 
