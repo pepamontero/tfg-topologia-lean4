@@ -30,7 +30,7 @@ El primer elemento, \code{IsOpen}, es una función que lleva cada conjunto de $X
 
 Veamos algunos ejemplos y sus demostraciones en Lean.
 
-\begin{example}
+\begin{example}\label{ex:topologia-discreta}
     Sea $X$ un conjunto cualquiera. Consideremos la colección $\mathcal{T}$ de todos los subconjuntos de $\mathcal{T}$. Entonces $\mathcal{T}$ es una topología sobre $X$, a la que llamamos \textnormal{topología discreta}.
 \end{example}
 
@@ -74,7 +74,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
 \end{proof}
 
 
-\begin{example}
+\begin{example}\label{ex:topologia-trivial}
     Sea $X$ un conjunto cualquiera. Consideremos la colección $\mathcal{T}=\{\emptyset, X\}$. Entonces $\mathcal{T}$ es una topología sobre $X$, a la que llamamos \textnormal{topología trivial}.
 \end{example}
 
@@ -817,61 +817,238 @@ En Lean, para poder utilizar esta definición, tenemos que demostrar que este co
 \subsection{Continuidad}
 
 \begin{definition}
-  Función Continua
+  Sean $X$ e $Y$ dos espacios topológicos y $f : X \to Y$ una función entre ambos. Entonces $f$ es \textnormal{continua} en un punto $x_0 \in X$ si para cada entorno $V$ de $f(x_0)$ en $Y$, se tiene que $f^{-1}(V)$ es entorno de $x_0$ en $X$. Diremos que $f$ es \textnormal{continua} en $X$ si es continua en cada punto.
 \end{definition}
 
+\begin{proposition}[\textbf{Caracterización de funciones continuas}]
+  Sean $X$ e $Y$ dos espacios topológicos y $f : X \to Y$ una función entre ambos. Entonces $f$ es continua si y solo si para cada $V \subseteq Y$ abierto, se tiene que $f^{-1}(V)$ es abierto en $X$.
+\end{proposition}
+
+\begin{proof} Veamos ambas implicaciones por separado.
+
+  \begin{lstlisting}
+  example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y]
+      (f : X → Y) :
+      (∀ x : X, ∀ V : Set Y, Neighbourhood V (f x) →
+        Neighbourhood (f ⁻¹' V) x)
+      ↔ ∀ (V : Set Y), IsOpen V → IsOpen (f ⁻¹' V) := by
+    constructor; all_goals intro h \end{lstlisting}
+
+  $(\implies)$ Sea $f : X \to Y$ continua y sea $V \subseteq Y$ un conjunto abierto. Queremos ver que $f^{-1}(V)$ es abierto. Para ello, basta ver que es entorno de todos sus puntos (Prop. \ref{caracterizacion-abierto}).
+  
+  Sea $x \in f^{-1}(V)$. Entonces $V$ es entorno de $f(x)$, por ser $V$ un abierto con $f(x) \in V$. Luego, por la definición de continuidad, $f^{-1}(V)$ es entorno de $x$.
+
+  \begin{lstlisting}
+    · intro V hVopen
+      apply A_open_iff_neighbourhood_of_all.mpr
+      intro x hx
+      exact h x V
+        (by use V; simp; exact ⟨hx, hVopen⟩) -- V entorno de f x \end{lstlisting}
+
+  $(\impliedby)$ Sea ahora $x \in X$ y $V \subseteq Y$ un entorno de $f(x)$ en $Y$. Queremos ver que $f^{-1}(V)$ es entorno de $x$ en $X$.
+  
+  Existe un entorno abierto $U\subseteq V$ de $f(x)$ en $Y$. Entonces $x \in f^{-1}(U)\subseteq f^{-1}(V)$, y es un abierto, por hipótesis. Por tanto $f^{-1}(V)$ es entorno de $x$.
+
+  \begin{lstlisting}
+    · intro x V hV
+      obtain ⟨U, hUV, hU⟩ := hV
+      obtain ⟨hUx, hUopen⟩ := hU
+      use f ⁻¹' U
+      constructor
+      · intro u hu -- f ⁻¹' U ⊆ f ⁻¹' V ?
+        apply hUV
+        exact hu
+      · constructor
+        · exact hUx -- x ∈ f ⁻¹' U
+        · exact h U hUopen -- IsOpen (f ⁻¹' U) \end{lstlisting}
+  
+\end{proof}
+
+Puesto que ambas definiciones son equivalentes, en Mathlib se utiliza la segunda para definir las funciones continuas, y en general utilizaremos esta definición.
+
 \begin{lstlisting}
-  def
+  structure Continuous (f : X → Y) : Prop where
+    isOpen_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
+\end{lstlisting}
+
+Utilizaremos \code{continuous\_def} para re escribir \code{Continuous f} por esta definición cuando lo necesitemos.
+
+\begin{example}
+  Sea $f : (X, \mathcal{T}_disc) \to (Y, \mathcal{T})$ una función en la que el espacio de salida tiene la topología discreta (Ej. \ref{ex:topologia-discreta}). Entonces $f$ es continua.
+
+  Si tomamos cualquier abierto de $Y$, su preimagen será abierta en la topología discreta trivialmente, puesto que cualquier conjunto lo es.
+\end{example}
+
+\begin{lstlisting}
+  lemma continuous_from_discrete {X Y : Type} [T : TopologicalSpace X]
+      [TopologicalSpace Y] (h : T = DiscreteTopo X) (f : X → Y) : Continuous f := by
+    rw [continuous_def]
+    intro U _ -- ni si quiera importa si U es abierto
+    rw [h, DiscreteTopo] -- utilizamos la def de topologia discreta
+    trivial
 \end{lstlisting}
 
 \begin{example}
-  funciones desde el discreto son continuas
+  Sea $f : (X, \mathcal{T}) \to (Y, \mathcal{T}_trivial)$ una función en la que el espacio de llegada tiene la topología trivial (Ej. \ref{ex:topologia-trivial}). Entonces $f$ es continua.
+
+  Puesto que las únicas posibilidades de abiertos a tomar en $Y$ son el propio $Y$ y el conjunto vacío, sus preimágenes serán respectivamente $X$ y el conjunto vacío, que son abiertos.
 \end{example}
 
-\begin{example}
-  funciones al trivial son continuas
-\end{example}
+\begin{lstlisting}
+  lemma continuous_to_trivial {X Y : Type} [TopologicalSpace X]
+      [T : TopologicalSpace Y] (h : T = TrivialTopology Y) (f : X → Y) :
+      Continuous f := by
+    rw [continuous_def]
+    intro U hU
+    rw [h, TrivialTopology] at hU
+    cases' hU with hUuniv hUempty
+    · rw [hUuniv] -- si U = Y
+      exact isOpen_univ
+    · rw [hUempty] -- si U = ∅
+      exact isOpen_empty
+\end{lstlisting}
 
 \begin{proposition}
-  la composición de funciones continuas es continua
+  La composición de funciones continuas entre espacios topológicos es también una función continua.
 \end{proposition}
 
+En Mathlib, este resultado recibe el nombre de \code{Continuous.comp}.
+
 \begin{proof}
-  proof
+  Sean $f : X \to Y$ y $g : Y \to Z$ dos funciones continuas y consideremos su composición $g \circ f : X \to Z$.
+
+  Sea $W$ un abierto de $Z$. Como $g$ es continua, $V = g^{-1}(W)$ es abierto en $Y$. Como $f$ es continua, $f^{-1}(V)$ es abierto en $X$. Pero
+  $$
+  f^{-1}(V) = f^{-1}(g^{-1}(W)) = (g \circ f)^{-1}(W)
+  $$
+
+  \begin{lstlisting}
+  example (X Y Z : Type) [TopologicalSpace X] [TopologicalSpace Y]
+      [TopologicalSpace Z] (f : X → Y) (g : Y → Z)
+      (hf : Continuous f) (hg : Continuous g) : Continuous (g ∘ f) := by
+    rw [continuous_def] at *
+    intro W hW
+    specialize hg W hW
+    specialize hf (g ⁻¹' W) hg
+    exact hf \end{lstlisting}
 \end{proof}
+
+\begin{proposition}[Caracterización de la continuidad por cerrados]
+  Sean $X$ e $Y$ dos espacios topológicos y $f : X \to Y$ una función entre ambos. Entonces $f$ es continua si y solo si para cada $C \subseteq Y$ cerrado, se tiene que $f^{-1}(C)$ es cerrado en $X$.
+\end{proposition}
+
+En Mathlib, este resultado recibe el nombre de \code{continuous\_iff\_isClosed}.
+
+
+\begin{proof}
+  Supongamos que $f$ es continua. Sea $C$ cerrado en $Y$. Entonces $C^c$ es abierto en $Y$. Por ser $f$ continua, $f^-1(C^c)$ es abierto en $X$. Pero $f^-1(C^c) = f^-1(C)^c$, luego $f^-1(C)$ es cerrado en $X$. El recíproco es análogo.
+  
+  \begin{lstlisting}
+  example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y]
+      (f : X → Y) : Continuous f ↔
+        ∀ C : Set Y, IsClosed C → IsClosed (f ⁻¹' C) := by
+    constructor; all_goals intro h
+    · rw [continuous_def] at h
+      intro C hC
+      rw [← isOpen_compl_iff] at *
+      exact h Cᶜ hC
+    · rw [continuous_def]
+      intro U hU
+      rw [← isClosed_compl_iff] at *
+      exact h Uᶜ hU  \end{lstlisting}
+
+\end{proof}
+
+\begin{proposition}[Continuidad del subespacio]
+  Sean $X$ e $Y$ espacios topológicos y $Z$ un subespacio topológico de Y. Una función $f : X \to Z$ es continua si y solo si lo es como función $f : X \to Y$.
+\end{proposition}
+
+Es decir, para demostrar la condición de continuidad de $f : X \to Z$, basta con tomar abiertos arbitrarios de $Y$.
+
+\begin{proof}
+  Veamos cada implicación por separado.
+
+  \begin{lstlisting}
+  lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
+      [TX : TopologicalSpace X] [TY : TopologicalSpace Y]
+      [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
+      (f : X → Z) : Continuous f ↔ ∀ U : Set Y,
+        TY.IsOpen U → TX.IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
+    rw [continuous_def]
+    constructor
+    all_goals intro h U hU \end{lstlisting}
+
+  $(\implies)$ Supongamos que $f : X \to Z$ es continua. Sea $U$ un abierto de $Y$ y queremos ver que $f^-1(U)$ es abierto en $X$. Puesto que $f$ es continua, basta ver que $f(f^{-1})(U)$ es abierto. Pero $f(f^{-1})(U) = U \cap Y$, que es abierto por la definición de topología relativa por ser $U$ abierto.
+
+  \begin{lstlisting}
+    · apply h
+      rw [hZ]
+      use U
+      constructor
+      · exact hU
+      · simp
+        exact Set.inter_comm Z U \end{lstlisting}
+
+  $(\impliedby)$ Supongamos ahora que $f : X \to Y$ es continua. Sea $U$ un abierto en $Z$. Entonces, por la definición de la topología relativa, existe un $V$ abierto en $Y$ de forma que $U = V \cap Z$. Por ser $f$ continua, $f^{-1}(V)$ es abierto. Entonces $f^{-1}(U) = f^{-1}(V \cap Z) = f^{-1}(V)$, por ser $f : X \to Z$. Luego es abierto.
+
+  \begin{lstlisting}
+    · rw [hZ] at hU
+      obtain ⟨V, hV⟩ := hU
+      rw [← @Set.preimage_val_image_val_eq_self Y Z U, hV.right]
+      simp
+      apply h
+      exact hV.left
+  \end{lstlisting}
+  
+\end{proof}
+
+\begin{lstlisting}
+  Nota: Realmente la gracia de esta demostracion es usar lo de Subype.val bien... No se ni si tiene sentido porque siento que no se entiende nada.
+\end{lstlisting}
 
 \begin{proposition}
-  Caracterización de la continuidad por cerrados
+  Sea $f : X \to Y$ una función entre espacios topológicos y sea $\mathcal{B}$ una base de $Y$. Entonces $f$ es continua si y solo si para cada $U \in \mathcal{B}$ abierto básico, se tiene que $f^{-1}(U)$ es abierto en $X$.
 \end{proposition}
 
-\begin{proof}
-  proof
-\end{proof}
+Es decir, para la definición de continuidad de una función basta tomar los abiertos básicos.
 
-\begin{proposition}
-  La continuidad en el subespacio
-\end{proposition}
-
-\begin{proof}
-  proof
-\end{proof}
-
-\begin{proposition}
-  la continuidad en funcion de una base
-\end{proposition}
+\begin{lstlisting}
+  lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
+      [T' : TopologicalSpace Y] (f : X → Y)
+      (B : Set (Set Y)) (hB : isTopoBase B) :
+      Continuous f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U)
+\end{lstlisting}
 
 \begin{proof}
-  proof
+  La primera implicación es trivial; si la propiedad de continuidad se cumple para cada abierto trivialmente se cumple para los abiertos básicos.
+
+  \begin{lstlisting}
+      rw [continuous_def]
+      constructor; all_goals intro h
+      · exact fun U hU ↦ h U (hB.left U hU)
+  \end{lstlisting}
+
+  $(\impliedby)$ Sea $V$ abierto en $Y$ y queremos ver que $f^{-1}(V)$ es abierto en $X$. Como $\mathcal{B}$ es base de $Y$, existe una familia $\{B_i\}_i \subseteq \mathcal{B}$ de forma que $U = \bigcup_i B_i$. Entonces $$
+  f^{-1}(U) = f^{-1}\big(\bigcup_i B_i\big) = \bigcup_i f^{-1}(B_i),
+  $$
+  que será abierto cuando cada uno de los componentes de la unión sea abierto. Pero $B_i$ es abierto por pertenecer a una base, y $f$ es continua, luego $f^{-1}(B_i)$ es continuo para cada $i$.
+
+  \begin{lstlisting}
+    · intro V hV
+      obtain ⟨UB, hUB⟩ := hB.right V hV
+      rw [hUB.right, Set.preimage_sUnion]
+      apply isOpen_biUnion
+      intro A hA
+      apply h
+      exact (hUB.left hA)
+  \end{lstlisting}
+
 \end{proof}
 
-
-
-
+Estos dos últimos resultados se pueden combinar, de manera que para demostrar que $f : X \to Z \subseteq Y$ es continua, basta con demostrar la condición para los abiertos básicos de $Y$. Este resultado, que he demostrado en Lean y llamado \code{continuousInSubspace\_iff\_trueForBase}, es uno de los que utilizaremos para demostrar la continuidad en el Lema de Urysohn.
 
 
 \subsection{Separación}
-
-
 
 \subsubsection{Espacios de Hausdorff}
 
