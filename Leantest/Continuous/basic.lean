@@ -1,4 +1,3 @@
-import Mathlib.Tactic
 import Leantest.BasicProp.open
 
 open TopologicalSpace
@@ -12,14 +11,14 @@ example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
 
 /- COMPOSITION -/
 
+#check Continuous.comp
 example (X Y Z : Type) [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : X → Y) (g : Y → Z) (hf : Continuous f) (hg : Continuous g) : Continuous (g ∘ f) := by
-  --exact Continuous.comp hg hf
 
   rw [continuous_def] at *
-  intro s hs
-  specialize hg s hs
-  specialize hf (g ⁻¹' s) hg
+  intro W hW
+  specialize hg W hW
+  specialize hf (g ⁻¹' W) hg
   exact hf
 
 /-
@@ -32,20 +31,16 @@ Proposición: son equivalentes:
 #check continuous_iff_isClosed
 example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ C : Set Y, IsClosed C → IsClosed (f ⁻¹' C) := by
-  constructor <;> intro h
+  constructor; all_goals intro h
   · rw [continuous_def] at h
     intro C hC
     rw [← isOpen_compl_iff] at *
-    specialize h Cᶜ hC
-    exact h
+    exact h Cᶜ hC
 
   · rw [continuous_def]
-    intro s hs
-    rw [← compl_compl s] at hs
-    rw [isOpen_compl_iff] at hs
-    specialize h sᶜ hs
-    simp at h
-    exact h
+    intro U hU
+    rw [← isClosed_compl_iff] at *
+    exact h Uᶜ hU
 
 
 -- equivalencia con la definición
