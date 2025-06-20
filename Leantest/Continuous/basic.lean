@@ -1,4 +1,5 @@
 import Mathlib.Tactic
+import Leantest.BasicProp.open
 
 open TopologicalSpace
 
@@ -45,3 +46,31 @@ example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     specialize h sᶜ hs
     simp at h
     exact h
+
+
+-- equivalencia con la definición
+example (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) :
+      (∀ x : X, ∀ V : Set Y,
+        Neighbourhood V (f x) → Neighbourhood (f ⁻¹' V) x)
+      ↔ ∀ (V : Set Y), IsOpen V → IsOpen (f ⁻¹' V) := by
+
+  constructor; all_goals intro h
+
+  · intro V hVopen
+    apply A_open_iff_neighbourhood_of_all.mpr
+    intro x hx
+    exact h x V
+      (by use V; simp; exact ⟨hx, hVopen⟩)
+
+  · intro x V hV
+    obtain ⟨U, hUV, hU⟩ := hV
+    obtain ⟨hUx, hUopen⟩ := hU
+    use f ⁻¹' U
+    constructor
+    · intro u hu
+      apply hUV
+      exact hu
+    · constructor
+      · exact hUx
+      · exact h U hUopen
