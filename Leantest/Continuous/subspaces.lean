@@ -9,11 +9,18 @@ import Leantest.BasicProp.subspaces
       the condition of continuity is true for opens in Y
 -/
 
+example {X Y : Type} {Z : Set Y}
+    [TX : TopologicalSpace X] [TY : TopologicalSpace Y]
+    [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
+    (f : X → Z)  :
+    Continuous f ↔ ∀ U : Set Y, TY.IsOpen U → TX.IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
+  sorry
+
 lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
     [TX : TopologicalSpace X] [TY : TopologicalSpace Y]
     [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
     (f : X → Z) :
-    Continuous f ↔ ∀ U : Set Y, IsOpen U → IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
+    Continuous f ↔ ∀ U : Set Y, TY.IsOpen U → TX.IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
 
   rw [continuous_def]
   constructor
@@ -30,13 +37,9 @@ lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
 
   · -- ←
     rw [hZ] at hU
-    cases' hU with V hV
+    obtain ⟨V, hV⟩ := hU
 
-    have aux : Subtype.val ⁻¹' (Subtype.val '' U) = U
-    exact Set.preimage_val_image_val_eq_self
-
-    rw [← aux]
-    rw [hV.right]
+    rw [← @Set.preimage_val_image_val_eq_self Y Z U, hV.right]
     simp
     apply h
     exact hV.left
