@@ -1050,30 +1050,35 @@ Estos dos últimos resultados se pueden combinar, de manera que para demostrar q
 
 \subsection{Separación}
 
-\subsubsection{Espacios de Hausdorff}
+No cualquier topología sobre un conjunto refleja adecuadamente las propiedades de dicho conjunto. Por ejemplo, la topología trivial no permite diferenciar elementos del espacio, por lo que bajo esta topología no es posible diferenciar unos conjuntos de otros o incluso de un único punto.
 
-\newpage
+Para profundizar en el estudio de la topología, se introducen ciertas condiciones que garantizan que los puntos del espacio puedan distinguirse de alguna forma mediante abiertos. Estas condiciones se conocen como axiomas de separación.
+
+Por ejemplo, un espacio es de Hausdorff si dados dos puntos distintos, existen abiertos disjuntos que contienen a cada uno de ellos. Esta condición es cierta para cualquier espacio métrico, y garantiza ciertas propiedades buenas, como la unicidad de los límites.
+
+En este trabajo nos centraremos, en particular, en los espacios normales.
+
+
 \subsubsection{Espacios normales}
 
-Introducción : ¿por qué son interesantes?
+Los espacios normales permiten separar no solo puntos, sino conjuntos cerrados disjuntos mediante abiertos disjuntos. Esta propiedad es más exigente, pero también más potente.
+
+Uno de las propiedades más importantes de los espacios normales es que nos permiten distinguir entre conjuntos cerrados separándolos mediante funciones continuas, lo que se conoce como \textbf{lema de Urysohn}. La formalización de este resultado es uno de los objetivos principales de este trabajo.
+
 
 \begin{definition}
-  Sea $X$ un espacio topológico. $X$ es \emph{normal} si para cada par de cerrados disjuntos $C, D \subseteq X$ existen abiertos disjuntos $U$ y $V$ en $X$ tales  que separan $C$ y $D$, es decir, $C \subseteq U$ y $D \subseteq V$ \textnormal{(véase \cite[p. 99]{willard2012general})}.
+  Sea $X$ un espacio topológico. Diremos que $X$ es un espacio \textnormal{normal} si para cada par de cerrados disjuntos $C, D \subseteq X$ existen abiertos disjuntos $U$ y $V$ en $X$ tales  que separan $C$ y $D$, es decir, $C \subseteq U$ y $D \subseteq V$.
 \end{definition}
-
-En Lean, escribimos esta definición de la siguiente forma.
 
 \begin{lstlisting}
   def NormalTopoSpace {X : Type} (T : TopologicalSpace X) : Prop :=
     ∀ C : Set X, ∀ D : Set X,
     IsClosed C → IsClosed D → C ∩ D = ∅ →
     ∃ U : Set X, ∃ V : Set X,
-      IsOpen U ∧
-      IsOpen V ∧
-      C ⊆ U ∧
-      D ⊆ V ∧
-      U ∩ V = ∅
+      IsOpen U ∧ IsOpen V ∧ C ⊆ U ∧ D ⊆ V ∧ U ∩ V = ∅
 \end{lstlisting}
+
+\newpage
 
 Ahora queremos dar una caracterización para este tipo de espacios, que nos facilitará el trabajo más adelante.
 
