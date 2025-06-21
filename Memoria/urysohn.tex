@@ -371,6 +371,8 @@ En vista de esto, mi primer acercamiento a la construcción de $G$ fue el siguie
   \item Para $n >1$, tomar $G(n)$ el resultado de aplicar la caracterización de espacios normales al abierto $G(s(n))$ y el cerrado $\overline{G(r(n))}$.
 \end{itemize}
 
+\newpage %no entiendo a latex
+
 \begin{lstlisting}
   def G {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
