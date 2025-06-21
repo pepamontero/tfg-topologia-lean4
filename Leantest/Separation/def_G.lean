@@ -1,6 +1,5 @@
 import Leantest.Separation.normal
 import Leantest.MyDefs.my_rs_functions
-import Leantest.MyDefs.my_induction
 import Leantest.MyDefs.my_lex_order
 
 
