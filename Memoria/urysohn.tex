@@ -249,9 +249,9 @@ De nuevo, en Lean esto se codifica como funciones; queremos encontrar una funci�
     let fR : Finset Q := R.image f
     have hfR : fR.Nonempty := (Finset.image_nonempty).mpr hR
     let fr := Finset.max' fR ((Finset.image_nonempty).mpr hR)
-    obtain ⟨r, hr⟩ := Finset.mem_image.mp (by exact Finset.max'_mem fR hfR)
-    use r
-  \end{lstlisting}
+    obtain ⟨r, hr⟩ := Finset.mem_image.mp
+      (by exact Finset.max'_mem fR hfR)
+    use r \end{lstlisting}
 
   Se tiene que $r \in R$, luego $r < n$ y $f(r) < f(n)$. Sea entonces un $k < n$ con $f(k) < f(n)$. Por construcción, $k \in R$ y por tanto $f(k) \in f(R)$. Como $r$ es el argumento máximo de $f(R)$, $f(r)$ es el máximo de $f(R)$ y por tanto $f(k) \leq f(R)$, como queríamos.
 \end{proof}
@@ -270,7 +270,65 @@ Garantizada la existencia de estas funciones, podemos tomar ahora las funciones 
     else 0
 \end{lstlisting}
 
-Necesitaremos varias propiedades de estas funciones, que iremos enunciando según las vayamos necesitando. En particular, los resultados \code{r\_prop} y \code{s\_prop} son casi idénticos a utilizar \code{Classical.choose\_spec} sobre \code{exists\_r} y \code{exists\_s}.
+Veamos las principales propiedades de estas dos funciones. En primer lugar tenemos las propiedades básicas de $r$ y $s$ que son simplemente por construcción.
+
+\begin{lemma}
+  Para cada $n > 1$, se tiene:
+  $$
+  \left\{
+    \begin{array}{l}
+      r(n) < n \\
+      f(r(n)) < f (n) \\
+      \forall m < n, \textnormal{ si } f(m) < f(n) \textnormal{ entonces } f(m) \leq f(r(n))
+    \end{array}
+  \right.
+  $$
+\end{lemma}
+
+\begin{lstlisting}
+  lemma r_prop (n : ℕ) (hn : n > 1) : (
+      (r n ∈ Finset.range n) ∧ (f (r n) < f n) ∧
+      (∀ m ∈ Finset.range n, f m < f n → f m ≤ f (r n))
+    ) := by sorry
+\end{lstlisting}
+
+El resultado es simétrico para $s$ y recibe el nombre de \code{s\_prop}.
+
+\begin{lemma}
+  Sea $n > 1$. Entonces o bien $r(n) = 1$ o bien $r(n) > 1$. Es decir, no puede ser $r(n) = 0$. De forma análoga, no puede ser $s(n) = 1$, luego o bien $s(n) = 0$ o bien $s(n) = 1$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by sorry
+  lemma s_options (n : ℕ) (hn : n > 1) : s n = 0 ∨ s n > 1 := by sorry
+\end{lstlisting}
+
+También se obtiene un resultado \code{rs\_options} que encapsula las cuatro combinaciones posibles de valores para $r$ y $s$, para facilitar el trabajo con ellas.
+
+\begin{proof}
+  Si fuera $r(n) = 0$, tendríamos $1 = f(0) = f(r(n)) < f(n)$, lo que es imposible pues $f$ toma valores en $[0, 1]$.
+\end{proof}
+
+\begin{lemma}
+  Sea $n > 1$ y supongamos que $s(n) > 1$ y que $r(n) < s(n)$. Entonces $r(n) = r(s(n))$.
+
+  De manera análoga, si $r(n) >1$ y $s(n) < r(n)$, entonces $s(n) = s(r(n))$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma rn_eq_rsn (n : ℕ) (hn : n > 1) (hsn : s n > 1)
+    (h : r n < s n) : r n = r (s n) := by
+\end{lstlisting}
+
+\begin{proof}
+  Demostramos solo el primero y el segundo es parecido. Sea $n > 1$ y supongamos que $s(n) > 1$ y que $r(n) < s(n)$. Queremos ver que $r(n) = r(s(n))$. Por la inyectividad de $f$, podemos comprobar en su lugar que $ f (r (n)) = f (r (s (n)))$. Veamos que se cumplen ambas desigualdades.
+
+  \begin{lstlisting}
+    apply f_prop.left.left
+    apply ge_antisymm \end{lstlisting}
+
+  
+\end{proof}
 
 \subsubsection{Construcción de $G$}
 
@@ -415,16 +473,92 @@ Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error:
   (3) Ahora, si $n > 1$, entonces estamos aplicando la función \code{from\_normality} a $G(s(n))$ y $\overline{G(r(n))}$. Luego es abierto análogamente.
 \end{proof}
 
-\begin{proposition}
+Para el siguiente resultado vamos a utilizar inducción completa. Yo he definido mi propio principio de inducción completa, demostrado a partir de la inducción completa usual en Lean, por sencillez.
+
+\begin{lstlisting}
+  theorem my_stronger_induction (n : ℕ) (P Q : ℕ → Prop)
+    (hn : P n) (h : ∀ n : ℕ, P n → ((∀ m < n, P m → Q m) → Q n)) :
+    (Q n) := by sorry
+\end{lstlisting}
+
+\begin{lemma}
   Para cada $n > 1$, se tiene:
   $$
    \overline{G(r(n))} \subseteq G(n) \subseteq \overline{G(n)} \subseteq G(s(n))
   $$
-\end{proposition}
+\end{lemma}
+
+\begin{lstlisting}
+  lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+    :
+    ∀ n > 1, closure (G hT C1 C2 (r n)) ⊆ (G hT C1 C2 n)
+      ∧ closure (G hT C1 C2 n) ⊆ (G hT C1 C2 (s n)) := by
+\end{lstlisting}
 
 \begin{proof}
-  
+  Procedemos por inducción completa sobre $n$.
+
+  \begin{lstlisting}
+    intro n hn
+    let P : ℕ → Prop := fun m ↦ m > 1
+    apply my_stronger_induction n P
+    exact hn -- probar que n cumple P
+    intro n hn hi \end{lstlisting}
+
+  Tenemos la siguiente hipótesis de inducción: para cada $m < n$ con $m > 1$ se tiene que $\overline{G(r(m))} \subseteq G(m) \subseteq \overline{G(m)} \subseteq G(s(m))$.
+
+  Queremos ver que entonces lo mismo se tiene para $n$.
+
+  \begin{lstlisting}
+  hi : ∀ m < n, 1 < m → closure (G hT C1 C2 (r m)) ⊆ G hT C1 C2 m ∧ closure (G hT C1 C2 m) ⊆ G hT C1 C2 (s m)
+
+  ⊢ closure (G hT C1 C2 (r n)) ⊆ G hT C1 C2 n ∧ closure (G hT C1 C2 n) ⊆ G hT C1 C2 (s n) \end{lstlisting}
+
+  Notemos que si $G(n)$ está obtenido mediante \ref{caracterizacion-normal} aplicado a $G(s(n))$ y $\overline{G(r(n))}$, lo anterior se reduce a comprobar que $(G(s(n)), \overline{G(r(n))})$ es un par normal (demostrado en \code{from\_normality\_prop2}).
+
+  \begin{lstlisting}
+    have normalpair : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))) \end{lstlisting}
+
+  Sabemos que $r(n)$ es o bien $r(n) = 1$ o bien $r(n) > 1$. No puede ser $r(n) = 0$ porque en ese caso sería $f(r(n)) = f(0) = 1 < f(n)$ (demostrado en \code{r\_options}). Análogamente, $s(n)$ es o bien $s(n) =0$ o bien $s(n) > 1$ (demostrado en \code{s\_options}).
+
+  Tenemos que diferenciar cada una de las cuatro combinaciones posibles.
+
+  Veamos por ejemplo el caso $r(n) = 1$, $s(n) > 1$. El resto son parecidos y se pueden consultar en el anexo.
+
+  (1) Ver que $G(s(n))$ es abierto es sencillo; ya hemos visto que $G$ siempre devuelve abiertos.
+
+  \begin{lstlisting}
+    ...
+      · exact G_Prop1 hT C1 C2 hC1 hC2 hC1C2 (s n) \end{lstlisting}
+
+  (2) Ver que $\overline{G(r(n))}$ es cerrado es sencillo; ya hemos visto que la adherencia de cualquier conjunto es cerrada.
+
+  \begin{lstlisting}
+    ...
+      · exact isClosed_closure \end{lstlisting}
+
+  (3) Ahora, para ver que $\overline{G(r(n))} \subseteq G(s(n))$, necesitamos utilizar la hipótesis de inducción.
+
+  Sabemos que $s(n) < n$. Luego podemos aplicar la hipótesis de inducción a $s(n)$, obteniendo que
+  $$
+  \overline{G(r(s(n)))} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(s(s(n)))
+  $$
+  Pero utilizando que $r(n) = r(s(n))$, obtenemos $\overline{G(r(n))} \subseteq G(s(n))$.
+
+  \begin{lstlisting}
+    ...
+      · have hsn := (s_prop n hn).left -- hsn : s n ∈ Finset.range n
+        simp at hsn -- hsn : s n < n
+        specialize hi (s n) hsn hs -- aplicar la H.I. a s(n)
+        rw [rn_eq_rsn n hn hs (by linarith)] -- usar r(n) = r(s(n))
+        exact hi.left \end{lstlisting}
 \end{proof}
 
 \subsubsection{La propiedad (\ref{eq:star})}
+
+
 
