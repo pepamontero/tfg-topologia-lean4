@@ -1,10 +1,9 @@
 import Mathlib.Tactic
 
 lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
-    have h := Rat.instDenumerable.eqv
-    have h2 := h.symm
-    have biy := h2.bijective
-    use ⇑h2
+    have f := (Rat.instDenumerable.eqv).symm
+    use f
+    exact f.bijective
 
 /-
 things i will need:
@@ -243,8 +242,6 @@ lemma permute_f_bijectivity {X Y : Type} [DecidableEq X]
   · exact permute_f_injectivity a b h.left
   · exact permute_f_surjectivity a b h.right
 
-lemma icantbelievethis : (⟨0, Q0⟩ : Q) ≠ (⟨1, Q1⟩ : Q) := by
-  exact ne_of_beq_false rfl
 
 lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0, Q0⟩) := by
   obtain ⟨f, hf⟩ := bijetcive_nat_Q
@@ -262,7 +259,7 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0,
       · by_contra c
         rw [← c] at hn
         rw [hn] at H'
-        exact icantbelievethis H'
+        exact ne_of_beq_false rfl H'
       simp [permute_f, aux, H']
     · simp [permute_f, hn]
 
@@ -278,7 +275,7 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0,
       · by_contra c
         rw [← c] at hn
         rw [hn] at H''
-        exact icantbelievethis H''.symm
+        exact ne_of_beq_false rfl H''.symm
       simp [permute_f, aux, H'']
 
   else
@@ -298,7 +295,7 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0,
       · by_contra c
         rw [← c] at hm
         simp [g, permute_f, hn] at hm
-        exact icantbelievethis hm.symm
+        exact ne_of_beq_false rfl hm.symm
       simp [h, permute_f, aux]
       simp [g, permute_f, hn]
     · simp [h, permute_f, hm]
