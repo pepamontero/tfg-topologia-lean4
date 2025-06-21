@@ -206,101 +206,67 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
   simp [P]
   intro n hn hi
 
-  have p := from_normality_prop2 hT
+
 
   have aux : n ≠ 0 := by exact Nat.not_eq_zero_of_lt hn
   have aux' : n ≠ 1 := by exact Ne.symm (Nat.ne_of_lt hn)
 
-  have r_cases := r_options n hn
-  cases' r_cases with hr hr
+  let U := G hT C1 C2 n
+  have U_def : U = G hT C1 C2 n := by rfl
+  rw [← U_def]
+  rw [G] at U_def
+  simp [hn, aux, aux'] at U_def
 
-  · -- caso r n = 1
+  have normalpair : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
 
-    have s_cases := s_options n hn
-    cases' s_cases with hs hs
+  · have r_cases := r_options n hn
+    cases' r_cases with hr hr
 
-    · -- caso r n = 1, s n = 0
+    · -- caso r n = 1
 
-      let U := G hT C1 C2 n
-      have U_def : U = G hT C1 C2 n := by rfl
-      rw [← U_def]
-      rw [G] at U_def
-      simp [hn, aux, aux'] at U_def
+      have s_cases := s_options n hn
+      cases' s_cases with hs hs
 
-      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
-      · constructor
-        · apply G_Prop1
-          exact hC1; exact hC2; exact hC1C2
+      · -- caso r n = 1, s n = 0
+        · constructor
+          · apply G_Prop1
+            exact hC1; exact hC2; exact hC1C2
+          constructor
+
+          · exact isClosed_closure
+
+          · have h : normal_pair (C2ᶜ, C1)
+            · constructor
+              exact hC2
+              constructor
+              exact hC1
+              exact hC1C2
+
+            simp [hr, hs, G, h, from_normality]
+
+            have h' := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
+            exact h'.right.right
+
+
+      · -- caso r n = 1, s n > 1
         constructor
-
-        · exact isClosed_closure
-
-        · have h : normal_pair (C2ᶜ, C1)
-          · constructor
-            exact hC2
-            constructor
-            exact hC1
-            exact hC1C2
-
-          simp [hr, hs, G, h, from_normality]
-
-          have h' := Classical.choose_spec (hT C2ᶜ C1 hC2 hC1 hC1C2)
-          exact h'.right.right
-
-
-      simp [from_normality, some] at U_def
-      have some' := some
-      apply p at some
-      simp [from_normality, some'] at some
-      rw [← U_def] at some
-      exact some
-
-    · -- caso r n = 1, s n > 1
-
-      let U := G hT C1 C2 n
-      have U_def : U = G hT C1 C2 n := by rfl
-      rw [← U_def]
-      rw [G] at U_def
-      simp [hn, aux, aux'] at U_def
-
-      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
-      · constructor
-        · apply G_Prop1
-          exact hC1; exact hC2; exact hC1C2
+        · exact G_Prop1 hT C1 C2 hC1 hC2 hC1C2 (s n)
         constructor
-
         · exact isClosed_closure
 
         · have hsn := (s_prop n hn).left
           simp at hsn
-          have hrs : r n < s n := by linarith
           specialize hi (s n) hsn hs
-          have aux := rn_eq_rsn n hn hs hrs
-          rw [aux]
+          rw [rn_eq_rsn n hn hs (by linarith)]
           exact hi.left
 
-      simp [from_normality, some] at U_def
-      have some' := some
-      apply p at some
-      simp [from_normality, some'] at some
-      rw [← U_def] at some
-      exact some
+    · -- caso r n > 1
+      have s_cases := s_options n hn
+      cases' s_cases with hs hs
 
+      · -- caso s n = 0, r n > 1
 
-  · -- caso r n > 1
-    have s_cases := s_options n hn
-    cases' s_cases with hs hs
-
-    · -- caso s n = 0, r n > 1
-
-      let U := G hT C1 C2 n
-      have U_def : U = G hT C1 C2 n := by rfl
-      rw [← U_def]
-      rw [G] at U_def
-      simp [hn, aux, aux'] at U_def
-
-      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
-      · constructor
+        constructor
         · apply G_Prop1
           exact hC1; exact hC2; exact hC1C2
         constructor
@@ -315,23 +281,8 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
           rw [aux]
           exact hi.right
 
-      simp [from_normality, some] at U_def
-      have some' := some
-      apply p at some
-      simp [from_normality, some'] at some
-      rw [← U_def] at some
-      exact some
-
-    · -- caso s n > 1, r n > 1
-
-      let U := G hT C1 C2 n
-      have U_def : U = G hT C1 C2 n := by rfl
-      rw [← U_def]
-      rw [G] at U_def
-      simp [hn, aux, aux'] at U_def
-
-      have some : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
-      · constructor
+      · -- caso s n > 1, r n > 1
+        constructor
         · apply G_Prop1
           exact hC1; exact hC2; exact hC1C2
         constructor
@@ -355,13 +306,16 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
             rw [aux]
             exact hi.right
 
+  simp [from_normality, normalpair] at U_def
+  have normalpair' := normalpair
+  apply from_normality_prop2 hT at normalpair
+  simp [from_normality, normalpair'] at normalpair
+  rw [← U_def] at normalpair
+  exact normalpair
 
-      simp [from_normality, some] at U_def
-      have some' := some
-      apply p at some
-      simp [from_normality, some'] at some
-      rw [← U_def] at some
-      exact some
+
+
+
 
 
 /-
