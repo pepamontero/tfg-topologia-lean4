@@ -23,40 +23,24 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     simp [R]
     constructor
     · exact hn
-    · have aux : f 1 ≤ f n
+    · apply lt_of_le_of_ne
       · rw [f_prop.right.right]
         exact (f n).property.left
-      have aux' : f 1 ≠ f n
       · by_contra c
         apply (f_prop.left).left at c
         linarith
-      exact lt_of_le_of_ne aux aux'
+
 
   let fR : Finset Q := R.image f
   -- tomamos el conjunto de as imágenes de R
 
   -- vemos que no es vacío
-  let hfR : fR.Nonempty
-  exact (Finset.image_nonempty).mpr hR
+  have hfR : fR.Nonempty := (Finset.image_nonempty).mpr hR
 
   -- tomamos el máximo de las imágenes
-  let fr := Finset.max' fR hfR
-  have hfr : fr ∈ fR
-  exact Finset.max'_mem fR hfR
-
-  -- condición de máximo
-  have hfr' : ∀ fm ∈ fR, fm ≤ fr
-  exact fun fm a ↦ Finset.le_max' fR fm a
-  have hfr' : ∀ m ∈ R, f m ≤ fr
-  intro m hm
-  have aux : f m ∈ fR
-  exact Finset.mem_image_of_mem f hm
-  exact hfr' (f m) aux
-
+  let fr := Finset.max' fR ((Finset.image_nonempty).mpr hR)
   -- tomamos el argumento de fr, fr = f r
-  have hfr'' : ∃ r ∈ R, f r = fr
-  exact Finset.mem_image.mp hfr
-  cases' hfr'' with r hr
+  obtain ⟨r, hr⟩ := Finset.mem_image.mp (by exact Finset.max'_mem fR hfR)
 
   use r -- probamos que este r nos vale
   simp [R] at hr
@@ -81,6 +65,15 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     · simp at hm
       exact hm
     · exact hmn
+
+  -- condición de máximo
+    have hfr' : ∀ fm ∈ fR, fm ≤ fr
+    · exact fun fm a ↦ Finset.le_max' fR fm a
+    have hfr' : ∀ m ∈ R, f m ≤ fr
+    · intro m hm
+      have aux : f m ∈ fR
+      exact Finset.mem_image_of_mem f hm
+      exact hfr' (f m) aux
 
     rw [hr.right]
     exact hfr' m aux
@@ -212,7 +205,7 @@ lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by
   have cases : r n = 0 ∨ r n > 0
   exact Nat.eq_zero_or_pos (r n)
   cases' cases with c1 c2
-  by_contra c
+  by_contra
   have hs := r_is_not_0 n hn
   exact hs c1
   exact LE.le.eq_or_gt c2
