@@ -98,13 +98,13 @@ En general, vamos a construir una sucesión de abiertos sobre $\mathbb{Q}\cap[0,
   \forall p , q \in \mathbb{Q}, p < q \implies \overline{U_p} \subseteq U_q \tag{$\star$} \label{eq:star}
 \end{equation}
 
-Una vez tenemos esta sucesión, que en Lean será una función $G : \mathbb{Q}\cap[0, 1] \to \mathcal{P}(X)$, definimos otra función $H$ sobre $X$ que a cada $x \in X$ le hace corresponder el conjunto
+Una vez tenemos esta sucesión, que en Lean será una función $G : \mathbb{Q}\cap[0, 1] \to \mathcal{P}(X)$, definimos otra función $F$ sobre $X$ que a cada $x \in X$ le hace corresponder el conjunto
 $$
-H(x) = \{p \in \mathbb{Q} ~|~ x \in G(p)\}
+F(x) = \{p \in \mathbb{Q} ~|~ x \in G(p)\}
 $$
 Por último, tomaremos la función $f : X \to [0, 1]$ definida por
 $$
-f(x) = \textnormal{inf}~H(x)
+f(x) = \textnormal{inf}~F(x)
 $$
 Esta función será la que utilicemos. Tendremos que demostrar que efectivamente toma valores en $[0, 1]$, que es continua y que separa nuestros conjuntos cerrados.
 
