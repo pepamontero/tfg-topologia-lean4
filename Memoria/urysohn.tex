@@ -317,7 +317,7 @@ También se obtiene un resultado \code{rs\_options} que encapsula las cuatro com
 
 \begin{lstlisting}
   lemma rn_eq_rsn (n : ℕ) (hn : n > 1) (hsn : s n > 1)
-    (h : r n < s n) : r n = r (s n) := by
+      (h : r n < s n) : r n = r (s n) := by
 \end{lstlisting}
 
 \begin{proof}
@@ -327,10 +327,30 @@ También se obtiene un resultado \code{rs\_options} que encapsula las cuatro com
     apply f_prop.left.left
     apply ge_antisymm \end{lstlisting}
 
-  
+  (1) Para ver $f (r (s (n))) \leq f (r (n))$, aplicamos la tercera parte de \code{r\_prop}. Luego hay que ver que $r(s(n)) < n$, lo cual sencillo por ser $r(s(n)) < s(n) < n$, y que $f (r (s (n))) < f n$. Esto último es cierto porque si fuera $f(n) < f(r(s(n)))$, como $r(s(n)) < s(n)$ tendríamos $f(s (n)) \leq f(r(s(n)))$, pero eso es imposible porque $f(r(s(n))) < f(s(n))$ por construcción (esta última parte viene dada por un resultado auxiliar \code{f\_rs\_prop}).
+
+  \begin{lstlisting}
+    · -- f (r (s n)) ≤ f (r n)
+      apply (r_prop n hn).right.right
+      · simp
+        trans s n
+        · exact List.mem_range.mp (r_prop (s n) hsn).left
+        · exact List.mem_range.mp (s_prop n hn).left
+      · exact f_rs_prop n hn hsn
+  \end{lstlisting}
+
+  (2) Para ver que $f (r (n)) \leq f (r (s (n)))$, basta ver que $r(n) < s(n)$ por hipótesis y que $f(r(n)) < f(n) < f(s(n))$ por las propiedades de $r$ y $s$. Luego aplicando la tercera propiedad básica a $s(n) > 1$ y $r(n) < s(n)$ obtenemos el resultado.
+
+  \begin{lstlisting}
+    · -- f (r n) ≤ f (r (s n))
+      apply (r_prop (s n) hsn).right.right
+      · exact List.mem_range.mpr h
+      · trans f n
+        · exact (r_prop n hn).right.left
+        · exact (s_prop n hn).right.left \end{lstlisting}
 \end{proof}
 
-\subsubsection{Construcción de $G$}
+\subsubsection{Construcción de $G$} 
 
 La construcción de $G : \rat \to \mathcal{P}(X)$ es, como hemos explicado, una construcción por inducción. Para empezar, es más fácil construir $G : \nat \to \mathcal{P}(X)$, y después tomar $G \circ f^{-1} : Q \to \mathcal{P}(X)$ donde $f$ es la función que numera $Q$ que habíamos obtenido antes. Nos centraremos en esta función.
 
