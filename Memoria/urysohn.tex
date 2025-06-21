@@ -160,3 +160,112 @@ Los racionales son numerables, es decir existe una biyección entre $\nat$ y $\r
       f 1 = ⟨0, Q0⟩) := by sorry
 \end{lstlisting}
 
+Para demostrar la existencia de tal función necesitamos una serie de resultados previos.
+
+En primer lugar, la numerabilidad de los racionales ya está demostrada en Mathlib con el resultado \code{Rat.instDenumerable}. Para extraer una función biyectiva de este resultado, he escrito el siguiente lema:
+
+\begin{lstlisting}
+  lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
+    have f := (Rat.instDenumerable.eqv).symm
+    use f
+    exact f.bijective
+\end{lstlisting}
+
+Evidentemente, por la independencia de las demostraciones de Lean, no podremos evaluar esta función de manera explícita. Pero tenemos la información que necesitamos de ella.
+
+Ahora, quiero demostrar que existe una función biyectiva de $\nat$ en $Q$. Como ya tenemos una función biyectiva de $\nat$ en $\rat$, la idea es componerla con una biyección de $\rat$ en $Q$.
+
+Para demostrar que esta biyección existe, basta demostrar que $\rat$ y $Q$ tienen el mismo cardinal (\code{Cardinal.eq}). Pero, de hecho, cualquier subconjunto de $\rat$ no finito tiene cardinal $\aleph_0$ (demostrado en \code{non\_finite\_rat\_set\_cardinal\_aleph0}). Basta demostrar que $Q$ no es finito.
+
+\begin{lstlisting}
+  lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) :
+      Cardinal.mk ↑A = Cardinal.aleph0 := by sorry
+\end{lstlisting}
+
+Por último, cualquier permutación de dos valores de una función preserva la biyectividad (demostrado en \code{permute\_f\_bijectivity}). Por tanto, podemos forzar que $f(0) = 1$ y $f(1) = 0$.
+
+\begin{lstlisting}
+  def permute_f {X Y : Type} [DecidableEq X]
+    (f : X → Y) (a b : X) : X → Y := fun x ↦
+      if x = a then f b
+      else if x = b then f a
+      else f x
+
+  lemma permute_f_bijectivity {X Y : Type} [DecidableEq X]
+      {f : X → Y} (a b : X) (h : f.Bijective) :
+      (permute_f f a b).Bijective := by sorry
+\end{lstlisting}
+
+\begin{lstlisting}
+  Nota: Todas estas demostraciones y la de hf son bastante largas y técnicas y no me parece que aporten mucho. Quizás se podrían dejar simplemente en el anexo.
+\end{lstlisting}
+
+Una vez demostrado \code{hf}, podemos definir $f$ mediante \code{Classical.choose} y empezar a trabajar con ella, aunque no la conozcamos explícitamente.
+
+\begin{lstlisting}
+  noncomputable def f : ℕ → Q := Classical.choose hf
+\end{lstlisting}
+
+Por ejemplo, podemos probar que tiene inversa.
+
+\begin{lstlisting}
+  lemma f_has_inverse :  ∃ g, Function.LeftInverse g f ∧
+      Function.RightInverse g f := by
+    rw [← Function.bijective_iff_has_inverse]
+    exact f_prop.left
+\end{lstlisting}
+
+\subsubsection{Encontrar el sucesor y predecesor inmediato}
+
+Ahora tenemos cada $p_k$ definido en Lean como $f(k)$ para cada $k \in \nat$. Para poder definir cada abierto $U_{p_k}$, necesitamos ser capaces de encontrar para cada conjunto $\{p_0, p_1, \dots, p_{n-1}\}$, el predecesor inmediato $p_r$ y el sucesor inmediato $p_s$ de $p_{n}$.
+
+De nuevo, en Lean esto se codifica como funciones; queremos encontrar una función $r : \nat \to \nat$ que, para cada $n>1$, devuelva el predecesor inmediato de $f(n)$, de entre $\{f(k) ~|~ k < n\}$, y lo mismo para una función $s : \nat \to \nat$ que encuentre el sucesor inmediato. Sin embargo, la existencia de tales funciones no es trivial.
+
+\begin{lemma}
+  Sea $n > 1$. Entonces existe un $r_n < n$ de forma que $f(r_n) < f(n)$, y si $k < n$ es tal que $f(k) < f(n)$ entonces $f(k) \leq f(r_n)$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
+    ((f r < f n) ∧
+    (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by sorry
+\end{lstlisting}
+
+\begin{proof}
+  Sea $n>1$. Consideremos el conjunto
+  $$
+  R = \{m : \nat ~|~ m < n \land f(m) < f(n)\}
+  $$
+  \begin{lstlisting}
+    let R : Finset ℕ := (Finset.range n).filter (fun m ↦ f m < f n) \end{lstlisting}
+  $R$ es un conjunto finito no vacío, pues $1 \in R$
+  \begin{lstlisting}
+    have hR : R.Nonempty
+    · use 1; sorry \end{lstlisting}
+
+  Tomamos el conjunto $f(R)$, que también es un conjunto finito y no vacío, por serlo $R$, luego tiene máximo. Tomamos el argumento máximo de $f(R)$, $r_n = \arg \max \{f(m) ~|~ m \in R\}$, y veamos que satisface las condiciones que pedimos.
+
+  \begin{lstlisting}
+    let fR : Finset Q := R.image f
+    have hfR : fR.Nonempty := (Finset.image_nonempty).mpr hR
+    let fr := Finset.max' fR ((Finset.image_nonempty).mpr hR)
+    obtain ⟨r, hr⟩ := Finset.mem_image.mp (by exact Finset.max'_mem fR hfR)
+    use r
+  \end{lstlisting}
+
+  Se tiene que $r \in R$, luego $r < n$ y $f(r) < f(n)$. Sea entonces un $k < n$ con $f(k) < f(n)$. Por construcción, $k \in R$ y por tanto $f(k) \in f(R)$. Como $r$ es el argumento máximo de $f(R)$, $f(r)$ es el máximo de $f(R)$ y por tanto $f(k) \leq f(R)$, como queríamos.
+\end{proof}
+
+La demostración completa está en el anexo, así como el análogo para $s$.
+
+Garantizada la existencia de estas funciones, podemos tomar ahora las funciones $r$ y $s$ y empezar a trabajar con ellas.
+
+\begin{lstlisting}
+  noncomputable def r : ℕ → ℕ := fun n ↦
+  if h : n > 1 then Classical.choose (exists_r n h)
+  else 1
+
+  noncomputable def s : ℕ → ℕ := fun n ↦
+  if h : n > 1 then Classical.choose (exists_s n h)
+  else 0
+\end{lstlisting}
