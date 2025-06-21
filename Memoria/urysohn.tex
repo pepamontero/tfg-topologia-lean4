@@ -489,8 +489,7 @@ Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error:
   \begin{lstlisting}
     cases' LE.le.eq_or_gt hn with hn hn -- n = 1 ∨ n > 1
     · simp [hn, G] -- n = 1
-      exact from_normality_open hT C2ᶜ C1
-  \end{lstlisting}
+      exact from_normality_open hT C2ᶜ C1 \end{lstlisting}
 
   (3) Ahora, si $n > 1$, entonces estamos aplicando la función \code{from\_normality} a $G(s(n))$ y $\overline{G(r(n))}$. Luego es abierto análogamente.
 \end{proof}
@@ -581,6 +580,91 @@ Para el siguiente resultado vamos a utilizar inducción completa. Yo he definido
 \end{proof}
 
 \subsubsection{La propiedad (\ref{eq:star})}
+
+Esta es la propiedad más importante que queremos pedirle a la función $G$, pues es la que garantiza la continuidad de la función que queremos construir para la demostración del lema de Urysohn, como veremos más adelante.
+
+\begin{lemma}
+  Sean $n, m \in \nat$ con $f(n) < f(m)$. Entonces
+  $$
+  \overline{G(n)} \subseteq G(m)
+  $$
+\end{lemma}
+
+\begin{lstlisting}
+  lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+    :
+    ∀ n m, f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by sorry
+\end{lstlisting}
+
+Para demostrar este resultado vamos a utilizar un principio de inducción más general que la inducción usual sobre los naturales. Siempre que se cuente con una relación bien fundada en un conjunto, se puede describir un principio de inducción sobre este conjunto.
+
+En nuestro caso, vamos a utilizar el orden lexicográfico sobre $\nat^2$, definido por $(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')$. Este ya está definido en Mathlib, y también está demostrado que es una relación bien fundada.
+
+\begin{lstlisting}
+  def lt_pair : (ℕ × ℕ) → (ℕ × ℕ) → Prop := Prod.Lex (Nat.lt) (Nat.lt)
+  def lt_pair_wfr : WellFoundedRelation (ℕ × ℕ) := Prod.lex (Nat.lt_wfRel) (Nat.lt_wfRel)
+  lemma lt_pair_wf : WellFounded lt_pair := lt_pair_wfr.wf
+\end{lstlisting}
+
+\begin{proof}
+  Procedemos por tanto por inducción bien fundada sobre el par $(n, m)$
+
+  \begin{lstlisting}
+      := by
+    ... -- ciertas modificaciones del objetivo
+    apply WellFounded.induction lt_pair_wf
+    ...
+    intro n m
+    intro hi hnm \end{lstlisting}
+
+  Por tanto tenemos la siguiente hipótesis de inducción:
+
+  \begin{lstlisting}
+    hi : ∀ (a b : ℕ), lt_pair (a, b) (n, m) → f a < f b → closure (G hT C1 C2 a) ⊆ G hT C1 C2 b \end{lstlisting}
+
+  Ahora dividimos entre distintos casos de valores de $n$ y $m$. Nos centramos en el caso $n >1, m>1$, que es el interesante, y el resto se pueden consultar en el anexo.
+
+  Además, hay tres casos posibles: o bien $f(s(n)) < f(m)$, o bien $f(s(n)) = f(m)$, o bien $f(s(n)) > f(m)$.
+
+  (1) Si $f(s(n)) < f(m)$, tenemos por un lado que $\overline{G(s(n))} \subseteq G(m)$, por ser $(s(n), m) < (n, m)$ y la hipótesis de inducción.
+
+  Por otro lado, $\overline{G(n)} \subseteq G(s(n))$, por la segunda propiedad de $G$. Luego tenemos
+  $$
+  \overline{G(n)} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(m)
+  $$
+
+  \begin{lstlisting}
+    ...
+      · -- si f (s n) < f m
+        trans closure (G hT C1 C2 (s n))
+        · trans G hT C1 C2 (s n)
+          · exact (G_Prop2 n hn1).right
+          · exact subset_closure
+        · exact hi (s n) m (by left; exact s_prop.left) h \end{lstlisting}
+
+  (2) Si $f(s(n)) = f(m)$ es muy fácil, porque entonces por la inyectividad de $f$ se tiene $s(n)= m$, y $\overline{G(n)} \subseteq G(s(n)) = G(m)$ por la segunda propiedad de $G$.
+
+  \begin{lstlisting}
+    ...
+      · -- si f (s n) = f m
+        apply f_prop.left.left at h
+        rw [h]
+        exact (G_Prop2 n hn1).right \end{lstlisting}
+
+  (3) Supongamos ahora que $f(s(n))>f(m)$. Este es el caso más complicado, y requiere que volvamos a dividir en tres posibles opciones para $f(n) \sim f(r(m))$.
+
+  (3a) Si $f(n) < f(r((m)))$, 
+
+
+
+
+
+\end{proof}
+
 
 
 
