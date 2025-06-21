@@ -163,7 +163,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     · rw [@continuousInSubspace_iff_trueForBase
         X ℝ Y T T' R hR f
         {s | ∃ a b : ℝ, s = Set.Ioo a b}
-        (by exact BaseOfRealTopo' hT')]
+        (by exact BaseOfRealTopo hT')]
 
       intro W hW
       simp at hW
