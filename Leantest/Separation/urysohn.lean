@@ -50,71 +50,62 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     intro h
     rw [normal_space_def] -- `1`
-    rw [hT'] at hR
     intro C1 C2 hC1 hC2 hinter -- `2`
 
     -- `3`
-    cases' eq_or_ne C1 ∅ with hcases1 hcases1
+    cases' eq_or_ne C1 ∅ with hC1empty hC1nempty
 
     -- si C1 es vacío
-    exact left_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases1
+    exact left_empty_implies_disjoint_open_neighbourhoods C1 C2 hC1empty
 
     -- si C2 es vacío
-    cases' eq_or_ne C2 ∅ with hcases2 hcases2
-    exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hcases2
+    cases' eq_or_ne C2 ∅ with hC2empty hC2nempty
+    exact right_empty_implies_disjoint_open_neighbourhoods C1 C2 hC2empty
 
     -- `4`
 
-    obtain ⟨f, hf, hfC1, hfC2⟩ := h C1 C2 hcases1 hcases2 hC1 hC2 hinter
+    obtain ⟨f, hf, hfC1, hfC2⟩ := h C1 C2 hC1nempty hC2nempty hC1 hC2 hinter
+
+    use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)})
+    use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1})
+
     rw [continuous_def] at hf
+    rw [hT'] at hR
 
-    let U : Set Y := {y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)}
-    let V : Set Y := {y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1}
-
-    use f ⁻¹' U
-    use f ⁻¹' V
-
+    constructor
     -- * is `f⁻¹( [0, 1/2) )` Open?
+    · apply hf -- aplicar def. de f continua
+      apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+      · exact hY
+      · exact hR
+      · norm_num
+
     constructor
-    apply hf -- aplicar def. de f continua
-    apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
-    · exact hY
-    · exact hR
-    · norm_num
-
-
     -- * is `f⁻¹( (1/2, 0] )` Open?
+    · apply hf -- aplicar def. de f continua
+      apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+      · exact hY
+      · exact hR
+      · norm_num
+
     constructor
-    apply hf -- aplicar def. de f continua
-    apply ioc_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
-    · exact hY
-    · exact hR
-    · norm_num
-
-
     -- * is `C1 ⊆ U1` ?
-    constructor
-    rw [← Set.image_subset_iff, hfC1]
-    simp
-    constructor
-    all_goals try norm_num
+    · rw [← Set.image_subset_iff, hfC1] -- `{0} ⊆ [0, 1/2)` ?
+      simp
 
+    constructor
     -- * is `C2 ⊆ U2` ?
-
-    constructor
-    rw [← Set.image_subset_iff, hfC2]
-    simp
-    constructor
-    all_goals try norm_num
+    · rw [← Set.image_subset_iff, hfC2] -- `{1} ⊆ (1/2, 1]` ?
+      simp; norm_num
 
 
     -- * is `U1 ∩ U2 = ∅` ?
-    by_contra c
-    rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq, ← Set.nonempty_iff_ne_empty] at c
-    obtain ⟨x, hxu, hxv⟩ := c
-    have hxu' := hxu.right
-    have hxv' := hxv.left
-    linarith
+    · apply Disjoint.preimage
+      by_contra c
+      rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq, ← Set.nonempty_iff_ne_empty] at c
+      obtain ⟨x, hxu, hxv⟩ := c
+      simp at hxu hxv
+      linarith
 
 
   · -- →
