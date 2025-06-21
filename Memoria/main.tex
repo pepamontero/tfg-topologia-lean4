@@ -1355,84 +1355,8 @@ Además, usar el axioma de elección tiene una ventaja práctica: cuando utilice
 
 \input{espacios.tex}
 
-
-
-\section{El Lema de Urysohn}
-
-Introducción:
-
-Definición: espacio normal
-
-Lema (de Urysohn):
-
-Esta demostración es relativamente complicada en papel, pero todavía lo es más cuando intentamos completarla en Lean. Por claridad, dividimos la demostración en varios pasos.
-
-La demostración en Lean empieza utilizando la táctica \bluecode{constructor}, que nos divide el objetivo en dos, uno para cada implicación. Nos centraremos primero en la segunda, que es la más sencilla.
-
-\subsection{El recíproco}
-
-
-
-
-
-Queremos 
-
-Demostración
-
-
-\subsection{Numerar los racionales}
-
-Los racionales son denumerables, es decir existe una biyección entre $\nat$ y $\rat$.
-
-En particular, existe una función $f : \nat \to Q$ donde $Q = \rat \cap [0, 1]$, de forma que
-
-\begin{enumerate}
-  \item $f$ es biyectiva
-  \item $f(0) = 1$
-  \item $f(1) = 0$
-\end{enumerate}
-
-A partir de ahora llamarmeos $f$ a esta función.
-
-Demostración:
-
-Demostración en Lean: [poner solo las partes importantes?]
-
-\subsection{Una parte}
-
-Sea $n \in \nat$ con $n > 1$. Como $$P_n = \{1, 2, \dots, n-1\}$$ es un conjunto finito y $f$ es sobreyectiva, existen $r$ y $s$ en $P_n$ (es decir, $r < n$ y $s < n$) tales que
-
-\begin{equation} \label{cond_rs}
-  f(r) < f(n) < f(s)
-\end{equation}
-
-y, además, estas son las mejores elecciones, es decir
-
-\begin{enumerate}
-  \item Si $m < n$ es tal que $f(m) < f(n)$, entonces $f(m) \leq f(r)$
-  \item Si $m < n$ es tal que $f(n) < f(m)$, entonces $f(s) \leq f(m)$
-\end{enumerate}
-
-Además, como $f$ es inyectiva, estas elecciones son únicas.
-
-Para cada $n > 1$, consideramos las funciones $r : \nat \to \nat$ y $s : \nat \to \nat$ que nos dan precisamente estos números $r$ y $n$.
-
---
-
-Supongamos que hemos encontrado una función $G : \nat \to \mathcal{P}(X)$ que satisface las siguientes propiedades
-
-\begin{enumerate}
-  \item $G(0) = X \backslash C_2$
-  \item $G(1) = V$ tal que $C_1 \subseteq V \subseteq \overline{V} \subseteq X \backslash C_2$
-  \item Para cada $n \in \nat $, $G(n)$ es abierto en $X$
-  \item Para cada $n \in \nat$, si $n>1$ entonces \begin{equation} \label{cond_Grs} \overline{G(r(n))} \subseteq G(n) \subseteq \overline{G(n)} \subseteq G(s(n)) \end{equation}
-\end{enumerate}
-
-Queremos probar que, en este caso, $G$ también cumple la siguiente propiedad:
-
-\begin{equation} \label{cond_G}
-  \forall n, m \in \nat, f(n) < f(m) \implies \overline{G(n)} \subseteq G(m)
-\end{equation}
+\newpage
+\input{urysohn.tex}
 
 
 
