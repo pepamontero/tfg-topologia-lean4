@@ -112,62 +112,51 @@ Sin embargo, una vez construidas estas funciones, este último paso es relativam
 
 Como se puede apreciar en las primeras iteraciones de la construcción de cada $U_q$, esta sucesión se construye por inducción. Para poder hacer inducción sobre los racionales, nos basamos en que son numerables, y, en particular, en que $\mathbb{Q}\cap[0, 1]$ lo es. Vamos a encontrar una función $f : \mathbb{N} \to \mathbb{Q} \cap [0, 1]$ biyectiva (invertible), de manera que $f(0) = 1$ y $f(1) = 0$. Esto nos servirá para construir cada $U_q$.
 
-Después, para demostrar que efectivamente se cumple la condición \ref{eq:star}, necesitaremos utilizar inducción sobre dos variables. Para ello, vamos a demostrar que el orden lexicográfico de $(\mathbb{N} \times \mathbb{N})$, definido por $(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')$, es una relación bien fundada, y por tanto admite inducción sobre pares de naturales.
+Después, para demostrar que efectivamente se cumple la condición (\ref{eq:star}), necesitaremos utilizar inducción sobre dos variables. Para ello, vamos a demostrar que el orden lexicográfico de $(\mathbb{N} \times \mathbb{N})$, definido por $(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')$, es una relación bien fundada, y por tanto admite inducción sobre pares de naturales.
 
 \begin{lstlisting}
   Nota: no se como poner que lo más difícil ha sido que no se me han ocurrido estas cosas a la primera jajajaja
 \end{lstlisting}
 
-\subsection{Numerar los racionales}
+\subsection{Construcción de la sucesión de abiertos}
 
-Los racionales son denumerables, es decir existe una biyección entre $\nat$ y $\rat$.
+Sea $Q = \mathbb{Q}\cap[0, 1]$ Para construir la sucesión $\{U_p ~|~ p \in Q\}$, o, lo que es lo mismo, la función $G : Q \to \mathcal{P}(X)$, $G(p) = U_p$, vamos a proceder de la siguiente forma.
 
-En particular, existe una función $f : \nat \to Q$ donde $Q = \rat \cap [0, 1]$, de forma que
+Como $Q$ es numerable, consideramos la numeración $Q = \{p_k ~|~ k \in \mathbb{N}\}$, y supongamos por simplicidad que $p_0 = 1$ y que $p_1 = 0$. Vamos a construir los abiertos con la condición (\ref{eq:star}) por inducción sobre $k$.
 
-\begin{enumerate}
-  \item $f$ es biyectiva
-  \item $f(0) = 1$
-  \item $f(1) = 0$
-\end{enumerate}
+Tomamos entonces, como base de la inducción,
 
-A partir de ahora llamarmeos $f$ a esta función.
+\begin{itemize}
+  \item $U_1 = U_{p_0} = X$.
+  \item $U_0 = U_{p_1}$ el abierto obtenido al aplicar la caracterización de espacios normales (\ref{caracterizacion-normal}) al cerrado $C_1$ y el abierto $C_2^c$.
+\end{itemize}
 
-Demostración:
+Trivialmente se tiene que $\overline{U_0} \subseteq U_1 = X$ (con $0<1$), luego se satisface (\ref{eq:star}).
 
-Demostración en Lean: [poner solo las partes importantes?]
+Ahora, para el caso inductivo, supongamos que hemos definido $U_{p_k}$ para cada $k = 0, 1, ..., n$ satisfaciendo (\ref{eq:star}), y ahora queremos construir $U_{p_{n+1}}$.
 
-\subsection{Una parte}
+Notar que el conjunto $\{p_0, p_1, ..., p_n\} \subset Q$ no está necesariamente ordenado. Sin embargo, es un conjunto finito de números racionales, por tanto, podemos encontrar unos elementos $p_r$ y $p_s$ de manera que $p_r$ es el predecesor inmediato de $p_{n+1}$ y $p_s$ es el sucesor inmediato de $p_{n+1}$. Es decir, se tiene
+$$
+p_r < p_{n+1} < p_s
+$$
+y no existe $k\leq n$ de forma que $p_r < p_k < p_{n+1}$ ni $p_{n+1} < p_k < p_s$.
 
-Sea $n \in \nat$ con $n > 1$. Como $$P_n = \{1, 2, \dots, n-1\}$$ es un conjunto finito y $f$ es sobreyectiva, existen $r$ y $s$ en $P_n$ (es decir, $r < n$ y $s < n$) tales que
+Puesto que $p_r < p_s$, por la hipótesis de inducción se tiene que ambos son abiertos y que $\overline{U_{p_r}} \subseteq U_{p_s}$ (\ref{eq:star}). Aplicamos la caracterización de normalidad para encontrar un nuevo abierto $U = U_{p_{n+1}}$ tal que
+$$
+\overline{U_{p_r}} \subseteq U \subseteq \overline{U} \subseteq U_{p_s}
+$$
+Con esto concluimos la inducción.
 
-\begin{equation} \label{cond_rs}
-  f(r) < f(n) < f(s)
-\end{equation}
+Veamos ahora como se traduce esto en Lean.
 
-y, además, estas son las mejores elecciones, es decir
+\subsubsection{Numerar los racionales}
 
-\begin{enumerate}
-  \item Si $m < n$ es tal que $f(m) < f(n)$, entonces $f(m) \leq f(r)$
-  \item Si $m < n$ es tal que $f(n) < f(m)$, entonces $f(s) \leq f(m)$
-\end{enumerate}
+Los racionales son numerables, es decir existe una biyección entre $\nat$ y $\rat$. En particular, necesitamos una función $f : \nat \to Q$ donde $Q = \rat \cap [0, 1]$, de forma que $f$ sea biyectiva, $f(0) = 1$ y $f(1) = 0$. Es decir, la función que nos lleva cada $k \in \nat$ a $p_k$.
 
-Además, como $f$ es inyectiva, estas elecciones son únicas.
+\begin{lstlisting}
+  lemma hf : ∃ f : ℕ → Q,
+      (f.Bijective ∧
+      f 0 = ⟨1, Q1⟩ ∧
+      f 1 = ⟨0, Q0⟩) := by sorry
+\end{lstlisting}
 
-Para cada $n > 1$, consideramos las funciones $r : \nat \to \nat$ y $s : \nat \to \nat$ que nos dan precisamente estos números $r$ y $n$.
-
---
-
-Supongamos que hemos encontrado una función $G : \nat \to \mathcal{P}(X)$ que satisface las siguientes propiedades
-
-\begin{enumerate}
-  \item $G(0) = X \backslash C_2$
-  \item $G(1) = V$ tal que $C_1 \subseteq V \subseteq \overline{V} \subseteq X \backslash C_2$
-  \item Para cada $n \in \nat $, $G(n)$ es abierto en $X$
-  \item Para cada $n \in \nat$, si $n>1$ entonces \begin{equation} \label{cond_Grs} \overline{G(r(n))} \subseteq G(n) \subseteq \overline{G(n)} \subseteq G(s(n)) \end{equation}
-\end{enumerate}
-
-Queremos probar que, en este caso, $G$ también cumple la siguiente propiedad:
-
-\begin{equation} \label{cond_G}
-  \forall n, m \in \nat, f(n) < f(m) \implies \overline{G(n)} \subseteq G(m)
-\end{equation}
