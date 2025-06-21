@@ -64,6 +64,17 @@ lemma from_normality_prop1 {X : Type} [T : TopologicalSpace X]
   have h := Classical.choose_spec (hT U C hUC.left hUC.right.left hUC.right.right)
   exact h.left
 
+lemma from_normality_open {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (U C : Set X)
+    :
+    IsOpen (from_normality hT (U, C)) := by
+
+  cases' Classical.em (normal_pair (U, C)) with h h
+  · exact from_normality_prop1 hT U C h
+  · simp [from_normality, h]
+
+
 lemma from_normality_prop2 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (U C : Set X)
@@ -147,43 +158,24 @@ lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
 
   intro n
 
-  have cases : n = 0 ∨ n > 0 := by exact Nat.eq_zero_or_pos n
-  cases' cases with hn hn
 
+  cases' Nat.eq_zero_or_pos n with hn hn
   · -- n = 0
     simp [hn, G]
     exact { isOpen_compl := hC2 }
 
-  have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn
-  cases' cases with hn hn
-
+  cases' LE.le.eq_or_gt hn with hn hn
   · -- n = 1
     simp [hn, G]
-    apply from_normality_prop1
-    constructor
-    exact hC2
-    constructor
-    exact hC1
-    exact hC1C2
+    exact from_normality_open hT C2ᶜ C1
 
   · -- n > 1
-    have aux : n ≠ 0 := by exact Nat.not_eq_zero_of_lt hn
-    have aux' : n ≠ 1 := by exact Ne.symm (Nat.ne_of_lt hn)
+    have aux := Nat.not_eq_zero_of_lt hn
+    have aux' := Ne.symm (Nat.ne_of_lt hn)
 
     rw [G]
     simp [hn, aux, aux']
-
-    have cases :
-      normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))) ∨
-      ¬ normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
-      := by exact Classical.em (normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))))
-
-    cases' cases with op1 op2
-
-    · apply from_normality_prop1
-      exact op1
-
-    · simp [from_normality, op2]
+    exact from_normality_open hT (G hT C1 C2 (s n)) (closure (G hT C1 C2 (r n)))
 
 
 /-
