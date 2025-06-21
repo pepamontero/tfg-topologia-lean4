@@ -63,12 +63,12 @@ lemma characterization_of_normal {X : Type}
     · exact V1_open
     constructor
     · exact hCV
-    · apply Disjoint.closure_left at hV
-      specialize hV V2_open
-      apply Set.subset_compl_iff_disjoint_right.mpr at hV
-      trans V2ᶜ
-      · exact hV
+    · trans V2ᶜ; swap
       · exact Set.compl_subset_comm.mp hUV
+      · apply Disjoint.closure_left at hV
+        specialize hV V2_open
+        exact Set.subset_compl_iff_disjoint_right.mpr hV
+
 
   · intro h C1 C2 C1_closed C2_closed hC
 
