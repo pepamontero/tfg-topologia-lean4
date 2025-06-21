@@ -1,5 +1,4 @@
 import Leantest.MyDefs.my_denumerableQ
-import Leantest.MyDefs.my_induction
 
 /-
 definición de las funciones r y s:
