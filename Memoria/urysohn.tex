@@ -262,10 +262,169 @@ Garantizada la existencia de estas funciones, podemos tomar ahora las funciones 
 
 \begin{lstlisting}
   noncomputable def r : ℕ → ℕ := fun n ↦
-  if h : n > 1 then Classical.choose (exists_r n h)
-  else 1
+    if h : n > 1 then Classical.choose (exists_r n h)
+    else 1
 
   noncomputable def s : ℕ → ℕ := fun n ↦
-  if h : n > 1 then Classical.choose (exists_s n h)
-  else 0
+    if h : n > 1 then Classical.choose (exists_s n h)
+    else 0
 \end{lstlisting}
+
+Necesitaremos varias propiedades de estas funciones, que iremos enunciando según las vayamos necesitando. En particular, los resultados \code{r\_prop} y \code{s\_prop} son casi idénticos a utilizar \code{Classical.choose\_spec} sobre \code{exists\_r} y \code{exists\_s}.
+
+\subsubsection{Construcción de $G$}
+
+La construcción de $G : \rat \to \mathcal{P}(X)$ es, como hemos explicado, una construcción por inducción. Para empezar, es más fácil construir $G : \nat \to \mathcal{P}(X)$, y después tomar $G \circ f^{-1} : Q \to \mathcal{P}(X)$ donde $f$ es la función que numera $Q$ que habíamos obtenido antes. Nos centraremos en esta función.
+
+Lean admite definiciones inductivas de una manera muy natural. Un ejemplo muy utilizado es la sucesión de Fibonacci: definir $Fib(0) = 0$ y $Fib(1) = 1$, y a partir de ahí, $Fib(n) = Fib(n-1)+Fib(n-2)$ para cada $n > 1$. En Lean, escribimos
+
+\begin{lstlisting}
+  def Fib : ℕ → ℕ := fun n ↦
+    if n = 0 then 0
+    else if n = 1 then 1
+    else Fib (n-1) + Fib (n-2)
+\end{lstlisting}
+
+En vista de esto, mi primer acercamiento a la construcción de $G$ fue el siguiente:
+
+\begin{itemize}
+  \item Para $n = 0$, definir $G(0) = C_2^c$.
+  \item Para $n = 1$, tomar $G(1)$ el resultado de aplicar la caracterización de espacios normales al abierto $C_2^c$ y el cerrado $C_1$.
+  \item Para $n >1$, tomar $G(n)$ el resultado de aplicar la caracterización de espacios normales al abierto $G(s(n))$ y el cerrado $\overline{G(r(n))}$.
+\end{itemize}
+
+\begin{lstlisting}
+  def G {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X) (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ) (hC1C2 : C1 ⊆ C2ᶜ)
+    : ℕ → Set X := fun n ↦
+      if n = 0 then C2ᶜ
+      else if n = 1 then Classical.choose (hT C2ᶜ C1 hC2 hC1 hC1C2)
+      else
+        let U := g hT C1 C2 hC1 hC2 hC1C2 (s n)
+        let C := closure (g hT C1 C2 hC1 hC2 hC1C2 (r n))
+        Classical.choose (hT U C (by sorry) (by sorry) (by sorry))
+\end{lstlisting}
+
+Donde en los últimos \redcode{sorry} habría que demostrar que $G(s(n))$ es abierto, que $\overline{G(r(n))}$ es cerrado y que $\overline{G(r(n))} \subseteq G(s(n))$, para poder aplicar la caracterización de la normalidad (\code{hT}).
+
+Todo esto nosotros \quotes{lo sabemos}: es la hipótesis de inducción. Pero a Lean todavía no le hemos dicho nada de eso. ¿Cómo podemos probar algo sobre un objeto que aún no hemos definido, porque necesitamos haberlo probado para poder definirlo?
+
+Para evitar este problema, tomé una estrategia distinta. Primero, defino la noción de \textit{par normal} de la siguiente manera.
+
+\begin{definition}
+  Dados $U, C \subseteq X$, decimos que $(U, C)$ es un \textnormal{par normal} si $U$ es abierto, $C$ es cerrado y $C \subseteq U$. Es decir, si satisfacen las condiciones para poder aplicar la caracterización de espacios normales (\ref{caracterizacion-normal}).
+\end{definition}
+
+\begin{lstlisting}
+  def normal_pair {X : Type} [TopologicalSpace X]
+    : (Set X × Set X) → Prop := fun (U, C) ↦
+    (IsOpen U ∧ IsClosed C ∧ C ⊆ U)
+\end{lstlisting}
+
+Ahora, defino una función \code{from\_normality} que toma dos conjuntos cualesquiera de $X$, y devuelve el resultado de aplicar la caracterización de espacios normales si forman un par normal, y el conjunto vacío en caso contrario.
+
+\begin{lstlisting}
+  noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    : (Set X × Set X) → Set X := fun (U, C) ↦
+      if h : normal_pair (U, C) = True then
+        Classical.choose (hT U C
+          (by simp at h; exact h.left)
+          (by simp at h; exact h.right.left)
+          (by simp at h; exact h.right.right)
+        )
+      else ∅
+\end{lstlisting}
+
+Ahora, al construir $G$, ya no me tengo que preocupar de si produce siempre conjuntos abiertos o no, porque lo puedo definir a partir de esta última función, que está definida para cualquieras dos abiertos. Una vez definida, puedo demostrar que cada conjunto obtenido es de hecho abierto.
+
+\begin{lstlisting}
+  def G {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X) : ℕ → Set X
+      := fun n ↦
+        if n = 0 then C2ᶜ
+        else if n = 1 then from_normality hT (C2ᶜ, C1)
+        else if n > 1 then
+          let U := G hT C1 C2 (s n)
+          let C := closure (G hT C1 C2 (r n))
+          from_normality hT (U, C)
+        else ∅
+\end{lstlisting}
+
+Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error: \redcode{fail to show termination for G}. Esto es, estamos definiendo una función recursiva, $G$, pero no es evidente que las veces que estamos llamando a $G$ dentro de $G$ constituyan conjuntos ya definidos. Es decir, no es evidente que $r(n) < n$ y $s(n) < n$. Por tanto, al final de la definición tenemos que añadir una demostración de que sí es así.
+
+\begin{lstlisting}
+  ...
+      else ∅
+
+    decreasing_by
+    · let s_prop := s_prop
+      have aux : ∀ n > 1, s n < n
+      · intro n hn
+        specialize s_prop n hn
+        simp at s_prop
+        exact s_prop.left
+      apply aux
+      linarith
+    · sorry -- analogo r
+\end{lstlisting}
+
+¡Ya tenemos nuestra función $G$! Aunque todavía queda mucho trabajo. Veamos que se cumplen las propiedades que queríamos de $G$.
+
+\begin{lemma}
+  Para cada $n \in \nat$, $G(n)$ es abierto en $X$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+    :
+    ∀ n : ℕ, IsOpen (G hT C1 C2 n) := by sorry
+\end{lstlisting}
+
+\begin{proof}
+  Notemos que la función \code{from\_normality} siempre produce abiertos, porque o bien es el resultado de aplicar \ref{caracterizacion-normal}, o bien es el vacío que es abierto (demostrado en \code{from\_normality\_open}).
+
+  Sea $n \in \nat$. Tenemos que distinguir en tres casos, pues existen tres casos en la definición de $G$.
+
+  (1) Si $n = 0$, entonces simplemente por hipótesis $G(0) = C_2^c$ es abierto.
+
+  \begin{lstlisting}
+    intro n
+    cases' Nat.eq_zero_or_pos n with hn hn -- n = 0 ∨ n > 0
+    · simp [hn, G] -- si n = 0
+      exact { isOpen_compl := hC2 }
+  \end{lstlisting}
+
+  (2) Si $n = 1$, entonces estamos aplicando la función \code{from\_normality} a $C_2^c$ y $C_1$. Luego es abierto.
+
+  \begin{lstlisting}
+    cases' LE.le.eq_or_gt hn with hn hn -- n = 1 ∨ n > 1
+    · simp [hn, G] -- n = 1
+      exact from_normality_open hT C2ᶜ C1
+  \end{lstlisting}
+
+  (3) Ahora, si $n > 1$, entonces estamos aplicando la función \code{from\_normality} a $G(s(n))$ y $\overline{G(r(n))}$. Luego es abierto análogamente.
+\end{proof}
+
+\begin{proposition}
+  Para cada $n > 1$, se tiene:
+  $$
+   \overline{G(r(n))} \subseteq G(n) \subseteq \overline{G(n)} \subseteq G(s(n))
+  $$
+\end{proposition}
+
+\begin{proof}
+  
+\end{proof}
+
+\subsubsection{La propiedad (\ref{eq:star})}
+
