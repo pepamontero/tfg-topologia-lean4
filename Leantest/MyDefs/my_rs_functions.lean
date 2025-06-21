@@ -331,18 +331,13 @@ lemma rn_eq_rsn (n : ℕ) (hn : n > 1)
     apply (r_prop n hn).right.right
     · simp
       trans s n
-      · have aux := (r_prop (s n) hsn).left
-        simp at aux
-        exact aux
-      · have aux := (s_prop n hn).left
-        simp at aux
-        exact aux
+      · exact List.mem_range.mp (r_prop (s n) hsn).left
+      · exact List.mem_range.mp (s_prop n hn).left
     · exact f_rs_prop n hn hsn
 
   · -- f (r n) ≤ f (r (s n))
     apply (r_prop (s n) hsn).right.right
-    · simp
-      exact h
+    · exact List.mem_range.mpr h
     · trans f n
       · exact (r_prop n hn).right.left
       · exact (s_prop n hn).right.left
