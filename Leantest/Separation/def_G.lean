@@ -1,6 +1,7 @@
 import Leantest.Separation.normal
 import Leantest.MyDefs.my_rs_functions
 import Leantest.MyDefs.my_lex_order
+import Leantest.MyDefs.my_induction
 
 
 #check characterization_of_normal
@@ -30,7 +31,7 @@ let (U, C) a Pair. Let V = from_normality (U, C)
   C ⊆ V ⊆ closure V ⊆ U
 -/
 
-def normal_pair {X : Type} [T : TopologicalSpace X]
+def normal_pair {X : Type} [TopologicalSpace X]
     : (Set X × Set X) → Prop := fun (U, C) ↦ (IsOpen U ∧ IsClosed C ∧ C ⊆ U)
 
 noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
