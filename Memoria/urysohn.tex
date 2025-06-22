@@ -1145,3 +1145,42 @@ El resultado se deduce entonces de [las propiedades estas que aún no expliqué]
 \end{lstlisting}
 
 Lo que concluye la prueba del Lema de Urysohn.
+
+
+\subsection{La prueba de Mathlib}
+
+La prueba del Lema de Urysohn que he descrito en este capítulo ha sido implementada por mí de manera completamente independiente a la de Mathlib, la cual no leí hasta haber escrito completamente mi demostración.
+
+Para cerrar este capítulo me gustaría hacer una breve comparación de ambas.
+
+La implementación que se encuentra en Mathlib está documentada en \cite{mathlib2023urysohn}.
+
+Como comentamos al principio del capítulo, la parte más complicada de la demostración ha sido construir la función $G$, por requerir inducción completa para construir los abiertos e inducción sobre dos variables para probar sus propiedades. En efecto, en la documentación de Mathlib, escriben:
+
+\begin{quote}
+  La mayoría de las fuentes prueban el lema de Urysohn utilizando una familia de conjuntos abiertos indexada por los números racionales diádicos en $[0, 1]$. Hay mcuhas dificultades ténicas al formalizar esta demostración (por ejemplo, es necesario formalizar la \quotes{inducción diádica}, y luego probar que la familia resultante de conjuntos abiertos es monótona).
+\end{quote}
+
+En efecto, es posible construir la sucesión que nosotros hemos construido tomando sólo los diádicos, pero uno se encuentra con problemas parecidos a los que hemos encontrado nosotros.
+
+El obejtivo de la prueba de Mathlib, es, por tanto, evitar esta complicación. A continuación veremos un esquema de la demostración de Mathlib.
+
+Sea $X$ un espacio normal. Para cada par $(U, C)$ con $U$ abierto y $C$ cerrado en $X$ con $C \subseteq U$ (es decir, para cada \textit{par normal}), definimos las funciones:
+
+$$
+\begin{array}{c}
+  L : X 
+\end{array}
+$$
+
+Supongamos que $X$ es un espacio normal y sean $C$ y $C'$ cerrados de $X$. Consideramos $U = C'$ abierto en $X$.
+
+Para cada par de la fora
+
+Consideremos la siguiente sucesión de funciones $\{f_n : X \to \mathbb{R}\}$:
+
+$$
+\begin{cases}
+  f_0(x) = 
+\end{cases}
+$$
