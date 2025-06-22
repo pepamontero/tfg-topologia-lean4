@@ -671,8 +671,160 @@ En nuestro caso, vamos a utilizar el orden lexicográfico sobre $\nat^2$, defini
 \end{proof}
 
 
+\subsubsection{Composición con $f^{-1}$}
+
+Por último, recordemos que la función $G$ que estábamos buscando no es de la forma $\nat \to \mathcal{P}(X)$ sino de la forma $\rat \cap [0, 1] \to \mathcal{P}(X)$. En particular, vamos a extenderla a $\rat \to \mathcal{P}(X)$ de la siguiente forma:
+
+$$
+H : \rat \to \mathcal{P}(X), ~~ q \mapsto
+\begin{cases}
+\emptyset & \text{si } q < 0 \\
+(G \circ f^{-1})(q) & \text{si } 0 \leq q \leq 1 \\
+X & \text{si } 1 < q
+\end{cases}
+$$
+
+\begin{lstlisting}
+  def H {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+    : ℚ → Set X := fun q ↦
+      if q < 0 then ∅
+      else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
+      else Set.univ
+\end{lstlisting}
+
+\begin{lemma}
+  Para los cerrados $C_1$ y $C_2$ elegidos al principio de la sección, la función $H$ previamente definida satisface las siguientes propiedades:
+  \begin{enumerate}
+    \item $H(1) = C_2^c$
+    \item $H(0)$ es tal que $C_1 \subseteq H(0) \subseteq \overline{H(0)} \subseteq C_2^c$
+    \item Para cada $q \in \rat$, $H(q)$ es abierto en $X$.
+    \item Para cada $p, q \in \rat$ con $p < q$, se tiene $\overline{H(p)} \subseteq H(q)$
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  Todas estas propiedades se deducen casi trivialmente de las de $G$, utilizando que $f$ es biyectiva y los valores fijos que toma en el $0$ y el $1$. El único añadido son los valores fuera de $[0, 1]$, para los que las últimas propiedades se demuestran fácilmente puesto que $\emptyset$ y $X$ son abiertos, $\overline{\emptyset} = \emptyset \subseteq U$ para cualquier $U$ y $U \subseteq X$ para cualquier $U$.
+\end{proof}
+
 \subsection{Construcción de una función continua separadora}
 
+Siguiendo con el esquema que habíamos propuesto, construimos ahora la siguiente función
+
+$$
+\begin{array}{rcrcl}
+  F & : & X & \longrightarrow & \mathcal{P}(\rat) \\
+    & & x & \longmapsto & \{p \in \rat ~|~ x \in H(p)\}
+\end{array}
+$$
+
+\begin{lstlisting}
+  def F {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
+      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+    : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ H hT C1 C2 p}
+\end{lstlisting}
+
+Ahora, queremos construir una función de la siguiente forma
+
+$$
+\begin{array}{rcrcl}
+  f & : & X & \longrightarrow & [0, 1] \\
+    & & x & \longmapsto & \inf F(x)
+\end{array}
+$$
+
+Sin embargo, tenemos que asegurarnos de que podemos definir esta función, es decir, de que el conjunto $F(x)$ tiene ínfimo para cada $x \in X$.
+
+\begin{lemma}
+  Sea $F :  X  \to \mathcal{P}(\rat)$ la función definida anteriormente. Entonces para cada $x \in X$, $F(x)$ es un conjunto no vacío.
+\end{lemma}
+
+\begin{proof}
+  Sea $x \in X$. Cualquier $q > 1$ es tal que $q \in F(x)$, pues si $q >1$, $H(q) = X$, luego $x \in H(q)$.
+\end{proof}
+
+\newpage
+
+\begin{lstlisting}
+  lemma hF_non_empty (...) :  ∀ x : X, (F hT C1 C2 x).Nonempty := by
+    intro x
+    use 2 -- por ejemplo 2 > 1
+    simp [F, H]
+\end{lstlisting}
+
+\begin{lemma}
+  Para cada $x \in X$, si $q < 0$ entonces $q  F(x)$. Es decir, todos los elementos de $F(x)$ son no negativos.
+\end{lemma}
+
+\begin{proof}
+  Sea $x \in X$ y $q < 0$. Entonces $H(q) = \emptyset$, luego obviamente $x \notin H(q)$.
+\end{proof}
+
+Llamaremos a este resultado \code{hFx\_non\_neg}. Como consecuencia, se tiene:
+
+\begin{lemma}
+  Para cada $x \in X$, $0$ es una cota inferior de $F(x)$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma hFx_has_lb_0 (...)
+    : ∀ x : X, 0 ∈ lowerBounds (F hT C1 C2 x) := by sorry
+\end{lstlisting}
+
+Por tanto, dado $x \in X$, puesto que $F(x)$ es un conjunto no vacío y acotado inferiormente, podemos concluir que $F(x)$ tiene un ínfimo \textbf{como conjunto real}, es decir, podemos concluir que existe un número $r \in \mathbb{R}$ de forma que $r = \inf F(x)$. Este resultado está incluido en Mathlib:
+
+\begin{lstlisting}
+  Real.exists_isGLB {s : Set ℝ} (hne : s.Nonempty) (hbdd : BddBelow s) :
+      ∃ x, IsGLB s x
+\end{lstlisting}
+
+Podríamos intentar escribir algo así:
+
+\begin{lstlisting}
+  lemma hFx_has_lb_0 (...)
+    : ∀ x : X, ∃ r : ℝ, IsGLB (F hT C1 C2 x) r := by sorry
+\end{lstlisting}
+
+Sin embargo, esto nos da el siguiente error:
+
+\begin{lstlisting}
+  argument r has type ℝ but is expected to have type ℚ
+\end{lstlisting}
+
+Esto es porque, en Mathlib, \code{IsGLB} está definido de la siguiente forma:
+
+\begin{lstlisting}
+  def IsGLB [Preorder α] (s : Set α) : α → Prop :=
+    IsGreatest (lowerBounds s)
+\end{lstlisting}
+
+Es decir, sólo está definido para valores de tipo $\alpha$ si $s \subset \alpha$. Como $F(x) \subset \rat$, no podemos decir que $r \in \mathbb{R}$ sea su ínfimo.
+
+Por tanto, necesitamos definir en Lean una función auxiliar $\tilde{F}$ de forma que $\tilde{F}(x) = F(x)$ para cada $x$, pero visto como subconjunto de $\mathbb{R}$. Lo hacemos de la siguiente manera.
+
+\begin{lstlisting}
+  def inclQR : ℚ → ℝ := fun q ↦ q
+
+  def F_Real (...) : X → Set ℝ :=
+    fun x ↦ inclQR '' (F hT C1 C2 x)
+\end{lstlisting}
+
+Esta nueva función $\tilde{F}$ es una función con las mismas propiedades que $F$, es decir, para cada $x \in X$, $\tilde{F}(x)$ es un conjunto no vacío con $0$ como cota inferior. Esto se prueba de manera inmediata utilizando las propiedades de $F$, aunque es necesario tener cuidado con la inferencia de tipos de Lean en algunos casos.
+
+Pero ahora $\tilde{F}$ que devuelve subconjuntos de $\mathbb{R}$, luego podemos asegurar que tiene un ínfimo en $\mathbb{R}$.
+
+\begin{lstlisting}
+  lemma F_Real_has_inf (...)
+      : ∀ x : X, ∃ r : ℝ, IsGLB (F_Real hT C1 C2 x) r := by
+    intro x
+    apply Real.exists_isGLB
+    exact F_Real_Nonempty hT C1 C2 x
+    exact F_Real_BddBelow hT C1 C2 x
+\end{lstlisting}
 
 
 
