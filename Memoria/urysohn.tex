@@ -1165,22 +1165,39 @@ En efecto, es posible construir la sucesión que nosotros hemos construido toman
 
 El obejtivo de la prueba de Mathlib, es, por tanto, evitar esta complicación. A continuación veremos un esquema de la demostración de Mathlib.
 
-Sea $X$ un espacio normal. Para cada par $(U, C)$ con $U$ abierto y $C$ cerrado en $X$ con $C \subseteq U$ (es decir, para cada \textit{par normal}), definimos las funciones:
+Sea $X$ un espacio normal. Sea $\mathcal{CU}_X$ el conjunto de los pares normales de $X$, es decir, los pares de la forma $(C, U)$ con $U$ abierto, $C$ cerrado y $C \subseteq U$. Definimos las funciones:
 
 $$
-\begin{array}{c}
-  L : X 
+\begin{array}{ccrclcccrcl}
+  L & : & \mathcal{CU}_X & \longrightarrow & \mathcal{CU}_X & ~~y~~ & R & : & \mathcal{CU}_X & \longrightarrow & \mathcal{CU}_X \\
+  & & (C, U) & \longmapsto & (C, V) & & & & (C, V) & \longmapsto & (\overline{V}, U)
 \end{array}
 $$
 
-Supongamos que $X$ es un espacio normal y sean $C$ y $C'$ cerrados de $X$. Consideramos $U = C'$ abierto en $X$.
+Donde $V$ es el resultado de aplicar la caracterización de espacios normales (\ref{caracterizacion-normal}) al par $(C, U)$ correspondiente.
 
-Para cada par de la fora
-
-Consideremos la siguiente sucesión de funciones $\{f_n : X \to \mathbb{R}\}$:
+Además, para cada $(C, U) \in \mathcal{CU}_X$ consideremos la sucesión de funciones $\{f_n^{(C, U)} : X \to \mathbb{R}\}_{n\in \nat}$ dada por
 
 $$
-\begin{cases}
-  f_0(x) = 
-\end{cases}
+\left\{
+\begin{array}{lclc}
+  f_0^{(C, U)}(x)  & = & \chi_{U^c}(x) & \\
+  & & & \\
+  f_{n+1}^{(C, U)}(x) & = & \dfrac{f_n^{L(C, U)}(x) + f_n^{R(C, U)}(x)}{2}, & n = 0, 1, \dots
+\end{array}
+\right.
 $$
+
+Se puede probar que esta es una sucesión monótona de funciones de forma que, para cada par $(C, U)$ y cada $n \in \nat$, $f_n^{(C, U)}(x) =0, \forall x \in C$, $f_n^{(C, U)}(x) = 1,\forall x \in D$, y $f_n^{(C, U)}(x) \in [0, 1],\forall x \in X$.
+
+En particular, sean $C$ y $D$ los cerrados disjuntos que queremos separar y consideremos el par $(C, D^c) \in \mathcal{CU}_X$. Sea $f : X \to \mathbb{R}$ la función dada por
+
+$$
+f(x) = \lim_{n \to \infty} f_n^{(C, D^c)}
+$$
+
+Entonces $f$ es una función continua que separa $C$ y $D$.
+
+\begin{lstlisting}
+  Nota: la verdad es que no se cuanto mas meterme en esto.
+\end{lstlisting}
