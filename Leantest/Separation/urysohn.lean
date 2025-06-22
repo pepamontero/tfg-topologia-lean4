@@ -109,16 +109,19 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
 
   · -- →
-    intro hT C1 C2 hC1 hC2 hC1' hC2' hC1C2
+    intro hT C1 C2 C1nempty C2nempty C1closed C2closed C1C2disj
 
-    have hC2'' : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
-    have hC1C2' : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left (id (Disjoint.symm hC1C2))
+    have C2c_open : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
+    have hC1C2 : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left (id (Disjoint.symm C1C2disj))
 
     rw [characterization_of_normal] at hT
 
     let G := H hT C1 C2
-
     let g := fun x ↦ k hT C1 C2 x
+
+    --- definiciones
+    have G_def : G = H hT C1 C2 := by rfl
+    have g_def : g = k hT C1 C2 := by rfl
 
     let f : X → Y := fun x ↦ ⟨g x, by
       rw [hY]
@@ -126,30 +129,12 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     use f
 
-    --- definiciones
-    have G_def : G = H hT C1 C2 := by rfl
-    have g_def : g = k hT C1 C2 := by rfl
-
-    -- propiedades
-
-    have G_isOpen := H_isOpen hT C1 C2 hC1' hC2'' hC1C2'
 
     constructor
 
     /-
             1. CONTINUITY OF f
     -/
-
-    have claim1 := k_claim1 hT C1 C2
-      hC1' (by exact IsClosed.isOpen_compl)
-      (by exact hC1C2')
-
-    have claim2 := k_claim2 hT C1 C2
-      hC1' (by exact IsClosed.isOpen_compl)
-      (by exact hC1C2')
-
-    rw [← G_def, ← g_def] at claim1 claim2
-
 
     · rw [@continuousInSubspace_iff_trueForBase
         X ℝ Y T T' R hR f
@@ -177,6 +162,17 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
 
       -- paso 2.1. probar: `x ∉ closure (U_p)`
+
+      have claim1 := k_claim1 hT C1 C2
+        C1closed (by exact IsClosed.isOpen_compl)
+        (by exact hC1C2)
+
+      have claim2 := k_claim2 hT C1 C2
+        C1closed (by exact IsClosed.isOpen_compl)
+        (by exact hC1C2)
+
+      rw [← G_def, ← g_def] at claim1 claim2
+
       have aux1 : x ∉ closure (G p)
       · by_contra c
         specialize claim1 p x c
@@ -217,7 +213,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           · exact aux1
         · -- probar que `V` es abierto
           apply IsOpen.inter
-          · exact G_isOpen q
+          · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
           · rw [isOpen_compl_iff]
             exact isClosed_closure
 
@@ -244,7 +240,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     rw [aux C1]
     simp
     rw [g_def]
-    exact k_in_C1_is_0 hT C1 C2 hC1' hC2'' hC1C2' hC1
+    exact k_in_C1_is_0 hT C1 C2 C1closed C2c_open hC1C2 C1nempty
 
 
     /-
@@ -255,4 +251,4 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     rw [aux C2]
     simp
     rw [g_def]
-    exact k_in_C2_is_1 hT C1 C2 hC1' hC2'' hC1C2' hC2
+    exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
