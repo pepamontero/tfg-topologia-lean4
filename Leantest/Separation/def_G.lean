@@ -563,7 +563,7 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
               exact (G_Prop2 m hm1).left
 
             · -- si f (r m) < f n (imposible!)
-              have aux : n < m
+              have n_lt_m : n < m
               · by_contra c
                 simp at c
                 apply lt_of_le_of_ne at c
@@ -574,7 +574,6 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
                 exact aux h
 
               by_contra
-              have aux' := r_prop.right.right
-              specialize aux' n aux hnm
-              apply not_lt.mpr at aux'
-              exact aux' h'
+              have r_prop := r_prop.right.right n n_lt_m hnm
+              apply not_lt.mpr at r_prop
+              exact r_prop h'
