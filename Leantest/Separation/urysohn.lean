@@ -1,7 +1,7 @@
 import Leantest.Separation.normal
 import Leantest.MyDefs.sets
 import Leantest.Continuous.bases
-import Leantest.Separation.def_K
+import Leantest.Separation.def_k
 import Leantest.BasicProp.interior
 
 /-
