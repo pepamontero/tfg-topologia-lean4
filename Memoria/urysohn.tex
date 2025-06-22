@@ -942,6 +942,10 @@ Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, d
   La demostración es muy parecida a la anterior y puede encontrarse en el anexo.
 \end{proof}
 
+\subsubsection{Propiedades sobre los cerrados $C_1$ y $C_2$}
+
+Propiedades.
+
 \subsection{La demostración}
 
 Vamos a demostrar, por tanto, la implicación principal del lema de Urysohn, siguiendo paso a paso la demostración en Lean.
@@ -971,14 +975,7 @@ Ahora, por comodidad vamos a definir las siguientes funciones.
     let g := fun x ↦ k hT C1 C2 x
 \end{lstlisting}
 
-De esta forma no tenemos que arrastrar los argumentos de $H$ y $k$ en cada paso. Cambio el nombre de $H$ a $G$ para seguir con la notación del esquema, puesto que es la función de la forma $G : \nat \to \mathcal{P}(X)$.
-
-Además, cambiarles el nombre nos permite acceder fácilmente a sus definiciones antiguas, que almacenamos aquí:
-
-\begin{lstlisting}
-    have G_def : G = H hT C1 C2 := by rfl
-    have g_def : g = k hT C1 C2 := by rfl
-\end{lstlisting}
+De esta forma no tenemos que arrastrar los argumentos de $H$ y $k$ en cada paso. Cambio el nombre de $H$ a $G$ para seguir con la notación del esquema, puesto que es la función de la forma $G : \nat \to \mathcal{P}(X)$. También cambio el nombre de $k$ a $g$, para evitar confusiones.
 
 Ahora, recordemos que $k : X \to \mathbb{R}$ no era exactamente la función que buscábamos. Vamos a definir finalmente la función a utilizar para separar nuestros cerrados, $f$, de la siguiente manera:
 
@@ -1046,7 +1043,6 @@ Primero recordemos los resultados \ref{claim1} y \ref{claim2} (con los nombres d
 \begin{lstlisting}
       have claim1 := k_claim1 (...)
       have claim2 := k_claim2 (...)
-      rw [← G_def, ← g_def] at claim1 claim2 -- para usarlos con G y g
 \end{lstlisting}
 
 (1) Para ver que $x \notin \overline{G(p)}$, por reducción al absurdo supongamos que sí está. Entonces podemos aplicar \code{claim1} y obtener que $g(x) \leq p$ pero teníamos $p < f(x) = g(x)$, contradicción.
@@ -1129,3 +1125,23 @@ Luego concluimos que $f(y) \in (a, b) = W$. El trabajo duro ya está hecho, ya s
 
 \subsubsection{Imagen de $f$}
 
+Para terminar la demostración, solo nos falta ver que $f(C_1) = \{0\}$ y que $f(C_2) = \{1\}$.
+
+Para empezar, notemos que $f(A) = g(A)$ para cualquier $A \subseteq X$.
+
+\begin{lstlisting}
+  have aux : ∀ A : Set X, f '' A = g '' A
+    · intro A; ext x; simp
+\end{lstlisting}
+
+Luego podemos reducir el objetivo a $g(C_1) = \{0\}$ y que $g(C_2) = \{1\}$.
+
+El resultado se deduce entonces de [las propiedades estas que aún no expliqué].
+
+\begin{lstlisting}
+    constructor
+    · exact k_in_C1_is_0 hT C1 C2 C1closed C2c_open hC1C2 C1nempty
+    · exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
+\end{lstlisting}
+
+Lo que concluye la prueba del Lema de Urysohn.
