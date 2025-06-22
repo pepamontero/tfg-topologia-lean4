@@ -891,3 +891,119 @@ Obtenemos la siguiente propiedad, fruto de aplicar \code{Classical.choose\_spec}
       apply not_lt.mpr at hq -- hq : ¬ q < k x
       exact hq hqk -- contradiccion \end{lstlisting}
 \end{proof}
+
+Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, damos varias propiedades de $k$ que necesitaremos. Recordemos que $H$ era $G \circ f^{-1}$ extendida a $\rat$.
+
+\begin{lemma}
+  Para cada $p \in \rat$ y cada $x \in X$, si $x \in \overline{H(p)}$ entonces $k(x) \leq p$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma k_claim1 (...)
+    : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by sorry
+\end{lstlisting}
+
+\begin{proof}
+  Sean $p \in \rat$ y $x \in X$ con $x \in \overline{H(p)}$. Supongamos, por reducción al absurdo, que $k(x) > p$. Entonces existe un racional $q \in \rat$ de forma que $p < q < k(x)$.
+
+  \begin{lstlisting}
+    intro p x hx -- hx : x ∈ closure (H hT C1 C2 p)
+    by_contra c
+    simp at c -- c : p < k hT C1 C2 x
+    have ⟨q, hq⟩ := exists_rat_btwn c \end{lstlisting}
+
+  Como $p < q$ y $x \in \overline{H(p)}$, por (\ref{eq:star}) se tiene que $x \in H(q)$. 
+
+  \begin{lstlisting}
+    apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 p q
+      (by exact_mod_cast hq.left)
+      at hx -- x ∈ H hT C1 C2 q \end{lstlisting}
+
+  Ahora, $x \in H(q)$ quiere decir que $q \in \tilde{F}(x)$. Pero $k(x)$ es cota superior de $\tilde{F}(x)$, luego $k(x) < q$, lo que contradice $q < k(x)$.
+
+  \begin{lstlisting}
+    have aux : inclQR q ∈ F_Real hT C1 C2 x := by sorry
+    have ⟨klb, _⟩ := k_prop hT C1 C2 x
+    apply klb at aux -- aux : k x ≤ q
+    apply not_lt.mpr at aux -- aux : ¬ q < k x
+    exact aux hq.right -- contradiccion\end{lstlisting}
+\end{proof}
+
+\begin{lemma}
+  Para cada $p \in \rat$ y cada $x \in X$, si $x \notin \overline{H(p)}$ entonces $k(x) \geq p$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma k_claim2 (...)
+    : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) → (k hT C1 C2 x) ≥ p := by sorry
+\end{lstlisting}
+
+\begin{proof}
+  La demostración es muy parecida a la anterior y puede encontrarse en el anexo.
+\end{proof}
+
+\subsection{La demostración}
+
+Vamos a demostrar, por tanto, la implicación principal del lema de Urysohn, siguiendo paso a paso la demostración en Lean.
+
+Sea $X$ un espacio normal. Queremos demostrar que para cada par de cerrados disjuntos no vacíos $C_1$ y $C_2$  existe una función continua $f : X \to [0, 1]$ de forma que $f(C_1) = \{0\}$ y $f(C_2) = \{1\}$.
+
+Sean por tanto $C_1$ y $C_2$ cerrados con esas condiciones.
+
+\begin{lstlisting}
+  · -- →
+    intro hT C1 C2 C1nempty C2nempty C1closed C2closed C1C2disj
+\end{lstlisting}
+
+Para empezar, demostramos algunas propiedades auxiliares, como que $C_2^c$ es abierto (por ser $C_2$ cerrado), y que $C_1 \subseteq C_2^c$ (por ser disjuntos), que nos facilitarán aplicar el resto de resultados que hemos ido probando. También utilizaremos la caracterización de espacios normales (\ref{caracterizacion-normal}) sobre la hipótesis de $X$ normal.
+
+\begin{lstlisting}
+    have C2c_open : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
+    have hC1C2 : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left
+      (id (Disjoint.symm C1C2disj))
+    rw [characterization_of_normal] at hT
+\end{lstlisting}
+
+Ahora, por comodidad vamos a definir las siguientes funciones.
+
+\begin{lstlisting}
+    let G := H hT C1 C2
+    let g := fun x ↦ k hT C1 C2 x
+\end{lstlisting}
+
+De esta forma no tenemos que arrastrar los argumentos de $H$ y $k$ en cada paso. Cambio el nombre de $H$ a $G$ para seguir con la notación del esquema, puesto que es la función de la forma $G : \nat \to \mathcal{P}(X)$.
+
+Además, cambiarles el nombre nos permite acceder fácilmente a sus definiciones antiguas, que almacenamos aquí:
+
+\begin{lstlisting}
+    have G_def : G = H hT C1 C2 := by rfl
+    have g_def : g = k hT C1 C2 := by rfl
+\end{lstlisting}
+
+Ahora, recordemos que $k : X \to \mathbb{R}$ no era exactamente la función que buscábamos. Vamos a definir finalmente la función a utilizar para separar nuestros cerrados, $f$, de la siguiente manera:
+
+\begin{lstlisting}
+    let f : X → Y := fun x ↦ ⟨g x, by
+        rw [hY]; exact k_in_01 hT C1 C2 x⟩
+\end{lstlisting}
+
+Es decir, $f$ es una función que toma valores en $X$ y devuelve un valor real y una demostración de que este valor está en realidad en el intervalo $[0, 1]$, dada utilizando \code{k\_in\_01}, que habíamos demostrado antes. Por tanto, Lean la interpreta como una función $f : X \to [0, 1]$, que es justo lo que queríamos.
+
+Así que ya tenemos la función separadora y podemos dar el gran paso:
+
+\begin{lstlisting}
+    use f
+\end{lstlisting}
+
+Nos queda por demostrar que $f$ es continua, que $f(C_1) = \{0\}$ y que $f(C_1) = \{1\}$.
+
+\begin{lstlisting}
+    constructor
+\end{lstlisting}
+
+\subsubsection{Continuidad de $f$}
+
+
+
+
+
