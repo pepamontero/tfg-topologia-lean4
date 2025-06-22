@@ -656,14 +656,25 @@ En nuestro caso, vamos a utilizar el orden lexicográfico sobre $\nat^2$, defini
         exact (G_Prop2 n hn1).right \end{lstlisting}
 
   (3) Supongamos ahora que $f(s(n))>f(m)$. Este es el caso más complicado, y requiere que volvamos a dividir en tres posibles opciones para $f(n) \sim f(r(m))$.
+  
+  Si $f(n) < f(r(m))$, procedemos de manera parecida a (1), utilizando la hipótesis de inducción para $(n, r(m)) < (n, m)$. Si $f(n) = f(r(m))$, hacemos lo mismo que en (2). Por último, queda demostrar que no se puede dar $f(r(m)) < f(n)$.
 
-  (3a) Si $f(n) < f(r((m)))$, 
+  En efecto, si $f(s(n))>f(m)$, se tiene que dar $n < m$, porque si fuera $m<n$ tendríamos $f(n) < f(m) < f(s(n))$, lo cual es imposible por las propiedades de $s$. Pero entonces si fuera $f(r(m)) < f(n)$ tendríamos $f(r(m)) < f(n) < f(m)$ con $n < m$, que es imposible por las propiedades de $r$.
 
-
-
-
-
+  \begin{lstlisting}
+    ...
+      · -- si f (r m) < f n
+        by_contra
+        have r_prop := r_prop.right.right n n_lt_m hnm -- f n ≤ f (r m)
+        apply not_lt.mpr at r_prop -- ¬f (r m) < f n
+        exact r_prop h' -- teniamos h' : f (r m) < f n \end{lstlisting}
 \end{proof}
+
+
+\subsection{Construcción de una función continua separadora}
+
+
+
 
 
 
