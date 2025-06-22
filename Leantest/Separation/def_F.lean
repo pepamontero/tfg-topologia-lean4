@@ -30,7 +30,7 @@ lemma hFx_has_lb_0 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
-    : ∀ x : X, ∀ p, p ∈ F hT C1 C2 x → 0 ≤ p := by
+    : ∀ x : X, 0 ∈ lowerBounds (F hT C1 C2 x) := by
 
   intro x p hp
   by_contra c
@@ -49,7 +49,6 @@ lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
   have aux' : ¬ (0 ≤ p ∧ p ≤ 1) := by by_contra; linarith
   simp [F, H, aux, aux', hp]
   linarith
-
 
 -------- COMPORTAMIENTO DE F EN C1
 
@@ -156,7 +155,7 @@ lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
   constructor
 
   · intro y hy
-    exact_mod_cast hFx_has_lb_0 hT C1 C2 x y hy
+    exact_mod_cast hFx_has_lb_0 hT C1 C2 x hy
 
   · intro y hy
     rw [F_at_C1 hT C1 C2 hC1 hC2 hC1C2] at hy
@@ -267,7 +266,7 @@ lemma F_Real_0_is_LB {X : Type} [T : TopologicalSpace X]
   cases' hq with hq hy
   simp [inclQR] at hy
   have aux : 0 ≤ q
-  · exact hFx_has_lb_0 hT C1 C2 x q hq
+  · exact hFx_has_lb_0 hT C1 C2 x hq
   rw [← hy]
   exact Rat.cast_nonneg.mpr aux
 
