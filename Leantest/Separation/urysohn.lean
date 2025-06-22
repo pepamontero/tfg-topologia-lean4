@@ -244,7 +244,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     rw [aux C1]
     simp
     rw [g_def]
-    exact k_in_C1_is_0' hT C1 C2 hC1' hC2'' hC1C2' hC1
+    exact k_in_C1_is_0 hT C1 C2 hC1' hC2'' hC1C2' hC1
 
 
     /-
@@ -255,4 +255,4 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     rw [aux C2]
     simp
     rw [g_def]
-    exact k_in_C2_is_1' hT C1 C2 hC1' hC2'' hC1C2' hC2
+    exact k_in_C2_is_1 hT C1 C2 hC1' hC2'' hC1C2' hC2
