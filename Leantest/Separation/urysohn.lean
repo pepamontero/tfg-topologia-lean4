@@ -142,7 +142,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
         (by exact BaseOfRealTopo hT')]
 
       intro W hW
-      simp at hW
       obtain ⟨a, b, hW⟩ := hW
 
       rw [A_open_iff_neighbourhood_of_all]
@@ -152,16 +151,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
       -- paso 1. encontrar p, q racionales con `a < p < f(x) < q < b`
 
-      have hp : ∃ p : ℚ, a < p ∧ p < Subtype.val (f x)
-      exact exists_rat_btwn hx.left
-      have hq : ∃ q : ℚ, Subtype.val (f x) < q ∧ q < b
-      exact exists_rat_btwn hx.right
-
-      obtain ⟨p, hp⟩ := hp
-      obtain ⟨q, hq⟩ := hq
-
-
-      -- paso 2.1. probar: `x ∉ closure (U_p)`
+      obtain ⟨p, hp⟩ := exists_rat_btwn hx.left
+      obtain ⟨q, hq⟩ := exists_rat_btwn hx.right
 
       have claim1 := k_claim1 hT C1 C2
         C1closed (by exact IsClosed.isOpen_compl)
@@ -173,15 +164,16 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
       rw [← G_def, ← g_def] at claim1 claim2
 
+      -- paso 2.1. probar: `x ∉ closure (U_p)`
       have aux1 : x ∉ closure (G p)
       · by_contra c
-        specialize claim1 p x c
+        apply claim1 p x at c
         linarith
 
       -- paso 2.1. probar: `x ∈ U_q`
       have aux2 : x ∈ G q
       · by_contra c
-        specialize claim2 q x c
+        apply claim2 q x at c
         linarith
 
       -- paso 3. tomamos el abierto `V = U_q \ closure (U_p)`
@@ -189,8 +181,9 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
       constructor
 
-      -- paso 4. probar que `V` es entorno abierto de `x`
+      -- paso 4. probar que `U` es entorno abierto de `x`
 
+        -- 4.1. probar que `U ⊆ f ⁻¹' W`
       · intro y hy
         rw [hW]
         constructor
@@ -198,7 +191,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           · by_contra c
             apply subset_closure at c
             exact hy.right c
-          specialize claim2 p y hy
+          apply claim2 p y at hy
           linarith
 
         · have hy := hy.left
@@ -206,18 +199,16 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           specialize claim1 q y hy
           linarith
 
-      · constructor
-        · -- probar que `x ∈ V`
-          constructor
-          · exact aux2
-          · exact aux1
-        · -- probar que `V` es abierto
-          apply IsOpen.inter
-          · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
-          · rw [isOpen_compl_iff]
-            exact isClosed_closure
-
-      -- paso 5. probar que `f(V) ⊆ U`
+      constructor
+      · -- probar que `x ∈ V`
+        constructor
+        · exact aux2
+        · exact aux1
+      · -- probar que `V` es abierto
+        apply IsOpen.inter
+        · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
+        · rw [isOpen_compl_iff]
+          exact isClosed_closure
 
 
     /-
