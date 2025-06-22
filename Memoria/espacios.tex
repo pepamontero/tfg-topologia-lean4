@@ -959,7 +959,7 @@ En Mathlib, este resultado recibe el nombre de \code{continuous\_iff\_isClosed}.
 
 \end{proof}
 
-\begin{proposition}[Continuidad del subespacio]
+\begin{proposition}[Continuidad del subespacio]\label{prop:continuidad-subespacio}
   Sean $X$ e $Y$ espacios topológicos y $Z$ un subespacio topológico de Y. Una función $f : X \to Z$ es continua si y solo si lo es como función $f : X \to Y$.
 \end{proposition}
 
@@ -1006,7 +1006,7 @@ Es decir, para demostrar la condición de continuidad de $f : X \to Z$, basta co
   Nota: Realmente la gracia de esta demostracion es usar lo de Subype.val bien... No se ni si tiene sentido porque siento que no se entiende nada.
 \end{lstlisting}
 
-\begin{proposition}
+\begin{proposition}\label{prop:continuous-base}
   Sea $f : X \to Y$ una función entre espacios topológicos y sea $\mathcal{B}$ una base de $Y$. Entonces $f$ es continua si y solo si para cada $U \in \mathcal{B}$ abierto básico, se tiene que $f^{-1}(U)$ es abierto en $X$.
 \end{proposition}
 
