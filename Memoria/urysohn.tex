@@ -456,7 +456,7 @@ Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error:
 
 ¡Ya tenemos nuestra función $G$! Aunque todavía queda mucho trabajo. Veamos que se cumplen las propiedades que queríamos de $G$.
 
-\begin{lemma}
+\begin{lemma}\label{prop:G-open}
   Para cada $n \in \nat$, $G(n)$ es abierto en $X$.
 \end{lemma}
 
@@ -894,7 +894,7 @@ Obtenemos la siguiente propiedad, fruto de aplicar \code{Classical.choose\_spec}
 
 Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, damos varias propiedades de $k$ que necesitaremos. Recordemos que $H$ era $G \circ f^{-1}$ extendida a $\rat$.
 
-\begin{lemma}
+\begin{lemma}\label{claim1}
   Para cada $p \in \rat$ y cada $x \in X$, si $x \in \overline{H(p)}$ entonces $k(x) \leq p$.
 \end{lemma}
 
@@ -929,8 +929,8 @@ Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, d
     exact aux hq.right -- contradiccion\end{lstlisting}
 \end{proof}
 
-\begin{lemma}
-  Para cada $p \in \rat$ y cada $x \in X$, si $x \notin \overline{H(p)}$ entonces $k(x) \geq p$.
+\begin{lemma}\label{claim2}
+  Para cada $p \in \rat$ y cada $x \in X$, si $x \notin H(p)$ entonces $k(x) \geq p$.
 \end{lemma}
 
 \begin{lstlisting}
@@ -1003,7 +1003,129 @@ Nos queda por demostrar que $f$ es continua, que $f(C_1) = \{0\}$ y que $f(C_1) 
 
 \subsubsection{Continuidad de $f$}
 
+Queremos ver que $f$ es continua. Para ello, aplicamos el resultado \code{continuousInSubspace\_iff\_trueForBase}, que vimos que era combinación de \ref{prop:continuidad-subespacio} y \ref{prop:continuous-base}.
 
+\begin{lstlisting}
+    · rw [@continuousInSubspace_iff_trueForBase
+        X ℝ Y T T' R hR f
+        {s | ∃ a b : ℝ, s = Set.Ioo a b}
+        (by exact BaseOfRealTopo hT')]
+\end{lstlisting}
 
+Luego basta demostrar que para cada abierto básico $W$ de $\mathbb{R}$, $f^{-1}(W)$ es abierto en $X$. Sea $W = (a, b)$ un abierto de la base formada por los intervalos abiertos reales.
 
+\begin{lstlisting}
+      intro W hW
+      obtain ⟨a, b, hW⟩ := hW -- hW : W = (a, b)
+\end{lstlisting}
+
+Queremos ver que $f^{-1}(W)$ es abierto en $X$. Utilizando la caracterización de abiertos (\ref{caracterizacion-abierto}), basta ver que es entorno de todos sus puntos. Sea entonces $x \in f^{-1}(W)$, lo que quiere decir que $f(x) \in (a, b)$.
+
+\begin{lstlisting}
+      rw [A_open_iff_neighbourhood_of_all]
+      intro x hx
+      rw [Set.mem_preimage, hW] at hx -- h x : f x ∈ (a, b)
+\end{lstlisting}
+
+Puesto que $f(x) \in (a, b)$, se tiene que existe $p \in \rat$ con $a < p < f(x)$, y también existe $q \in \rat$ con $f(x) < q < b$.
+
+\begin{lstlisting}
+    obtain ⟨p, hp⟩ := exists_rat_btwn hx.left
+    obtain ⟨q, hq⟩ := exists_rat_btwn hx.right
+\end{lstlisting}
+
+Vamos a demostrar que $x \in G(q)$ y que $x \notin \overline{G(p)}$.
+
+Primero recordemos los resultados \ref{claim1} y \ref{claim2} (con los nombres de las funciones correspondientes a la notación actual):
+
+\begin{itemize}
+  \item \code{k\_claim1}: $\forall p \in \rat,\forall x \in X, x \in \overline{G(p)} \implies g(x) \leq p$
+  \item \code{k\_claim2}: $\forall p \in \rat,\forall x \in X, x \notin G(p) \implies g(x) \geq p$
+\end{itemize}
+
+\begin{lstlisting}
+      have claim1 := k_claim1 (...)
+      have claim2 := k_claim2 (...)
+      rw [← G_def, ← g_def] at claim1 claim2 -- para usarlos con G y g
+\end{lstlisting}
+
+(1) Para ver que $x \notin \overline{G(p)}$, por reducción al absurdo supongamos que sí está. Entonces podemos aplicar \code{claim1} y obtener que $g(x) \leq p$ pero teníamos $p < f(x) = g(x)$, contradicción.
+
+\begin{lstlisting}
+      have aux1 : x ∉ closure (G p)
+      · by_contra c
+        apply claim1 p x at c
+        linarith
+\end{lstlisting}
+
+(2) De manera similar, si suponemos por reducción al absurdo que $x \notin U(q)$, entonces por \code{claim2} obtenemos que $g(x) \geq q$, pero teníamos $q > f(x) = g(x)$, contradicción.
+
+\begin{lstlisting}
+      have aux2 : x ∈ G q
+      · by_contra c
+        apply claim2 q x at c
+        linarith
+\end{lstlisting}
+
+Recapitulando, queremos ver que $f^{-1}(W)$ es entorno de $x$ ($x$ era arbitrario). Esto es, por definición, encontrar un conjunto $U\subseteq X$ que sea abierto y de manera que $x \in U \subseteq f^{-1}(W)$.
+
+Tomemos el conjunto $U = G(q) \cap (\overline{G(p)})^c$ y veamos que cumple estas condiciones.
+
+\begin{lstlisting}
+      use (G q) ∩ (closure (G p))ᶜ
+      constructor
+\end{lstlisting}
+
+(1) Veamos que $U \subseteq f^{-1}(W)$. Para ello, sea $y \in U$ y veamos que $y \in f^{-1}(W) = f^{-1}((a, b))$, es decir, veamos que $a < f(y) < b$.
+
+\begin{lstlisting}
+      · intro y hy
+        rw [hW]
+        constructor
+\end{lstlisting}
+
+Se tiene que $y \notin G(p)$, pues en caso contrario, $y \in G(p) \subseteq \overline{G(p)}$, pero $y \in \overline{G(p)}^c$. Aplicando \code{claim1}, se tiene que $f(y) = g(y) \geq p > a$.
+
+\begin{lstlisting}
+        · have hy : y ∉ G p
+          · by_contra c
+            apply subset_closure at c
+            exact hy.right c
+          apply claim2 p y at hy
+          linarith
+\end{lstlisting}
+
+Por otro lado, como $y \in G(q) \subseteq \overline{G(q)}$, por \code{claim2} se tiene que $f(y) = g(y) \leq q < b$.
+
+\begin{lstlisting}
+        · have hy := hy.left
+          apply subset_closure at hy
+          specialize claim1 q y hy
+          linarith
+\end{lstlisting}
+
+Luego concluimos que $f(y) \in (a, b) = W$. El trabajo duro ya está hecho, ya solo falta ver que $x \in U$ y que $U$ es abierto.
+
+\begin{lstlisting}
+      constructor
+\end{lstlisting}
+
+(2) Como habíamos visto, $x \in G(q)$ y $x \notin \overline{G(p)}$. Luego $x \in U$.
+
+\begin{lstlisting}
+      · constructor
+        · exact aux2
+        · exact aux1
+\end{lstlisting}
+
+(3) Probar que $U$ es abierto es sencillo: como es una intersección finita, basta ver que ambos componentes son abiertos. Por \ref{prop:G-open}, $G(q)$ es abierto. Además, $\overline{G(p)}$ es cerrado por ser una clausura, luego su complementario es abierto.
+
+\begin{lstlisting}
+      · apply IsOpen.inter
+        · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
+        · rw [isOpen_compl_iff]
+          exact isClosed_closure
+\end{lstlisting}
+
+\subsubsection{Imagen de $f$}
 
