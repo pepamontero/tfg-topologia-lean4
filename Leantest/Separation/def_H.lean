@@ -1,6 +1,6 @@
 import Leantest.Separation.def_G
 
-def H {X : Type} [T : TopologicalSpace X]
+def H {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
