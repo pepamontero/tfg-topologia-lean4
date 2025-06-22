@@ -119,16 +119,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     let G := H hT C1 C2
     let g := fun x ↦ k hT C1 C2 x
 
-    --- definiciones
-    have G_def : G = H hT C1 C2 := by rfl
-    have g_def : g = k hT C1 C2 := by rfl
-
     let f : X → Y := fun x ↦ ⟨g x, by
       rw [hY]
       exact k_in_01 hT C1 C2 x⟩
 
     use f
-
 
     constructor
 
@@ -161,8 +156,6 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       have claim2 := k_claim2 hT C1 C2
         C1closed (by exact IsClosed.isOpen_compl)
         (by exact hC1C2)
-
-      rw [← G_def, ← g_def] at claim1 claim2
 
       -- paso 2.1. probar: `x ∉ closure (U_p)`
       have aux1 : x ∉ closure (G p)
@@ -216,30 +209,18 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -/
 
     have aux : ∀ A : Set X, f '' A = g '' A
-    · intro A
-      ext x
-      simp
+    · intro A; ext x; simp
 
+    rw [← Set.image_val_inj, ← Set.image_val_inj]
+    rw [aux C1, aux C2]
+    simp
     constructor
-
-
     /-
             2. f(C1) = {0}
     -/
-
-    apply Set.image_val_inj.mp
-    rw [aux C1]
-    simp
-    rw [g_def]
-    exact k_in_C1_is_0 hT C1 C2 C1closed C2c_open hC1C2 C1nempty
-
-
+    · exact k_in_C1_is_0 hT C1 C2 C1closed C2c_open hC1C2 C1nempty
     /-
             3. f(C2) = {1}
     -/
 
-    apply Set.image_val_inj.mp
-    rw [aux C2]
-    simp
-    rw [g_def]
-    exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
+    · exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
