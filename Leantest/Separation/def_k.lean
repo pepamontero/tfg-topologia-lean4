@@ -29,33 +29,16 @@ lemma k_in_01 {X : Type} [T : TopologicalSpace X]
     : ∀ x : X, (k hT C1 C2 x) ∈ Set.Icc 0 1 := by
 
   intro x
-  have h := k_prop hT C1 C2 x
+  have ⟨klb, kglb⟩ := k_prop hT C1 C2 x
   constructor
-  · exact h.right (F_Real_0_is_LB hT C1 C2 x)
+  · exact kglb (F_Real_0_is_LB hT C1 C2 x)
   · by_contra c
-    simp [k] at c
-    let inf := Classical.choose (F_Real_has_inf hT C1 C2 x)
-    have inf_def : inf = Classical.choose (F_Real_has_inf hT C1 C2 x) := by rfl
-    have inf_prop := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-    rw [← inf_def] at inf_prop c
-    simp [IsGLB, IsGreatest] at inf_prop
-    cases' inf_prop with inf_lb inf_glb
-
-    let hr := exists_rat_btwn c
-    cases' hr with r r_prop
-
-    have r_lb : inclQR r ∈ F_Real hT C1 C2 x
-    · apply F_Real_1inf hT C1 C2 x r
-      exact_mod_cast r_prop.left
-
-    have aux : inclQR r < inf
-    · simp [inclQR]
-      exact r_prop.right
-
-    simp [lowerBounds] at inf_lb
-    specialize inf_lb r_lb
-    apply not_le_of_lt at aux
-    exact aux inf_lb
+    simp at c
+    obtain ⟨q, hq1, hqk⟩ := exists_rat_btwn c
+    have hq := F_Real_1inf hT C1 C2 x q (by exact_mod_cast hq1)
+    apply klb at hq
+    apply not_lt.mpr at hq
+    exact hq hqk
 
 
 lemma k_claim1 {X : Type} [T : TopologicalSpace X]
