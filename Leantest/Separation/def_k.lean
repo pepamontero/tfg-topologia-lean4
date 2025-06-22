@@ -54,21 +54,11 @@ lemma k_claim1 {X : Type} [T : TopologicalSpace X]
   intro p x hx
   by_contra c
   simp at c
+  have ⟨q, hq⟩ := exists_rat_btwn c
 
-  simp [k] at c
-  let inf := Classical.choose (F_Real_has_inf hT C1 C2 x)
-  have inf_def : inf = Classical.choose (F_Real_has_inf hT C1 C2 x) := by rfl
-  have inf_prop := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-  rw [← inf_def] at inf_prop c
-  simp [IsGLB, IsGreatest] at inf_prop
-  cases' inf_prop with inf_lb inf_glb
-
-  let hq := exists_rat_btwn c
-  cases' hq with q hq
-
-  have h := H_isOrdered hT C1 C2 hC1 hC2 hC1C2 p q
+  apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 p q
     (by exact_mod_cast hq.left)
-  apply h at hx
+    at hx
 
   have aux : inclQR q ∈ F_Real hT C1 C2 x
   · simp [F_Real]
@@ -76,12 +66,10 @@ lemma k_claim1 {X : Type} [T : TopologicalSpace X]
     simp
     exact hx
 
-  simp [lowerBounds] at inf_lb
-  specialize inf_lb aux
-  have aux' : inf > q
-  · exact_mod_cast hq.right
-  apply not_le_of_lt at aux'
-  exact aux' inf_lb
+  have ⟨klb, _⟩ := k_prop hT C1 C2 x
+  apply klb at aux
+  apply not_lt.mpr at aux
+  exact aux hq.right
 
 
 
@@ -117,14 +105,7 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
     apply h at c
     exact c hq
 
-  simp [k]
-  let inf := Classical.choose (F_Real_has_inf hT C1 C2 x)
-  have inf_def : inf = Classical.choose (F_Real_has_inf hT C1 C2 x) := by rfl
-  have inf_prop := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
-  rw [← inf_def] at *
-  simp [IsGLB, IsGreatest] at inf_prop
-  cases' inf_prop with inf_lb inf_glb
-
+  obtain ⟨_, kglb⟩ := k_prop hT C1 C2 x
   by_contra c
   simp at c
 
@@ -138,9 +119,9 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
     simp [inclQR]
     exact le_of_lt hr
 
-  specialize inf_glb p_inf
+  specialize kglb p_inf
   apply not_le_of_lt at c
-  exact c inf_glb
+  exact c kglb
 
 
 ----- COMPORTAMIENTO EN C1
