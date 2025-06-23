@@ -187,7 +187,7 @@ Las proposiciones, como cualquier otro objeto en esta teoría, son términos con
   #check ¬ P    -- ¬ P : Prop
 \end{lstlisting}
 
-En Lean, interpretamos los objetos de tipo \code{Prop} como tipos en sí mismos. En particular, una proposición \code{p : Prop} es el tipo de las demostraciones de \code{p}. Por tanto, una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Tiene entonces sentido decir que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
+En Lean, interpretamos los objetos de tipo \code{Prop} como tipos en sí mismos y las demostraciones de cada proposición como términos que habitan este tipo, siguiendo la correspondencia de Curry-Howard. Es decir, una proposición \code{p : Prop} es el tipo de las demostraciones de \code{p}; una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Decimos que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
 
 \begin{lstlisting}
   variable (p : Prop)
@@ -207,9 +207,11 @@ En este caso, un término de tipo \code{es\_par n} será una prueba de que \code
 
 Además, si \code{p : Prop} es una proposición, Lean reconoce cualesquiera dos elementos de tipo \code{p} (\code{h1 h2 : p}) como iguales por definición: no importa qué prueba concreta tengamos, sólo importa su existencia. Esto se conoce como \quotes{irrelevacia de las demostraciones} (\textit{proof irrelevance}).
 
-Esta propiedad tiene ventajas prácticas. Por ejemplo, si demostramos una existencia (una proposición del estilo $\exists x, P(x)$) de dos maneras distintas utilizando dos valores diferentes, Lean identificará ambas pruebas, por lo que al extraer de $\exists x, P(x)$ un valor $x$ con $P(x)$, este valor será independiente de la demostración utilizada. Sin embargo, esto también tiene la desventaja de que este tipo de pruebas no son constructivas: no es posible recuperar exactamente el valor que utilizamos para completar la demostración.
+Esta propiedad tiene consecuencias importantes. Por un lado, evita comportamientos no deseados cuando definimos estructuras que dependen de proposiciones. Por ejemplo, si quisiéramos definir un punto del primer cuadrante en $\mathbb{R}^2$ como un par de la forma \code{x y : $\mathbb{R} \times \mathbb{R}$} junto con una demostración \code{h : x $\geq$ 0 $\land$ y $\geq$ 0}, entonces gracias a la irrelevancia de las demostraciones podemos identificar dos puntos que tengan las mismas coordenadas, aunque las pruebas \code{h} y \code{h'} asociadas a cada uno sean distintos.
 
-También por esta propiedad, Lean no tiene un tipo especial para la implicación lógica: dadas dos proposiciones \code{p q : Prop}, una prueba de \code{p $\to$ q} es simplemente una función que, dada una prueba de \code{p}, devuelve una prueba de \code{q}. Esta identificación de una función con el conector implicación proviene de la correspondencia de Curry-Howard.
+Por otro lado, esta misma propiedad impide acceder al contenido de una prueba. En particular, no es posible extraer directamente el testigo de la demostración de una proposición existencial del tipo $\exists x, P(x)$, ya que todas las demostraciones de esa proposición se consideran iguales. Dada una demostración de $\exists x, P(x)$, para obtener un valor concreto que satisfaga $P$, necesitaremos utilizar el axioma de elección, que en Lean se introduce mediante la función \code{Classical.choose}, como veremos más adelante.
+
+Una última característica destacable de las proposiciones en Lean es que la implicación lógica se representa directamente mediante funciones: dadas dos proposiciones \code{p q : Prop}, una prueba de \code{p $\to$ q} es simplemente una función que, dada una prueba de \code{p}, devuelve una prueba de \code{q}. Esta identificación entre funciones e implicaciones es otra manifestación de la correspondencia de Curry-Howard.
 
 En resumen, para poder expresar un resultado matemático en este lenguaje, tenemos que escribir un término de la forma \code{p : Prop}. Para probar que el resultado es cierto, debemos construir un término \code{h : p}. El trabajo de Lean como asistente de demostración es verificar que el término \code{h} está bien construido y tiene el tipo correcto.
 
