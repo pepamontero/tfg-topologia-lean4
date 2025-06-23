@@ -45,7 +45,7 @@ Por otro lado, un tipo, como es $\mathbb{N}$, también es un término. Podemos c
   #check ℕ    -- ℕ : Type
 \end{lstlisting}
 
-En Lean, los tipos tienen su propio tipo, que recibe el nombre de \code{Type}. Esto nos permite definir nuevos tipos. Podemos utilizar el comando \bluecode{variable} para definir objetos en nuestro código\footnote{Veremos este comando en detalle más adelante}.
+En Lean, los tipos tienen su propio tipo, que recibe el nombre de \blue{}code{Type}. Esto nos permite definir nuevos tipos. Podemos utilizar el comando \bluecode{variable} para definir objetos en nuestro código\footnote{Veremos este comando en detalle más adelante}.
 
 \begin{lstlisting}
   variable (X : Type)
@@ -75,13 +75,13 @@ Por otro lado, a partir de la yuxtaposición de términos simples, podemos forma
 
 La capacidad de Lean para identificar el tipo de un término sin necesidad de que el usuario lo especifique se conoce como \textbf{inferencia de tipos}. Como veremos más adelante, este proceso ocurre de manera automática en su núcleo y es el aspecto crucial de la verificación de demostraciones.
 
-\subsection{El cálculo lambda}.
+\subsection{El cálculo lambda}
 
 El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal en el que todos los términos se interpretan como funciones (llamadas abstracciones) y se operan entre sí mediante aplicación de funciones (el uso de una función sobre un argumento) \cite{pierce2002types}. A pesar de su simplicidad, este sistema se ha convertido en la base formal de muchos lenguajes de programación modernos, incluido Lean.
 
 Por ejemplo, un término válido podría ser $n \mapsto 2n : \mathbb{N} \rightarrow \mathbb{N}$, que representa una función que puede aplicarse a un valor para obtener otro.
 
-En Lean, definimos funciones utilizando el comando \code{fun}, que corresponde a la notación $\lambda n, 2n$ del cálculo lambda clásico\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, 2 * n}, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ 2 * n} para mejorar la legibilidad del código.}. Por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
+En Lean, definimos funciones utilizando el comando \bluecode{fun}, que corresponde a la notación $\lambda n, 2n$ del cálculo lambda clásico\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, 2 * n}, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ 2 * n} para mejorar la legibilidad del código.}. Por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
 
 \begin{lstlisting}
   def f := fun n ↦ 2 * n
@@ -143,7 +143,7 @@ En Lean, definimos un tipo inductivo utilizando la palabra clave \bluecode{induc
     | constructorₙ : ... → Foo
 \end{lstlisting}
 
-Un ejemplo clásico de definición inductiva es el conjunto de los números naturales, $\mathbb{N}$. En Lean, podríamos describir el tipo \code{Nat} de los números naturales como
+Un ejemplo clásico de definición inductiva es el conjunto de los números naturales, $\mathbb{N}$. En Lean, podemos describir el tipo \code{Nat} de los números naturales como
 
 \begin{lstlisting}
   inductive Nat where
@@ -157,9 +157,14 @@ Internamente, la declaración \bluecode{inductive} genera automáticamente una c
   \item Una constante, \code{Nat}, que representa el nuevo tipo.
   \item Una serie de reglas de introducción o constructores, que indican las posibles formas de construir términos del nuevo tipo. 
   \item Una regla de eliminación, \code{Nat.rec}, que indica la forma de \quotes{usar} un término de este tipo\footnote{El comando \bluecode{\#print} muestra la definición completa del objeto, a diferencia de \bluecode{\#check}, que solo muestra su tipo.}.
-  \begin{lstlisting}
+\end{itemize}
+
+\begin{lstlisting}
   #print Nat.rec
-      -- recursor Nat.rec.{u}  :  {motive : ℕ → Sort u} → motive Nat.zero → ((n : ℕ) → motive n → motive n.succ) → (t : ℕ) → motive t\end{lstlisting}\end{itemize}
+      -- recursor Nat.rec.{u}  :  {motive : ℕ → Sort u} → motive Nat.zero → ((n : ℕ) → motive n → motive n.succ) → (t : ℕ) → motive t
+\end{lstlisting}
+
+\newpage
 
 Es decir, \bluecode{inductive} puede verse como \textit{azúcar sintáctico} que genera automáticamente el siguiente código en Lean\footnote{Estudiaremos el comando \bluecode{axiom} en detalle más adelante.}:
 
@@ -168,7 +173,8 @@ Es decir, \bluecode{inductive} puede verse como \textit{azúcar sintáctico} que
   axiom (zero : Nat)
   axiom (succ : Nat → Nat)
   axiom (Nat.rec : {motive : Nat → Sort u} → motive Nat.zero →
-    ((n : Nat) → motive n → motive Nat.succ n) → (t : Nat) → motive t)
+    ((n : Nat) → motive n → motive Nat.succ n) → (t : Nat) →
+    motive t)
 \end{lstlisting}
 
 Este último objeto, \code{Nat.rec}, codifica el principio de inducción sobre los naturales\footnote{\code{Nat.rec} es un tipo que depende de \code{motive}, que es una propiedad cualquiera sobre los naturales. \code{Nat.rec} nos dice que si se cumple \code{motive} para \code{Nat.zero} (\code{motive Nat.zero}), entonces si para cada \code{n} (\code{n : Nat}) que cumpla \code{motive} (\code{motive n}) se tiene que \code{n+1} cumple \code{motive} (\code{motive Nat.succ n}), entonces se cumple \code{motive} para cualquier \code{n} (\code{(t : Nat) → motive t}).}. Este principio se utiliza implícitamente en muchas definiciones por casos, como por ejemplo:
@@ -190,7 +196,7 @@ En el cálculo de construcciones inductivas, en cambio, la lógica se expresa de
 
 \subsubsection{Las demostraciones como objeto matemático}
 
-Las proposiciones, como cualquier otro objeto en esta teoría, son términos con un tipo asociado. En Lean, este tipo recibe el nombre de \code{Prop}.
+Las proposiciones, como cualquier otro objeto en esta teoría, son términos con un tipo asociado. En Lean, este tipo recibe el nombre de \bluecode{Prop}.
 
 \begin{lstlisting}
   #check Prop    -- Prop : Type
@@ -237,7 +243,7 @@ Como hemos señalado, demostrar un resultado en Lean consiste en construir corre
 
 El resto de componentes de Lean con el que interactuamos para construir demostraciones (como por ejemplo las tácticas que veremos después) devuelven construcciones expresadas en el lenguaje del kernel de Lean \cite{bailey2024type}. Esto quiere decir que confiar en Lean realmente se reduce a confiar en su kernel\footnote{Esta idea se conoce como \textit{criterio de de Bruijn}, que propone que un verificador formal debe producir sus pruebas en el lenguaje de un núcleo pequeño, incluso aunque utilicen otros métodos más complicados para construir dichas pruebas a priori \cite{bailey2024type}.}.
 
-Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel \cite{bailey2024type}. Por ejemplo, en \cite{carneiro2024lean4lean}, Carneiro describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de \textit{Mathlib}.
+Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel \cite{bailey2024type}. Por ejemplo, en \cite{carneiro2024lean4lean}, Carneiro describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de Mathlib.
 
 
 
@@ -247,13 +253,13 @@ Hasta ahora, hemos explorado la teoría de tipos dependientes sobre la que se co
 
 Recordemos que formalizar un resultado en Lean no consiste solo en escribir su enunciado, sino también en construir una demostración paso a paso, sin omisiones y con total precisión. Aquí, nunca nos basta con escribir \quotes{trivial} cuando creamos que algo ya deberíamos poder saberlo: necesitamos convencer al sistema de que cada paso es válido.
 
-Esta sección está dedicada a aprender a escribir demostraciones en Lean. Veremos cómo introducir nuevos objetos en nuestros contexto, como enunciar proposiciones y cómo construir demostraciones interactuando con Lean. También presentaremos algunas herramientas de automatización y métodos para poder apoyarnos en la librería de Mathlib.
+Esta sección está dedicada a aprender a escribir demostraciones en Lean. Veremos cómo introducir nuevos objetos en nuestro contexto, cómo enunciar proposiciones y cómo construir demostraciones interactuando con Lean. También presentaremos algunas herramientas de automatización y métodos para poder apoyarnos en la librería de Mathlib.
 
 \subsubsection{Axiomas, definiciones y variables}
 
 Antes de escribir demostraciones en cualquier sistema formal, necesitamos describir el \textbf{contexto} en el que trabajamos: el conjunto de objetos e hipótesis disponibles en un momento dado. Este contexto es dinámico y se va ampliando a medida que introducimos nuevos elementos.
 
-En Lean ocurre exactamente lo mismo. El sistema mantiene y actualiza este contexto constantemente para comprobar que cada expresión está bien formada y tiene el tipo esperado.
+En Lean ocurre lo mismo. El sistema mantiene y actualiza este contexto constantemente para comprobar que cada expresión está bien formada y tiene el tipo esperado.
 
 Podemos introducir nueva información en el contexto de distintas formas. Distinguimos entre axiomas, definiciones y variables, cada una con una función lógica distinta en el sistema.
 
@@ -277,7 +283,7 @@ Estamos declarando una proposición $P$ y una prueba de que $P$ implica $P$.
 
 Aquí estamos suponiendo que $n$ es un número natural mayor que $2$.
 
-Así, los axiomas nos permiten fijar hechos en el contexto que queremos asumir como válidos a lo largo de nuestras demostraciones.
+Así, los axiomas nos permiten fijar hechos que queremos asumir como válidos a lo largo de nuestras demostraciones.
 
 
 \begin{itemize}
@@ -360,7 +366,7 @@ Además, el modo táctico nos permite trabajar de manera \textbf{interactiva} co
 
 Estamos indicando que queremos construir un término de tipo \code{p $\land$ q} a partir de las hipótesis \code{hp : p} y \code{hq : q}, y que para esa construcción vamos a utilizar el modo táctico.
 
-Internamente, Lean interpreta esto mediante la generación de un contexto local (nuestras hipótesis) y un \textbf{objetivo} (nuestra tesis), que consiste en construir el término del tipo esperado. Después de \bluecode{by}, podemos empezar a escribir tácticas, que Lean interpretará actualizando el contexto y el objetivo deseado.
+Internamente, Lean interpreta esto mediante la generación de un contexto local (nuestras hipótesis) y un \textbf{objetivo} (nuestra tesis), que consiste en construir el término del tipo esperado. Después de \bluecode{by}, podemos empezar a escribir tácticas, que Lean interpretará actualizando el contexto y el objetivos.
 
 Este objetivo aparece reflejado en el \textbf{InfoView}, una ventana que muestra el estado actual de nuestra demostración. Lean procesa línea a línea de forma automática, por lo que en cualquier momento podemos consultar el impacto de haber aplicado una táctica simplemente colocando el cursor sobre la línea de código correspondiente.
 
@@ -371,7 +377,7 @@ De hecho, en el InfoView también se muestran los resultados de las instruccione
   \includegraphics[width=1\textwidth]{figuras/check-example-light-version.png}
 \end{figure}
 
-En general, cuando escribamos en Lean, tendremos abierta esta ventana paralelamente a nuestro código, para poder ir viendo el progreso de nuestra demostración.
+En general, mientras escribimos en Lean, tendremos abierta esta ventana paralelamente a nuestro código, para poder ir viendo el progreso de nuestra demostración.
 
 \begin{figure}[h]
   \centering
@@ -383,12 +389,12 @@ Bajo el apartado \code{Tactic state}, podemos comprobar:
 \begin{itemize}
   \item El número de tesis que nos quedan por demostrar (en este caso solo una: \bluecode{1 goal}).
   \item Nuestro contexto.
-  \item La (o las) tesis, marcadas con el símbolo \bluecode{$\vdash$}.
+  \item La (o las) tesis, marcada con el símbolo \bluecode{$\vdash$}.
 \end{itemize}
 
-A partir de este punto, podemos empezar a añadir las tácticas que van a construir nuestra demostración. Las tácticas se escriben una detrás de otra, separadas por punto y coma (\code{;}) o por saltos de línea.
+A partir de este punto, podemos empezar a añadir las tácticas que van a constituir nuestra demostración. Las tácticas se escriben una detrás de otra, separadas por punto y coma (\code{;}) o por saltos de línea.
 
-Al escribir una táctica, el apartado \code{Tactic state} del InfoView se actualizará según corresponda. Cuando todas las tesis se hayan resueltos, el InfoView mostrará \bluecode{No goals}.
+Al escribir una táctica, el apartado \code{Tactic state} del InfoView se actualizará según corresponda. Cuando todas las tesis se hayan resuelto, el InfoView mostrará \bluecode{No goals}.
 
 \begin{figure}[h]
   \centering
@@ -399,13 +405,13 @@ Al escribir una táctica, el apartado \code{Tactic state} del InfoView se actual
 
 En esta sección veremos algunas de las tácticas más básicas y útiles para construir demostraciones en Lean. Veremos cómo se aplican y qué efecto tienen en el InfoView. El resto de tácticas que aparecen a lo largo del trabajo pueden consultarse en el Anexo (letra, probablemente la A).
 
-Para poder utilizar las tácticas mencionadas a continuación, es necesario importar el módulo de Mathlib correspondiente al modo táctico con:
+Para poder utilizar las tácticas mencionadas a continuación, es necesario importar el módulo de Mathlib correspondiente al modo táctico mediante
 
 \begin{lstlisting}
   import Mathlib.Tactic
 \end{lstlisting}
 
-A partir de aquí, en lugar de mostrar capturas del InfoView, utilizaremos dos bloques de código en paralelo: el de la izquierda contiene el código de Lean, y el de la derecha representa el estado táctico que se vería en el InfoView si colocásemos el cursor en la última línea.
+A partir de aquí, en lugar de mostrar capturas del InfoView, utilizaremos dos bloques de código en paralelo: el de la izquierda contiene el código de Lean; el de la derecha representa el estado que se mostraría en el InfoView si colocásemos el cursor en la última línea.
 
 \vspace{1em}
 \noindent\textbf{$~$ \largebluecode{intro}}
@@ -518,7 +524,7 @@ La táctica \bluecode{exact} se utiliza cuando ya tenemos, en nuestro contexto, 
     ŋ1 goalŋ
     ħpħ : Prop
     ħhpħ : p
-    ⊢ p → p
+    ⊢ p
 \end{lstlisting}
 \end{minipage}
 %
@@ -690,14 +696,14 @@ En una demostración informal, si queremos demostrar que \quotes{$A$ o $B$} es c
 \end{lstlisting}
 \end{minipage}
 
-Podríamos finalizar esta demostración aplicando \code{\blue{exact} hp}.
+Podríamos completar esta demostración aplicando \code{\blue{exact} hp}.
 
 \vspace{1em}
 \noindent\textbf{$~$ \largebluecode{constructor}}
 
 Utilizamos \bluecode{constructor} para trabajar con conjunciones, es decir, proposiciones de la forma $A \land B$.
 
-Cuando queremos demostrar  que \quotes{$A$ y $B$} es cierto, basta con demostrar $A$ por un lado y $B$ por otro. Al aplicar \bluecode{constructor}, Lean divide un objetivo \code{A $\land$ B} en dos sub-objetivos con el mismo contexto: uno para \code{A} y otro para \code{B}. Por ejemplo:
+Cuando queremos demostrar  que \quotes{$A$ y $B$} es cierto, podemos demostrar $A$ por un lado y $B$ por otro. Al aplicar \bluecode{constructor}, Lean divide un objetivo \code{A $\land$ B} en dos sub-objetivos con el mismo contexto: uno para \code{A} y otro para \code{B}. Por ejemplo:
 
 \begin{minipage}[t]{0.58\textwidth}
 \begin{lstlisting}[language=lean]
@@ -1063,7 +1069,7 @@ Veamos por tanto como es el proceso de trabajar con \bluecode{exact?}. Considere
 
 \begin{enumerate}
   \item Mirando el estado actual de la demostración, identificar cuál sería una hipótesis que desearíamos tener en nuestro contexto. En este caso, al tratarse de una división, podría ser necesario tener la hipótesis $x \neq 0$.
-  \item Añadir la nueva tesis utilizando have.
+  \item Añadir la nueva tesis utilizando \blue{have}\footnote{En algunos casos, será más útil escribir aquello que creemos poder necesitar fuera de la demostración, utilizando \bluecode{example}, porque podremos escribir resultados más generales.}.
 \end{enumerate}
 
 \vspace{-1.5em}
@@ -1190,7 +1196,7 @@ Un ejemplo de una búsqueda real que necesité para el trabajo en LeanSearch, fu
   \includegraphics[width=1\textwidth]{figuras/leansearch-example-cropped.png}
 \end{figure}
 
-El primer resultado que aparece es justo el que necesitaba. Sin embargo, antes de buscarlo no tenía ninguna idea de cómo formalizar los resultados en los que estaba trabajando, especialmente porque no estaba familiarizada con el módulo \code{Cardinal.mk}. Este fue un ejemplo claro de que estas herramientas permiten acceder a partes de Mathlib que de otro modo serían difíciles de localizar.
+El primer resultado que aparece es justo el que necesitaba. Sin embargo, antes de buscarlo no tenía ninguna idea de cómo formalizar los resultados en los que estaba trabajando, especialmente porque no estaba familiarizada con el módulo \code{Cardinal}. Este fue un ejemplo claro de que estas herramientas permiten acceder a partes de Mathlib que de otro modo serían difíciles de localizar.
 
 En conjunto, herramientas como \bluecode{exact?}, LeanSearch o Moogle han resultado fundamentales para hacer más eficiente el proceso de formalización, permitiendo apoyarse en Mathlib de forma efectiva sin necesidad de conocerla en profundidad desde el principio.
 
@@ -1199,13 +1205,13 @@ En conjunto, herramientas como \bluecode{exact?}, LeanSearch o Moogle han result
 
 Para finalizar esta sección sobre Lean en la práctica, es útil comentar brevemente una cuestión que aparecerá en algunas de las definiciones posteriores: el uso del \textbf{axioma de elección} y la palabra clave \bluecode{noncomputable}.
 
-En Lean, el axioma de elección se introduce de forma directa mediante
+En Lean, el axioma de elección se introduce de la siguiente forma:
 
 \begin{lstlisting}
   axiom choice {α : Sort u} : Nonempty α → α
 \end{lstlisting}
 
-Es decir, dado un tipo no vacío, \code{choice} nos devuelve un elemento de ese tipo, aunque no nos dice cómo encontrarlo. Por este motivo, su uso impide extraer información computable del resultado.
+Es decir, dado un tipo no vacío, \code{choice} devuelve un elemento de ese tipo, aunque no nos dice cómo encontrarlo. Por este motivo, su uso impide extraer información computable del resultado.
 
 En consecuencia, cuando definimos funciones o construcciones que dependen de \code{choice}, Lean nos obliga a marcarlas como \bluecode{noncomputable}.  Un ejemplo es la función \code{choose}, que dada una prueba de tipo existencial, selecciona un testigo:
 
