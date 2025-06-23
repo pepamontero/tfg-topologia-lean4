@@ -67,6 +67,12 @@
 \newcommand{\bluecode}[1]{\code{\textcolor{tacticcolor}{#1}}}
 \newcommand{\blue}[1]{\textcolor{tacticcolor}{#1}}
 \newcommand{\redcode}[1]{\code{\textcolor{keywordcolor}{#1}}}
+\newcommand{\largebluecode}[1]{%
+  \mbox{\ttfamily
+    \tikz \node[anchor=base,fill=inlinecodecolor, font=\large]{\textcolor{tacticcolor}{#1}};
+  }%
+}
+
 
 % Lean code
 \def\lstlanguagefiles{lstlean.tex, infoview.tex}
