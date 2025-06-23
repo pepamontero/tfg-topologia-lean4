@@ -1,3 +1,54 @@
 \section{Introducción}
 
-Introducción al trabajo.
+En esta era dominada por la inteligencia artificial empieza a aparecer cada vez más la pregunta: ¿las máquinas pueden hacer matemáticas?
+
+Probablemente no. unless...?
+
+Para ponernos ni si quiera a empezar a pensar en que una máquina haga matemáticas primero nos tenemos que preguntar: ¿cómo hago que un ordenador reconozca matemáticas?
+
+Vale, las matemáticas ya tienen un lenguaje relativamente riguroso. Sin embargo, la principal idea es hacer que este lenguaje sea riguroso a muerte de manera que una máquina lo pueda leer.
+
+Surgen los primeros lenguajes de programación para escribir matemáticas.
+
+A mi, personalmente, me interesa en particular esta intersección hiper-específica de las matemáticas y la computación, porque escribir matemáticas en Lean me resulta como un puzle de 10 millones de piezas muy complicado de resolver. Quiero decir, que me parece extremadamente divertido.
+
+En particular, he elegido la topología porque me parece la rama de las matemáticas más curiosa, probablemente gracias a la inmensa publicidad que ha obtenido de las tazas y los donuts. Demostrar resultados de topología en Lean es como hacer un puzle de 10 millones de piezas y las piezas tienen forma de tazas y donuts y además no las puedes ver.
+
+¿Por qué he elegido Lean? -> más parecido al lenguaje natural que otros sistemas, comunidad activa, librería extensa y unificada, y porque tenía más recursos a mi disposición.
+
+\subsection{Objetivos}
+
+El objetivo principal es conocer a fondo el asistente de demostración Lean, llegando a ser capaz de formalizar resultados sencillos del grado en matemáticas.
+
+Una vez adquirida cierta familiaridad con el sistema, se plantea escribir una demostración de un resultado relevante que ilustre las dificultades del proceso de formalización.
+
+Finalmente, he elegido para el trabajo el Lema de Urysohn. Una de las razones por la que he elegido este resultado es porque la demostración requiere de utilizar inducción, una herramienta más avanzada de Lean.
+
+Por último, mediante este aprendizaje y puesta a prueba se quiere llegar a comprender las ventajas y las dificultades que supone escribir las matemáticas en un asistente de demostración.
+
+\subsection{Plan de trabajo}
+
+El primer paso fue, obviamente, aprender Lean. Para ello en primer lugar me apunté al curso de Lean impartido por CompuMates en la Facultad de Matemáticas durante el curso 2023/24. Esto me permitió tener unas primeras nociones básicas y empezar a escribir mis pequeñas demostraciones, sobretodo de lógica proposicional.
+
+Después de asistir a este curso, mi interés por Lean creció, y empecé a aprender Lean 4, la nueva versión, de manera autodidacta. En particular, seguí bastante detenidamente el curso de Kevin Buzzar, Formalising Mathematics 2024 \cite{buzzar2024formalising}, completando los ejercicios hasta el capítulo 10, espacios topológicos.
+
+Este capítulo sobre espacios topológicos era muy escueto, sólo tenía dos ejemplos de espacios topológicos concretos, y algunas cuestiones sobre continuidad. Los ejercicios que completé hasta este momento se pueden encontrar en (github?).
+
+En ese momento decidí que necesitaba aprender más sobre formalización de topología. Entonces tomé los apuntes que había tomado durante el curso de Topología Elemental del grado, y empecé a formalizar todos los resultados que iban apareciendo. Una parte de este trabajo se puede encontrar en la sección 3.
+
+Continuando con este ejercicio llegué hasta el apartado sobre separación. Durante mi curso de topología elemental no di espacios normales, así que busqué otras fuentes.
+
+En este momento, escribí por primera vez mi enunciado del lema de Urysohn. A partir de ahí, centré mis esfuerzos en intentar formalizar la demostración.
+
+Por último, como el resultado ya estaba demostrado en Mathlib, he querido comparar mi demostración con la implementada en Mathlib.
+
+
+\subsection{Estructura del trabajo}
+
+El trabajo se divide principalmente en cuatro partes. En primer lugar daré una explicación detallada del lenguaje Lean, de sus fundamentos matemáticos y la forma en la que se formalizan demostraciones en este lenguaje.
+
+Después daré una serie de resultados de topología general, no a modo de introducción a la topología sino para empezar a ver ejemplos de como este ámbito, cómo se prueban propiedades sobre espacios topológicos, cómo se describen espacios concretos, etc.
+
+El corazón del trabajo es el apartado 4, en el que se da la formalización detallada del lema de Urysohn y su demostración, terminando con la comparación de la misma con aquella de Mathlib.
+
+Por último, se exponen las conclusiones que extraigo de este proceso de aprendizaje sobre formalizar resultados en Lean.

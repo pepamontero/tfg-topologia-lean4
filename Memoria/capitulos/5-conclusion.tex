@@ -1,3 +1,41 @@
 \section{Conclusión}
 
 Conclusión al trabajo.
+
+Posibles secciones:
+
+1- Aprendiendo Lean
+
+Algunas conclusiones: aprender es relativamente sencillo pero luego hay muchísima complejidad posible; me daba cuenta de que yo demostraba un resultado en 100 líneas y después comprobaba la solución de Buzzar y tenía 3 línas. A lo largo del recorrido del trabajo he ido intentando limpiar y sintetizar el código, así que muchas de las demostraciones que ahora son compactas y bonitas antes eran extremadamente liosas y largas. Aun así, siempre queda mucho por aprender a este respecto.
+
+Otra cosa: la intuición de que resultados es posible encontrar en mathlib si utilizas exact? y cuales vas a tener que re escribir de otra forma.
+
+2- Formalizando Urysohn
+
+El trabajo ha sido muy complicado porque uno está acostumbrado a pensar en formato matemáticas, y este es un formato completamente distinto.
+
+No he encontrado ninguna fuente en la que se demuestre rigurosamente que la sucesión de los abiertos (diádicos o no) es monótona (cumple la propiedad \ref{eq:star}). En todas las fuentes se da como algo completamente trivial. A mi me ha llevado meses encontrar la forma de poder hacerlo.
+
+Por supuesto, una vez terminada, son cientos de líneas de código, en comparación con las 500 de mathlib (que incluyen muchos comentarios).
+
+Me parece que hay una cierta forma de pensar que se adquiere con el tiempo cuando formalizas con Lean. Quizás no se trata de intentar formalizarlo exactamente como lo lees en el papel, sino de buscar una forma que sea más computational-friendly.
+
+Sin embargo, formalizar Urysohn siento que me ha dado un dominio muy avanzado de esta herramienta, y una vez estaba todo terminado, he ido simplificando todos los resultados que había escrito, reduciendo muchísimo el volumen.
+
+Además, puesto que la inducción ha sido especialmente un quebradero de cabeza, he terminado escribiendo por mi cuenta un montón de tipos distintos de inducción (y demostrándolos), para poder entenderlo a fondo y comprender por qué mis ideas no estaban funcionando.
+
+Otra cosa que me ha resultado especialmente complicada ha sido la inferencia de tipos de Lean. Quiero decir: te ahorra un montón de trabajo todo el rato. Sin embargo, a veces puede ser un obstáculo. Ejemplos de esto son haber tenido que escribir una función especial $\tilde{F}$ en lugar de poder usar directamente $F$, porque $F$ devolvía conjuntos en $\rat$ y no en $\mathbb{R}$.
+
+Sin embargo esta dificultad también me ha permitido aprender nuevas herramientas muy útiles como \bluecode{exact\_mod\_cast}, o utilizar la función \code{Subtype.val} de Mathlib.
+
+\subsection{Posibles mejoras y amplicaciones}
+
+(1) Intentar escribir todo utilizando definiciones de Mathlib.
+
+Nota: explicar que realmente solo es necesario que las definiciones usadas en el enunciado estén en Mathlib.
+
+Aunque había utilizado mis propias definiciones de continuidad o clausura o espacio normal al principio, al final las cambié todas por las definiciones de Mathlib. No conseguí hacer lo mismo con TopoSubspace. Este es probablemente otro ejemplo de que yo todo el rato intentaba reflejar el papel, en lugar de quizás ver el problema más computacionalmente.
+
+La definición de la topología usual directamente no la he encontrado en Lean. No tengo claro como infiere en el archivo de Urysohn de Mathlib que está usando la topología usual, o si es que lo está haciendo de otra forma.
+
+(2) Escribir la documentación del código utilizando una herramienta como la utilizada en la documentación de Mathlib.
