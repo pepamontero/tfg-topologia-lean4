@@ -21,7 +21,7 @@ La teoría de conjuntos de Zermelo-Fraenkel con el axioma de elección (ZFC) es 
 
 Sin embargo, este sistema carece de una estructura interna diferenciada: todo objeto matemático, como un número, una función o incluso una colección de funciones son, en última instancia, conjuntos. Para lograr una representación más clara y diferenciada de los objetos matemáticos, Lean utiliza, en su lugar, un sistema basado en tipos. Además, este enfoque nos ofrece la posibilidad de establecer una correspondencia entre programas y demostraciones matemáticas, conocida como la correspondencia de Curry-Howard\footnote{La correspondencia de Curry-Howard establece una relación entre lógica y programación; permite entender como pueden ser equivalentes \quotes{demostrar una proposición} y \quotes{construir un término de cierto tipo}. Veremos qué quiere decir esto en la práctica más adelante, pero las ideas más profundas, que quedan fuera del alcance de este trabajo, se exponen detalladamente en \cite{sorensen2006lectures}.}.
 
-En particular, Lean se fundamenta en el \textit{Cálculo de Construcciones Inductivas}, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no acumulativa de universos \cite{coquand1986calculus}. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales.
+En particular, Lean se fundamenta en el \textit{Cálculo de Construcciones Inductivas}, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no acumulativa de universos \cite{coquand1986calculus}. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales: la teoría de tipos, el cálculo lambda, la incorporación de tipos a esta última, y la introducción de tipos dependientes.
 
 En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con un compilador interactivo que procesa cada línea cuando el cursor se encuentra sobre ella, mostrando el resultado por pantalla. A partir de ahora, los comentarios que acompañan al código reflejan la salida que Lean devuelve en cada línea. Los comentarios en Lean se escriben empezando con doble guión ($--$) y están en color gris.
 
@@ -75,40 +75,53 @@ Por otro lado, a partir de la yuxtaposición de términos simples, podemos forma
 
 La capacidad de Lean para identificar el tipo de un término sin necesidad de que el usuario lo especifique se conoce como \textbf{inferencia de tipos}. Como veremos más adelante, este proceso ocurre de manera automática en su núcleo y es el aspecto crucial de la verificación de demostraciones.
 
-\subsubsection{Teoría de tipos dependientes}
+\subsection{El cálculo lambda}.
 
-Para poder expresar los distintos objetos matemáticos en esta teoría, es importante que un tipo no sea necesariamente estático, sino que pueda depender de otros términos.
+El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal en el que todos los términos se interpretan como funciones (llamadas abstracciones) y se operan entre sí mediante aplicación de funciones (el uso de una función sobre un argumento) \cite{pierce2002types}. A pesar de su simplicidad, este sistema se ha convertido en la base formal de muchos lenguajes de programación modernos, incluido Lean.
 
-Por ejemplo, \code{Fin} es un tipo en Lean que describe los números naturales menores que otro número natural dado. Precisamente, no tiene sentido afirmar que un término tiene tipo \code{Fin}, porque \code{Fin} depende de este número dado: un término de tipo \code{$\mathbb{N}$}. En efecto,
+Por ejemplo, un término válido podría ser $n \mapsto 2n : \mathbb{N} \rightarrow \mathbb{N}$, que representa una función que puede aplicarse a un valor para obtener otro.
 
-\begin{lstlisting}
-  #check Fin    -- Fin (n : ℕ) : Type
-  #check Fin 5    -- Fin 5 : Type
-\end{lstlisting}
-
-Decimos que \code{Fin} es un tipo dependiente, porque depende del valor de n. Lean admite, por tanto, tipos dependientes en su teoría.
-
-\subsubsection{Cálculo de Construcciones}
-
-El Cálculo de Construcciones es una extensión del Cálculo Lambda con tipos \cite{coquand1986calculus}. El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal en el que todos los términos se ven como funciones (o abstracciones) y se operan entre sí mediante aplicación de funciones (el uso de una función sobre un argumento) \cite{pierce2002types}. A pesar de su simplicidad, este sistema se ha convertido en la base formal de muchos lenguajes de programación modernos.
-
-Por ejemplo, una función válida podría ser $n \mapsto 2n : \mathbb{N} \rightarrow \mathbb{N}$, que representa una función que, al ser aplicada a un número natural, devuelve el número multiplicado por dos.
-
-En Lean, definimos funciones utilizando el comando \code{fun}\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, 2 * n}, más similar a la del Cálculo Lambda, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ 2 * n} para mejorar la legibilidad del código.}, por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
+En Lean, definimos funciones utilizando el comando \code{fun}, que corresponde a la notación $\lambda n, 2n$ del cálculo lambda clásico\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, 2 * n}, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ 2 * n} para mejorar la legibilidad del código.}. Por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
 
 \begin{lstlisting}
-  def f : ℕ → ℕ := fun n ↦ 2 * n
+  def f := fun n ↦ 2 * n
 \end{lstlisting}
 
-Además, se puede definir una reducción sobre este tipo de términos: el término formado por la anterior función aplicada a $3$, $(n \mapsto 2n)3$, se puede reducir a $2 \cdot 3$ por aplicación funcional, y luego a $6$ por definición de la multiplicación.
-
-Podemos comprobar el resultado de esta reducción utilizando el comando \bluecode{\#eval}.
+Además, Lean admite reducción por aplicación funcional sobre estos términos. Por ejemplo, si aplicamos la anterior función a $3$, $(n \mapsto 2n)3$, se puede reducir a $2 \cdot 3$ por aplicación funcional, y luego a $6$ por definición de la multiplicación. Podemos comprobar el resultado de esta reducción utilizando el comando \bluecode{\#eval}.
 
 \begin{lstlisting}
   #eval f 3    -- 6
 \end{lstlisting}
 
-Diremos que dos términos que pueden reducirse de esta manera al mismo valor son \textbf{iguales por definición}. Lean trata términos que sean iguales por definición como literalmente iguales, como veremos más adelante. En la siguiente sección, utilizaremos la noción de equivalencia por definición con frecuencia.
+Diremos que dos términos que pueden reducirse de esta manera al mismo valor son \textbf{iguales por definición}. Lean trata términos que sean iguales por definición como literalmente iguales, como veremos en la práctica.
+
+\subsubsection{Cálculo lambda tipado}
+
+El cálculo lambda clásico no incorpora tipos: cualquier función puede aplicarse a cualquier argumento. Para evitar inconsistencias y dar más estructura, se introduce el cálculo lambda tipado, donde a cada término se le asocia un tipo concreto.
+
+Podemos escribir el ejemplo anterior de la siguiente forma en Lean:
+
+\begin{lstlisting}
+  def f : ℕ → ℕ := fun n => 2 * n
+\end{lstlisting}
+
+Aquí, estamos indicando que $f$ tiene tipo $\nat \to \nat$, es decir, que es una función que toma valores en $\nat$ y devuelve valores en $\nat$. Esta información permite a Lean verificar que las expresiones están bien formadas.
+
+\subsubsection{Teoría de tipos dependientes}
+
+Para poder expresar los distintos objetos matemáticos en esta teoría, necesitamos introducir los tipos dependientes. Un tipo dependiente es aquel que puede variar en función de un término. 
+
+
+Por ejemplo, en Lean, el tipo \code{Matrix n m $\alpha$} representa las matrices de dimensión $n \times m$ con entradas en $\alpha$. El tipo en sí depende de tres parámetros: los tipos \code{m} y \code{n}, que indexan las filas y columnas, y el tipo \code{$\alpha$} de los elementos. Internamente, se define como una función de tipo \code{m $\to$ n $\to$ $\alpha$}.
+
+\begin{lstlisting}
+  #check Matrix (Fin 3) (Fin 2) ℝ    -- Matrix (Fin 3) (Fin 2) ℝ : Type
+\end{lstlisting}
+
+En un caso más general, si \code{$\beta$ : $\alpha$ $\to$ Type} es una familia de tipos indexada por $\alpha$, entonces una función de tipo \code{f : $\alpha$ $\to$ $\beta$ $\alpha$} es una función dependiente, ya que el tipo de salida de $f$ depende del argumento de entrada.
+
+Una forma importante en la que aparecen los tipos dependientes es en las proposiciones cuantificadas. Por ejemplo, la proposición $\forall x \in \nat, P x$ se representa en Lean como un tipo dependiente: el tipo de las funciones que, dado un $x$, devuelven una prueba de $P x$. La notación de Lean para este tipo de \quotes{funciones generalizadas} es \code{$\Pi$ x, P x}.
+
 
 \subsubsection{Jerarquía de universos}
 
