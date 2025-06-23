@@ -396,32 +396,8 @@ Para poder utilizar las tácticas mencionadas a continuación, es necesario impo
 
 A partir de aquí, en lugar de mostrar capturas del InfoView, utilizaremos dos bloques de código en paralelo: el de la izquierda contiene el código de Lean, y el de la derecha representa el estado táctico que se vería en el InfoView si colocásemos el cursor en la última línea.
 
-
-ELEGIR FORMATO:
-
 \vspace{1em}
-\noindent\textbf{\bluecode{intro}}
-
-Da una instrucción de la forma "supongamos que...". 
-Para demostrar A implica B, en general primero suponemos A, y a partir de ahí vemos si B es cierto.
-
-\begin{itemize}
-  \item \bluecode{intro}
-\end{itemize}
-
-Da una instrucción de la forma "supongamos que...". 
-Para demostrar A implica B, en general primero suponemos A, y a partir de ahí vemos si B es cierto.
-
-\vspace{1em}
-\noindent\hspace{2em}\textbf{\bluecode{intro}}
-
-Da una instrucción de la forma "supongamos que...". 
-Para demostrar A implica B, en general primero suponemos A, y a partir de ahí vemos si B es cierto.
-
-FIN ELEGIR FORMATO
-
-\vspace{1em}
-\noindent\textbf{\bluecode{intro}}
+\noindent\textbf{$~$ \largebluecode{intro}}
 
 La táctica \bluecode{intro} introduce un nuevo objeto en el contexto, de manera similar a escribir \quotes{Supongamos que...} o \quotes{Sea...} en una demostración informal.
 
@@ -511,7 +487,7 @@ Y para deshacer cuantificadores:
 
 
 \vspace{1em}
-\noindent\textbf{\bluecode{exact}}
+\noindent\textbf{$~$ \largebluecode{exact}}
 
 La táctica \bluecode{exact} se utiliza cuando ya tenemos, en nuestro contexto, exactamente lo que queremos demostrar. Es decir, existe una hipótesis que coincide con la tesis actual. Por ejemplo:
 
@@ -556,7 +532,7 @@ La táctica \bluecode{exact} se utiliza cuando ya tenemos, en nuestro contexto, 
 
 
 \vspace{1em}
-\noindent\textbf{\bluecode{apply}}
+\noindent\textbf{$~$ \largebluecode{apply}}
 
 La táctica \bluecode{apply} nos permite usar una implicación para reducir un objetivo a otro más simple. Equivale a utilizar la regla del \textit{Modus Ponens}: si tenemos una hipótesis de la forma $p \rightarrow q$ y queremos demostrar $q$, basta con demostrar $p$.
 
@@ -611,7 +587,7 @@ Podríamos completar esta demostración usando \code{\blue{exact} hp}.
 
 
 \vspace{1em}
-\noindent\textbf{\bluecode{use}}
+\noindent\textbf{$~$ \largebluecode{use}}
 
 Utilizamos \bluecode{use} para trabajar con el cuantificador existencial. Si queremos demostrar una proposición de la forma \quotes{$\exists x, P x$}, basta con encontrar un $x_0$ concreto que satisfaga la propiedad $P$.
 
@@ -654,7 +630,7 @@ En este caso, aplicamos \bluecode{use} para indicarle a Lean el valor concreto $
 
 
 \vspace{1em}
-\noindent\textbf{\bluecode{left}, \bluecode{right}}
+\noindent\textbf{$~$ \largebluecode{left}, \largebluecode{right}}
 
 Las táticas \bluecode{left} y \bluecode{right} se utilizan para trabajar con disyunciones, es decir, proposiciones de la forma $A \lor B$.
 
@@ -705,10 +681,8 @@ En una demostración informal, si queremos demostrar que \quotes{$A$ o $B$} es c
 
 Podríamos finalizar esta demostración aplicando \code{\blue{exact} hp}.
 
-
-
 \vspace{1em}
-\noindent\textbf{\bluecode{constructor}}
+\noindent\textbf{$~$ \largebluecode{constructor}}
 
 Utilizamos \bluecode{constructor} para trabajar con conjunciones, es decir, proposiciones de la forma $A \land B$.
 
@@ -846,7 +820,7 @@ Si colocamos el cursor al final, el InfoView solo muestra \bluecode{1 goal}, por
 
 
 \vspace{1em}
-\noindent\textbf{\bluecode{constructor}}
+\noindent\textbf{$~$ \largebluecode{cases'}}
 
 La táctica \bluecode{cases'} se utiliza para analizar una disyunción en el contexto, es decir, una hipótesis de la forma $A \lor B$.
 
