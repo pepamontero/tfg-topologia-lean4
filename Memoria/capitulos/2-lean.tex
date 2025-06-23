@@ -286,7 +286,7 @@ Además, cuando el tipo puede inferirse a partir de la construcción, no es nece
   \item \textbf{Variables}
 \end{itemize}
 
-Al contrario de lo que estamos acostumbrados, definir una variable en Lean no significa asignarle un valor arbitrario. En su lugar, lo que se introduce es un contexto universal: si $x$ es una variable, siempre que $x$ aparezca de forma libre, Lean interpretará que lo que sigue está cuantificado universalmente respecto a $x$. Por ejemplo\footnote{Las variables, a diferencia de los axiomas y las definiciones, se escriben entre paréntesis. Lo mismo ocurre con los argumentos que toman las proposiciones, como veremos más adelante. Esto está relacionado con la correspondencia de Curry–Howard: declarar una variable equivale a abstraer sobre ella, y por tanto a cuantificar universalmente(?).}:
+En la mayoría de lenguajes de programación, estamos acostumbrados a que definir una variable implique asignarle un valor concreto. Sin embargo, en Lean las variables se comportan más bien como en lógica. Al introducir una variable $x$, lo que se introduce es un contexto universal: siempre que $x$ aparezca de forma libre, Lean interpretará que lo que sigue está cuantificado universalmente respecto a $x$. Por ejemplo\footnote{Las variables, a diferencia de los axiomas y las definiciones, se escriben entre paréntesis. Lo mismo ocurre con los argumentos que toman las proposiciones, como veremos más adelante. Esto está relacionado con la correspondencia de Curry–Howard: declarar una variable equivale a abstraer sobre ella, lo que corresponde a cuantificar universalmente.}:
 
 \begin{lstlisting}
   variable (x : ℕ)
