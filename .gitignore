@@ -11,7 +11,7 @@
 *.fdb_latexmk
 *.synctex.gz
 *.toc
-
+*.synctex(busy)
 # Archivos PDF generados
 *.pdf
 
