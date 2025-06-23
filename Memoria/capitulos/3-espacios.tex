@@ -31,11 +31,11 @@ El primer elemento, \code{IsOpen}, es una función que lleva cada conjunto de $X
 Veamos algunos ejemplos y sus demostraciones en Lean.
 
 \begin{example}\label{ex:topologia-discreta}
-    Sea $X$ un conjunto cualquiera. Consideremos la colección $\mathcal{T}$ de todos los subconjuntos de $\mathcal{T}$. Entonces $\mathcal{T}$ es una topología sobre $X$, a la que llamamos \textnormal{topología discreta}.
+    Sea $X$ un conjunto cualquiera. Consideremos la colección de todos los subconjuntos de $X$, $\mathcal{T} = \mathcal{P}(X)$. Entonces $\mathcal{T}$ es una topología sobre $X$, a la que llamamos \textnormal{topología discreta}.
 \end{example}
 
 \begin{proof}
-  Podemos describir $\mathcal T$ como \code{\{U $\in$ Set (X) | True\}}, porque \code{IsOpen} es cierto para cualquier $U$.
+  Podemos describir $\mathcal T$ como \code{\{U $\in$ Set (X) | true\}}, porque \code{IsOpen} es cierto para cualquier $U$.
 
   \begin{lstlisting}
   def DiscreteTopo (X : Type) : TopologicalSpace X where
@@ -89,7 +89,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
 
   \begin{lstlisting}
     isOpen_univ := by
-      left
+      left -- elegimos X = X
       rfl\end{lstlisting}
 
   Consideremos ahora dos abiertos (\bluecode{intro}). Diferenciamos en casos:
@@ -113,7 +113,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
         rw [hs_empty]
         simp \end{lstlisting}
 
-  Consideremos finalmente una colección arbitraria $S$ de abiertos. Para ver si la unión es abierta, consideramos dos casos distintos: o bien $X$ está en $S$, en cuyo caso la unión en $X$, o bien no lo está, en cuyo caso todos los conjuntos son vacíos y la unión también lo es.
+  Consideremos finalmente una colección arbitraria $S$ de abiertos. Para ver si la unión es abierta, consideramos dos casos distintos: o bien $X$ está en $S$, en cuyo caso la unión es $X$, o bien no lo está, en cuyo caso todos los conjuntos de $S$ son el vacío y la unión también lo es.
 
   \begin{lstlisting}
     isOpen_sUnion := by
@@ -142,7 +142,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
 
 \begin{example}
 
-  Consideremos la recta real y consideremos la definición usual de conjunto abierto en $\mathbb{R}$, es decir, $A \subseteq \mathbb{R}$ es abierto si y solo si para cada punto $x \in A$ existe una bola abierta centrada en $x$ enteramente contenida en $A$. Sea $\mathcal{T}$ la colección de estos abiertos. Entonces $\mathcal{T}$ es una topología sobre $\mathbb{R}^2$, a la que llamamos \textnormal{topología usual}.
+  Consideremos la recta real y la definición usual de conjunto abierto en $\mathbb{R}$, es decir, $A \subseteq \mathbb{R}$ es abierto si y solo si para cada punto $x \in A$ existe una bola abierta centrada en $x$ enteramente contenida en $A$. Sea $\mathcal{T}$ la colección de estos abiertos. Entonces $\mathcal{T}$ es una topología sobre $\mathbb{R}$, a la que llamamos \textnormal{topología usual}.
 \end{example}
 
 \begin{proof}
@@ -208,7 +208,7 @@ Aplicar la función \code{fun x $\mapsto$ true} a cualquier conjunto retorna sie
 Como hemos dicho, los conjuntos abiertos en un espacio topológico son los elementos de la topología. En Lean, es una función \code{TopologicalSpace.IsOpen} de tipo \code{Set X $\to$ \blue{Prop}}. Podemos utilizar esta definición directamente para demostrar que un abierto lo es.
 
 \begin{example} 
-    Por ejemplo, por definición, el universo, $X$, siempre es abierto. En efecto:
+    Por definición, el universo, $X$, siempre es abierto. En efecto:
 \end{example}
 
 \begin{lstlisting}
@@ -216,7 +216,7 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
     exact TopologicalSpace.isOpen_univ \end{lstlisting}
 
 \begin{example}
-  En la Definición \ref{def:espacio-topologico}, requeríamos que el vacío es abierto. Sin embargo, en la definición de Mathlib no hemos pedido la misma condición.
+  En la Definición \ref{def:espacio-topologico}, teníamos la condición $\emptyset \in \mathcal{T}$, condición que no aparece en la definición de Mathlib.
 
   Se puede probar que el vacío es abierto a partir del resto de condiciones: podemos escribir $\emptyset$ como $\emptyset = \bigcup_{x \in \emptyset} \{x\}$. Aplicando que la unión arbitraria de abiertos es abierta, bastaría ver que $\forall x \in \emptyset$, $\{x\}$ es un conjunto abierto. Lo cual es trivial.
 \end{example}
@@ -226,13 +226,15 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
       IsOpen (∅ : Set X) := by
     rw [← Set.sUnion_empty] -- ∅ = ⋃₀ ∅
     apply isOpen_sUnion
-    intro t ht -- ∀ t ∈ ∅, IsOpen t ?
+    intro t ht -- ht : t ∈ ∅, IsOpen t ?
     exfalso
     exact ht -- t ∈ ∅ = False
 \end{lstlisting}
+
+\newpage
   
 \begin{example}\label{ejemplo:intervalos-abiertos}
-  En la topología usual, $(\mathbb{R}, \mathcal{T}_u)$, los intervalos abiertos $I = (a, b)$ con $a < b$ son abiertos.
+  En la topología usual, $(\mathbb{R}, \mathcal{T}_u)$, los intervalos abiertos $I = (a, b)$ con $a < b$ son abiertos de la topología.
 \end{example}
 
 \begin{proof}
@@ -281,7 +283,7 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
 \end{lstlisting}
 
 \begin{example}
-  El universo es entorno abierto de cualquier punto $x \in X$. En efecto:
+  El universo, $X$, es entorno abierto de cualquier punto $x \in X$. En efecto:
 \end{example}
 
 \begin{lstlisting}
@@ -309,11 +311,8 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
   example {X : Type} [TopologicalSpace X] (U : Set X) (x : X) :
       OpenNeighbourhood U x → Neighbourhood U x := by
     intro hU
-    use U -- usamos el propio U como abierto
-\end{lstlisting}
-
-\begin{lstlisting}
-  Nota: deberia marcar de alguna forma cuando una demostracion esta terminada en Lean??? porque aqui parece que no pero realmente esta terminada
+    use U -- usamos el propio U como abierto,
+        -- lo que completa la prueba directamente
 \end{lstlisting}
 
 \begin{proposition}[\textbf{Caracterización de conjuntos abiertos}]\label{caracterizacion-abierto}
@@ -323,14 +322,13 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
 \begin{lstlisting}
   lemma A_open_iff_neighbourhood_of_all {X : Type}
       [T : TopologicalSpace X] {A : Set X} :
-      IsOpen A ↔ ∀ x ∈ A, Neighbourhood A x
+      IsOpen A ↔ ∀ x ∈ A, Neighbourhood A x := by
 \end{lstlisting}
 
 \begin{proof}
   Demostramos cada implicación separadamente.
 
   \begin{lstlisting}
-      := by
     constructor; all_goals intro h \end{lstlisting}
 
   $(\implies)$ La primera implicación es sencilla: si $A$ es abierto, para cada $x \in A$ basta tomar $A$ como entorno de $x$.
@@ -339,10 +337,10 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
     · intro x hx -- hx : x ∈ A
       use A
       constructor
-      · trivial -- A ⊆ A ?
+      · trivial -- A ⊆ A
       · constructor
-        · exact hx -- x ∈ A ?
-        · exact h -- IsOpen A ? \end{lstlisting}
+        · exact hx -- x ∈ A
+        · exact h -- IsOpen A \end{lstlisting}
 
   $(\impliedby)$ El recíproco es más complicado. Sabemos que para cada $a \in A$ existe $U_a$ entorno de $a$. Primero probaremos que
   $$
@@ -358,7 +356,7 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
            -- hUx : OpenNeigh. Ux x
           simp -- ∃ a ∈ A, x ∈ Ua ?
           use x, hx
-          exact hUx.left \end{lstlisting}
+          exact hUx.left -- x ∈ Ux \end{lstlisting}
 
   Ahora, si $x \in \bigcup_{a}U_a$, entonces existe un $a \in A$ con $x \in U_a$ y $U_a$ entorno abierto de $a$ con $U_a \subseteq A$. Luego $x \in U_a \subseteq A$.
 
@@ -366,6 +364,7 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
         · simp at hx
           obtain ⟨a, ha, hx⟩ := hx -- hx : x ∈ Ua
           have ⟨ha', _⟩ := Classical.choose_spec (h a ha)
+            -- ha' : Ua ⊆ A
           apply ha'
           exact hx \end{lstlisting}
   
@@ -378,10 +377,9 @@ Como hemos dicho, los conjuntos abiertos en un espacio topológico son los eleme
       exact (Classical.choose_spec (h a a.property)).right.right \end{lstlisting}
 \end{proof}
 
+\newpage
 
-\paragraph{Interior}
-
-\begin{definition}
+\begin{definition}[\textbf{Interior}]
     Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Definimos el \textnormal{interior} como el conjunto
     $$
     \overset{\circ}{A} = \bigcup \left\{ U \subseteq X | U \text{ es abierto y } U \subseteq A \right\}
@@ -420,10 +418,10 @@ En Mathlib, este resultado recibe el nombre de \code{interior\_subset}.
     Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $\overset{\circ}{A}$ es un conjunto abierto.
 \end{proposition}
 
-En Mathlib, este resultado recibe el nombre de \code{isOpen\_interior}
+En Mathlib, este resultado recibe el nombre de \code{isOpen\_interior}.
 
 \begin{proof}
-  Por la caracterización de conjuntos abiertos \pref{caracterizacion-abierto}, basta ver que dado un $a \in \overset{\circ}{A}$, $\overset{\circ}{A}$ es entorno de $a$.
+  Por la caracterización de conjuntos abiertos \pref{caracterizacion-abierto}, basta ver que dado $a \in \overset{\circ}{A}$, $\overset{\circ}{A}$ es entorno de $a$.
   
   Si $a \in \overset{\circ}{A}$, entonces existe abierto $U$ con $a \in U \subseteq A$. Usamos este $U$ para demostrar que $\overset{\circ}{A}$ es entorno de $a$.
 
@@ -438,8 +436,8 @@ En Mathlib, este resultado recibe el nombre de \code{isOpen\_interior}
     · intro x hx -- U ⊆ interior A ?
       use U
     · constructor
-      · exact ha -- a ∈ U ?
-      · exact hU.left -- IsOpen U ?\end{lstlisting}
+      · exact ha -- a ∈ U
+      · exact hU.left -- IsOpen U \end{lstlisting}
 \end{proof}
 
 
@@ -447,7 +445,7 @@ En Mathlib, este resultado recibe el nombre de \code{isOpen\_interior}
     Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $A$ es abierto si y solo si $A$ es igual a su interior.
 \end{proposition}
 
-En Mathlib, este resultado recibe el nombre de \code{interior\_eq\_iff\_isOpen}
+En Mathlib, este resultado recibe el nombre de \code{interior\_eq\_iff\_isOpen}.
 
 \begin{proof}
   El recíproco es trivial, pues ya hemos visto que el interior de un conjunto es abierto.
@@ -510,10 +508,7 @@ En Mathlib, este resultado recibe el nombre de \code{interior\_eq\_iff\_isOpen}
   exact hB
 \end{lstlisting}
 
-
-\paragraph{Clausura}
-
-\begin{definition}
+\begin{definition}[\textbf{Clausura}]
   Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Definimos la \textnormal{clausura} de $A$ como el conjunto
   $$
   \overline{A} = \bigcap \{K \subseteq X | K \text{ es cerrado y } A \subseteq K\}
@@ -534,7 +529,7 @@ Veamos algunas propiedades de la clausura de un conjunto.
   $$
 \end{proposition}
 
-En Mathlib, este resultado recibe el nombre de \code{subset\_closure}
+En Mathlib, este resultado recibe el nombre de \code{subset\_closure}.
 
 \begin{proof}
   Sea $a \in A$ y queremos ver que $a \in \overline{A}$. Como $\overline{A}$ es una intersección, esto es equivalente a probar que para cada $K$ cerrado con $A \subseteq K$, $x \in K$. Pero esto es trivial porque, para cada uno de esos $K$, $x \in A \subseteq K$.
@@ -555,7 +550,7 @@ En Mathlib, este resultado recibe el nombre de \code{subset\_closure}
   $$
 \end{proposition}
 
-En Mathlib, este resultado recibe el nombre de \code{interior\_compl}
+En Mathlib, este resultado recibe el nombre de \code{interior\_compl}.
 
 \begin{proof}
   Veamos ambos contenidos por separado.
@@ -602,7 +597,7 @@ En Mathlib, este resultado recibe el nombre de \code{interior\_compl}
   Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$. Entonces $\overline{A}$ es un conjunto cerrado.
 \end{proposition}
 
-En Mathlib, este resultado recibe el nombre de \code{isClosed\_closure}
+En Mathlib, este resultado recibe el nombre de \code{isClosed\_closure}.
 
 \begin{proof}
   La prueba es sencilla utilizando el resultado anterior: $\overline{A}$ es cerrado si $(\overline{A})^c$ es abierto. Pero hemos visto que $(\overline{A})^c = (A^c)^\circ$, y el interior de cualquier conjunto es abierto.
@@ -725,13 +720,13 @@ En Mathlib, este resultado recibe el nombre de \code{isClosed\_closure}
 \subsection{Topología relativa}
 
 \begin{definition}[\textbf{Topología relativa}]
-  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$ un subconjunto. Entonces la colección de conjuntos
+  Sea $(X, \mathcal{T})$ un espacio topológico y $A \subseteq X$ un subconjunto. Entonces la colección
   $$
   \mathcal{T}|_A = \{U \cap A | U \in \mathcal{T}\}
   $$
   es una topología sobre $A$, llamada la \textnormal{topología relativa} a $X$ de $A$.
 
-  Diremos que $(A, \mathcal{T}|_A)$ es un \textnormal{subespacio topológico} de $(X, \mathcal{T})$
+  Diremos que $(A, \mathcal{T}|_A)$ es un \textnormal{subespacio topológico} de $(X, \mathcal{T})$.
 \end{definition}
 
 En Lean, para poder utilizar esta definición, tenemos que demostrar que este conjunto es, en efecto, una topología.
@@ -745,7 +740,6 @@ En Lean, para poder utilizar esta definición, tenemos que demostrar que este co
   \begin{lstlisting}
   def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
       TopologicalSpace Y where
-
     IsOpen (V : Set Y) := ∃ U : Set X, T.IsOpen U ∧ V = U ∩ Y \end{lstlisting}
   
   (1) El universo es abierto. En efecto, pues $A = X \cap A$ y $X$ es abierto en $X$.
@@ -874,7 +868,7 @@ Puesto que ambas definiciones son equivalentes, en Mathlib se utiliza la segunda
 Utilizaremos \code{continuous\_def} para re escribir \code{Continuous f} por esta definición cuando lo necesitemos.
 
 \begin{example}
-  Sea $f : (X, \mathcal{T}_disc) \to (Y, \mathcal{T})$ una función en la que el espacio de salida tiene la topología discreta (Ej. \ref{ex:topologia-discreta}). Entonces $f$ es continua.
+  Sea $f : (X, \mathcal{T}_{disc}) \to (Y, \mathcal{T})$ una función en la que el espacio de salida tiene la topología discreta (Ej. \ref{ex:topologia-discreta}). Entonces $f$ es continua.
 
   Si tomamos cualquier abierto de $Y$, su preimagen será abierta en la topología discreta trivialmente, puesto que cualquier conjunto lo es.
 \end{example}
@@ -889,7 +883,7 @@ Utilizaremos \code{continuous\_def} para re escribir \code{Continuous f} por est
 \end{lstlisting}
 
 \begin{example}
-  Sea $f : (X, \mathcal{T}) \to (Y, \mathcal{T}_trivial)$ una función en la que el espacio de llegada tiene la topología trivial (Ej. \ref{ex:topologia-trivial}). Entonces $f$ es continua.
+  Sea $f : (X, \mathcal{T}) \to (Y, \mathcal{T}_{trivial})$ una función en la que el espacio de llegada tiene la topología trivial (Ej. \ref{ex:topologia-trivial}). Entonces $f$ es continua.
 
   Puesto que las únicas posibilidades de abiertos a tomar en $Y$ son el propio $Y$ y el conjunto vacío, sus preimágenes serán respectivamente $X$ y el conjunto vacío, que son abiertos.
 \end{example}
@@ -997,14 +991,9 @@ Es decir, para demostrar la condición de continuidad de $f : X \to Z$, basta co
       rw [← @Set.preimage_val_image_val_eq_self Y Z U, hV.right]
       simp
       apply h
-      exact hV.left
-  \end{lstlisting}
-  
+      exact hV.left \end{lstlisting}
 \end{proof}
 
-\begin{lstlisting}
-  Nota: Realmente la gracia de esta demostracion es usar lo de Subype.val bien... No se ni si tiene sentido porque siento que no se entiende nada.
-\end{lstlisting}
 
 \begin{proposition}\label{prop:continuous-base}
   Sea $f : X \to Y$ una función entre espacios topológicos y sea $\mathcal{B}$ una base de $Y$. Entonces $f$ es continua si y solo si para cada $U \in \mathcal{B}$ abierto básico, se tiene que $f^{-1}(U)$ es abierto en $X$.
@@ -1025,8 +1014,7 @@ Es decir, para la definición de continuidad de una función basta tomar los abi
   \begin{lstlisting}
       rw [continuous_def]
       constructor; all_goals intro h
-      · exact fun U hU ↦ h U (hB.left U hU)
-  \end{lstlisting}
+      · exact fun U hU ↦ h U (hB.left U hU) \end{lstlisting}
 
   $(\impliedby)$ Sea $V$ abierto en $Y$ y queremos ver que $f^{-1}(V)$ es abierto en $X$. Como $\mathcal{B}$ es base de $Y$, existe una familia $\{B_i\}_i \subseteq \mathcal{B}$ de forma que $U = \bigcup_i B_i$. Entonces $$
   f^{-1}(U) = f^{-1}\big(\bigcup_i B_i\big) = \bigcup_i f^{-1}(B_i),
@@ -1040,12 +1028,11 @@ Es decir, para la definición de continuidad de una función basta tomar los abi
       apply isOpen_biUnion
       intro A hA
       apply h
-      exact (hUB.left hA)
-  \end{lstlisting}
+      exact (hUB.left hA) \end{lstlisting}
 
 \end{proof}
 
-Estos dos últimos resultados se pueden combinar, de manera que para demostrar que $f : X \to Z \subseteq Y$ es continua, basta con demostrar la condición para los abiertos básicos de $Y$. Este resultado, que he demostrado en Lean y llamado \code{continuousInSubspace\_iff\_trueForBase}, es uno de los que utilizaremos para demostrar la continuidad en el Lema de Urysohn.
+Estos dos últimos resultados se pueden combinar, de manera que para demostrar que $f : X \to Z \subseteq Y$ es continua, basta con demostrar la condición para los abiertos básicos de $Y$. Este resultado, que he demostrado en Lean y llamado \code{continuousInSubspace\_iff\_trueForBase}, es uno de los que utilizaremos para demostrar la continuidad en el lema de Urysohn.
 
 
 \subsection{Separación}
@@ -1084,21 +1071,23 @@ Ahora queremos dar una caracterización para este tipo de espacios, que nos faci
   Sea $X$ un espacio topológico. $X$ es normal si y sólo si para cada abierto $U$ y cada cerrado $C$ de $X$ tales que $C \subseteq U$, existe un abierto $V \subset X$ de forma que $C \subseteq V \subseteq \overline{V} \subseteq U$.
 \end{proposition}
 
-\begin{proof}
-  Veamos cada implicación por separado.
-
-  \begin{lstlisting}
+\begin{lstlisting}
   lemma characterization_of_normal {X : Type} (T : TopologicalSpace X) :
       NormalTopoSpace T ↔
       ∀ U : Set X, ∀ C : Set X, IsOpen U → IsClosed C → C ⊆ U →
         ∃ V : Set X, IsOpen V ∧ C ⊆ V ∧ (Closure V) ⊆ U := by
+\end{lstlisting}
+
+\begin{proof}
+  Veamos cada implicación por separado.
+
+  \begin{lstlisting}
     rw [normal_space_def]
     constructor \end{lstlisting}
 
   ($\implies$) Supongamos que $X$ es un espacio normal (\code{hT}) y sean $U$ un abierto (\code{hU}) y $C$ un cerrado (\code{hC}) tales que $C \subseteq U$ (\code{hCU}).
 
   \begin{lstlisting}
-    constructor
     · intro hT U C hU hC hCU \end{lstlisting}
   
   Puesto que $X$ es normal, por la definición, para $C$ y $U^c$ cerrados en $X$ obtenemos $V_1$ y $V_2$ abiertos (\code{V1\_open}, \code{V2\_open}) disjuntos (\code{hV}) tales que $C \subseteq V_1$ (\code{hCV}) y $U^c \subseteq V_2$ (\code{hUV}).
@@ -1129,7 +1118,8 @@ Ahora queremos dar una caracterización para este tipo de espacios, que nos faci
         · exact Set.compl_subset_comm.mp hUV -- V2ᶜ ⊆ U
         · apply Disjoint.closure_left at hV
           specialize hV V2_open -- hV : Disjoint (closure V1) V2
-          exact Set.subset_compl_iff_disjoint_right.mpr hV -- cl V1 ⊆ V2ᶜ \end{lstlisting}
+          exact Set.subset_compl_iff_disjoint_right.mpr hV
+            -- closure V1 ⊆ V2ᶜ \end{lstlisting}
 
   ($\impliedby$) Procedemos de manera similar. Sean $C_1$ y $C_2$ cerrados (\code{C1\_closed}, \code{C2\_closed}) disjuntos (\code{hC}). Podemos aplicar la hipótesis (\code{h}) al abierto $C_1^c$ y al cerrado $C_2$ para obtener obtener un abierto $V$ (\code{V\_open}) de manera que $C_2 \subseteq V \subseteq \overline{V} \subseteq C_1^c$ (\code{hV}).
 
@@ -1137,9 +1127,9 @@ Ahora queremos dar una caracterización para este tipo de espacios, que nos faci
     · intro h C1 C2 C1_closed C2_closed hC
       obtain ⟨V, V_open, hV⟩ :=
         h C1ᶜ C2
-        (by exact IsClosed.isOpen_compl)
-        C2_closed
-        (by rw [← ABdisjoint_iff_AsubsBc, Set.inter_comm C2 C1]; exact hC)
+        (by exact IsClosed.isOpen_compl) C2_closed
+        (by rw [← ABdisjoint_iff_AsubsBc, Set.inter_comm C2 C1];
+          exact hC)
 \end{lstlisting}
 
   Ahora tomamos los abiertos $U_1 = \overline{V}^c$ y $U_2 = V$. Queremos ver que cumplen la condición de normalidad para $C_1$ y $C_2$, es decir:
