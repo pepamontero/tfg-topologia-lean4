@@ -169,6 +169,8 @@ Este último objeto, \code{Nat.rec}, codifica el principio de inducción sobre l
 
 En esta definición, utilizamos la expresión \code{match n with} para distinguir los dos posibles casos de un número natural: \code{zero} y \code{succ n}. Internamente, Lean compila esta expresión como una aplicación de \code{Nat.rec}. Veremos más adelante cómo este principio de inducción puede utilizarse no solo para definir funciones, sino también para probar propiedades sobre todos los términos de un tipo inductivo.
 
+Cabe destacar que existen otras construcciones en Lean, como \bluecode{structure} o \bluecode{class}, que se definen internamente como casos particulares de tipos inductivos, pero se añaden como construcciones separadas para añadir legibilidad y funcionalidad. Veremos algunos ejemplos de su uso a lo largo del trabajo.
+
 Finalmente, mediante los tipos inductivos es posible definir los conectores lógicos (negación, conjunción, disyunción e implicación). Esto constituye otra gran diferencia entre la teoría de conjuntos y el cálculo de construcciones inductivas. Para utilizar la teoría de conjuntos, es necesario haber desarrollado previamente la lógica (de primer orden). De esta manera, las demostraciones formales no constituyen objetos matemáticos, sino que viven exclusivamente en el plano meta-teórico.
 
 En el cálculo de construcciones inductivas, en cambio, la lógica se expresa dentro de la misma teoría, y las demostraciones son objetos matemáticos que viven dentro de ella.
