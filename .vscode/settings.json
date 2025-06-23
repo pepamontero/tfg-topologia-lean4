@@ -1,5 +1,14 @@
 {
     "cSpell.enabledFileTypes": {
         "lean4": false
-    }
+    },
+    "cSpell.words": [
+        "Carneiro",
+        "Fraenkel",
+        "Moogle",
+        "Moura",
+        "Ponens",
+        "tipado",
+        "Zermelo"
+    ]
 }

@@ -4,11 +4,11 @@ A medida que las matemáticas se vuelven más técnicas y especializadas, verifi
 
 Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de \quotes{verificación}, y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite[Sección~1]{avigad2024theorem}.
 
-En este trabajo nos centraremos en el uso de \textbf{Lean Theorem Prover}, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar subproblemas sencillos al sistema
+En este trabajo nos centraremos en el uso de \textbf{Lean Theorem Prover}, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar sub-problemas sencillos al sistema
 
 Aunque aquí nos limitaremos a su uso como asistente de demostración, Lean es también un lenguaje de programación funcional completo, lo que ofrece amplias posibilidades de personalización y automatización al usuario \cite[Sección~1]{avigad2024theorem}.
 
-En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen. Esta tarea se ve facilitada por \textit{Mathlib}, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada colaborativamente por una comunidad activa y en constante crecimiento \cite{mathlib}.
+En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen. Esta tarea se ve facilitada por \textit{Mathlib}, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada de manera colaborativa por una comunidad activa y en constante crecimiento \cite{mathlib}.
 
 Las demostraciones son verificadas automáticamente por el núcleo lógico de Lean, que garantiza su corrección mediante un sistema de tipos expresivo y riguroso. La fiabilidad de Lean como asistente de demostración reside precisamente en la simplicidad y robustez de este núcleo \cite{bailey2024type}.
 
@@ -19,9 +19,9 @@ En esta sección seguiremos principalmente el manual en línea \textit{Theorem P
 
 La teoría de conjuntos de Zermelo-Fraenkel con el axioma de elección (ZFC) es la base fundacional elegida para formalizar la mayoría de las matemáticas que conocemos. En este marco, todos los objetos matemáticos (números, funciones, estructuras algebraicas, etc.) pueden representarse como conjuntos, construidos a partir de unos pocos axiomas básicos.
 
-Sin embargo, este sistema carece de una estructura interna diferenciada: todo objeto matemático, como un número, una función o incluso una colección de funciones son, en última instancia, conjuntos. Para lograr una representación más clara y diferenciada de los objetos matemáticos, Lean utiliza, en su lugar, un sistema basado en tipos. Además, este enfoque nos ofrece la posibilidad de establecer una correspondencia entre programas y demostraciones matemáticas, conocida como la correspondencia de Curry-Howard\footnote{La correspondencia de Curry-Howard establece una relación entre lógica y programación; permite entender como pueden ser equivalentes \quotes{demostrar una proposición} y \quotes{construir un término de cierto tipo}. Veremos qué quiere decir esto en la práctica más adelante, pero las ideas más profundas, que quedan fuera del alacance de este trabajo, se exponen detalladamente en \cite{sorensen2006lectures}.}.
+Sin embargo, este sistema carece de una estructura interna diferenciada: todo objeto matemático, como un número, una función o incluso una colección de funciones son, en última instancia, conjuntos. Para lograr una representación más clara y diferenciada de los objetos matemáticos, Lean utiliza, en su lugar, un sistema basado en tipos. Además, este enfoque nos ofrece la posibilidad de establecer una correspondencia entre programas y demostraciones matemáticas, conocida como la correspondencia de Curry-Howard\footnote{La correspondencia de Curry-Howard establece una relación entre lógica y programación; permite entender como pueden ser equivalentes \quotes{demostrar una proposición} y \quotes{construir un término de cierto tipo}. Veremos qué quiere decir esto en la práctica más adelante, pero las ideas más profundas, que quedan fuera del alcance de este trabajo, se exponen detalladamente en \cite{sorensen2006lectures}.}.
 
-En particular, Lean se fundamenta en el \textit{Cálculo de Construcciones Inductivas}, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no cumulativa de universos \cite{coquand1986calculus}. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales.
+En particular, Lean se fundamenta en el \textit{Cálculo de Construcciones Inductivas}, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no acumulativa de universos \cite{coquand1986calculus}. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales.
 
 En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con un compilador interactivo que procesa cada línea cuando el cursor se encuentra sobre ella, mostrando el resultado por pantalla. A partir de ahora, los comentarios que acompañan al código reflejan la salida que Lean devuelve en cada línea. Los comentarios en Lean se escriben empezando con doble guión ($--$) y están en color gris.
 
@@ -114,7 +114,7 @@ Diremos que dos términos que pueden reducirse de esta manera al mismo valor son
 
 Puesto que en la teoría de tipos cada elemento tiene un tipo, también el tipo \code{Type} tiene un tipo asociado: el tipo \code{Type 1}. A su vez, \code{Type 1} tiene tipo \code{Type 2} y, en general, \code{Type n} tiene tipo \code{Type n+1} para cada $n$, formando una jerarquía numerable de tipos que llamaremos \textbf{universos}.
 
-Esta jerarquía es no cumulativa, lo que significa que si \code{A : Type n}, no se asume en general que \code{A : Type (n+1)}. Esta propiedad evita que ocurran conversiones implítias y facilita la inferencia de tipos de Lean. Sin embargo, en la práctica Lean se encarga de realizar ciertas conversiones de manera automática, por lo que rara vez es necesario trabajar explícitamente con los universos.
+Esta jerarquía es no acumulativa, lo que significa que si \code{A : Type n}, no se asume en general que \code{A : Type (n+1)}. Esta propiedad evita que ocurran conversiones implícitas y facilita la inferencia de tipos de Lean. Sin embargo, en la práctica Lean se encarga de realizar ciertas conversiones de manera automática, por lo que rara vez es necesario trabajar explícitamente con los universos.
 
 \subsubsection{Tipos inductivos}
 
@@ -169,7 +169,7 @@ Este último objeto, \code{Nat.rec}, codifica el principio de inducción sobre l
 
 En esta definición, utilizamos la expresión \code{match n with} para distinguir los dos posibles casos de un número natural: \code{zero} y \code{succ n}. Internamente, Lean compila esta expresión como una aplicación de \code{Nat.rec}. Veremos más adelante cómo este principio de inducción puede utilizarse no solo para definir funciones, sino también para probar propiedades sobre todos los términos de un tipo inductivo.
 
-Finalmente, mediante los tipos inductivos es posible definir los conectores lógicos (negación, conjunción, disyunción e implicación). Esto constituye otra gran diferencia entre la teoría de conjuntos y el cálculo de construcciones inductivas. Para utilizar la teoría de conjuntos, es necesario haber desarrollado previamente la lógica (de primer orden). De esta manera, las demostraciones formales no constituyen objetos matemáticos, sino que viven exclusivamente en el plano metateórico.
+Finalmente, mediante los tipos inductivos es posible definir los conectores lógicos (negación, conjunción, disyunción e implicación). Esto constituye otra gran diferencia entre la teoría de conjuntos y el cálculo de construcciones inductivas. Para utilizar la teoría de conjuntos, es necesario haber desarrollado previamente la lógica (de primer orden). De esta manera, las demostraciones formales no constituyen objetos matemáticos, sino que viven exclusivamente en el plano meta-teórico.
 
 En el cálculo de construcciones inductivas, en cambio, la lógica se expresa dentro de la misma teoría, y las demostraciones son objetos matemáticos que viven dentro de ella.
 
@@ -185,7 +185,7 @@ Las proposiciones, como cualquier otro objeto en esta teoría, son términos con
   #check ¬ P    -- ¬ P : Prop
 \end{lstlisting}
 
-En Lean, intepretamos los objetos de tipo \code{Prop} como tipos en sí mismos. En particular, una proposición \code{p : Prop} es el tipo de las demostraciones de \code{p}. Por tanto, una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Tiene entonces sentido decir que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
+En Lean, interpretamos los objetos de tipo \code{Prop} como tipos en sí mismos. En particular, una proposición \code{p : Prop} es el tipo de las demostraciones de \code{p}. Por tanto, una expresión de la forma \code{h : p} quiere decir que \code{h} es una demostración de \code{p}. Tiene entonces sentido decir que una proposición \code{p} es verdadera si podemos construir término de tipo \code{p}.
 
 \begin{lstlisting}
   variable (p : Prop)
@@ -220,7 +220,7 @@ Como hemos señalado, demostrar un resultado en Lean consiste en construir corre
 
 El resto de componentes de Lean con el que interactuamos para construir demostraciones (como por ejemplo las tácticas que veremos después) devuelven construcciones expresadas en el lenguaje del kernel de Lean \cite{bailey2024type}. Esto quiere decir que confiar en Lean realmente se reduce a confiar en su kernel\footnote{Esta idea se conoce como \textit{criterio de de Bruijn}, que propone que un verificador formal debe producir sus pruebas en el lenguaje de un núcleo pequeño, incluso aunque utilicen otros métodos más complicados para construir dichas pruebas a priori \cite{bailey2024type}.}.
 
-Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel \cite{bailey2024type}. Por ejemplo, en \cite{carneiro2024lean4lean}, Carneiro describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de \textit{mathlib}.
+Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel \cite{bailey2024type}. Por ejemplo, en \cite{carneiro2024lean4lean}, Carneiro describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de \textit{Mathlib}.
 
 
 
@@ -228,7 +228,7 @@ Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequ
 
 Hasta ahora, hemos explorado la teoría de tipos dependientes sobre la que se construye Lean, así como los fundamentos que garantizan la corrección de sus demostraciones. Pasamos por tanto a un enfoque más práctico: ¿cómo escribimos matemáticas en Lean?
 
-Recordemos que formalizar un resultado en Lean no consiste solo en escribir su enunciado, sino también en construir una demostración paso a paso, sin omiciones y con total precisión. Aquí, nunca nos basta con escribir \quotes{trivial} cuando creamos que algo ya deberíamos poder saberlo: necesitamos convencer al sistema de que cada paso es válido.
+Recordemos que formalizar un resultado en Lean no consiste solo en escribir su enunciado, sino también en construir una demostración paso a paso, sin omisiones y con total precisión. Aquí, nunca nos basta con escribir \quotes{trivial} cuando creamos que algo ya deberíamos poder saberlo: necesitamos convencer al sistema de que cada paso es válido.
 
 Esta sección está dedicada a aprender a escribir demostraciones en Lean. Veremos cómo introducir nuevos objetos en nuestros contexto, como enunciar proposiciones y cómo construir demostraciones interactuando con Lean. También presentaremos algunas herramientas de automatización y métodos para poder apoyarnos en la librería de Mathlib.
 
@@ -244,14 +244,14 @@ Podemos introducir nueva información en el contexto de distintas formas. Distin
   \item \textbf{Axiomas}\footnote{En Lean 3, a este tipo de declaraciones se les llamaba \textit{constantes} y utilizaban el comando \bluecode{constant}.}
 \end{itemize}
 
-Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que x \quotes{es de tipo X} es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos\footnote{En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. \code{inductive Nat} se puede ver como una versión extructurada de \code{axiom Nat : Type}, \code{axiom zero : Nat}, \code{axiom succ : Nat to Nat}, etc.}. Por ejemplo:
+Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que x \quotes{es de tipo X} es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos\footnote{En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. \code{inductive Nat} se puede ver como una versión estructurada de \code{axiom Nat : Type}, \code{axiom zero : Nat}, \code{axiom succ : Nat to Nat}, etc.}. Por ejemplo:
 
 \begin{lstlisting}
   axiom P : Prop
   axiom h : P → P
 \end{lstlisting}
 
-Estamos declaranto una proposicion $P$ y una prueba de que $P$ implica $P$.
+Estamos declarando una proposición $P$ y una prueba de que $P$ implica $P$.
 
 \begin{lstlisting}
   axiom n : ℕ
@@ -626,7 +626,7 @@ En este caso, aplicamos \bluecode{use} para indicarle a Lean el valor concreto $
 \vspace{1em}
 \noindent\textbf{$~$ \largebluecode{left}, \largebluecode{right}}
 
-Las táticas \bluecode{left} y \bluecode{right} se utilizan para trabajar con disyunciones, es decir, proposiciones de la forma $A \lor B$.
+Las tácticas \bluecode{left} y \bluecode{right} se utilizan para trabajar con disyunciones, es decir, proposiciones de la forma $A \lor B$.
 
 En una demostración informal, si queremos demostrar que \quotes{$A$ o $B$} es cierto, nos basta con demostrar una de las dos. Utilizamos \bluecode{left} para indicar que vamos a demostrar la parte izquierda ($A$), y \bluecode{right} si queremos demostrar la parte derecha ($B$). Por ejemplo:
 
@@ -680,7 +680,7 @@ Podríamos finalizar esta demostración aplicando \code{\blue{exact} hp}.
 
 Utilizamos \bluecode{constructor} para trabajar con conjunciones, es decir, proposiciones de la forma $A \land B$.
 
-Cuando queremos demostrar  que \quotes{$A$ y $B$} es cierto, basta con demostrar $A$ por un lado y $B$ por otro. Al aplicar \bluecode{constructor}, Lean divide un objetivo \code{A $\land$ B} en dos subobjetivos con el mismo contexto: uno para \code{A} y otro para \code{B}. Por ejemplo:
+Cuando queremos demostrar  que \quotes{$A$ y $B$} es cierto, basta con demostrar $A$ por un lado y $B$ por otro. Al aplicar \bluecode{constructor}, Lean divide un objetivo \code{A $\land$ B} en dos sub-objetivos con el mismo contexto: uno para \code{A} y otro para \code{B}. Por ejemplo:
 
 \begin{minipage}[t]{0.58\textwidth}
 \begin{lstlisting}[language=lean]
@@ -918,7 +918,7 @@ Además, en lugar de volver a demostrar resultados que ya están formalizados, e
 
 Sin embargo, apoyarse en Mathlib no siempre es directo: los resultados pueden tener nombres poco intuitivos o muy específicos, y encontrar el lema que necesitamos en un momento dado no es siempre fácil.
 
-Por ejemplo, un resultado tan simple como: \quotes{Si $a, b, c$ son números reales tales que $a < b$ y $c < 0$, entonces $a + c < b$} (que en una prueba informal considereíamos casi trivial), aparece en Mathlib con el nombre \code{add\_lt\_of\_lt\_of\_neg'}. En la práctica, recordar todos estos nombres resulta inviable, incluso para resultados elementales.
+Por ejemplo, un resultado tan simple como: \quotes{Si $a, b, c$ son números reales tales que $a < b$ y $c < 0$, entonces $a + c < b$} (que en una prueba informal consideraríamos casi trivial), aparece en Mathlib con el nombre \code{add\_lt\_of\_lt\_of\_neg'}. En la práctica, recordar todos estos nombres resulta inviable, incluso para resultados elementales.
 
 En esta sección introduciremos la táctica \bluecode{exact?}, que permite resolver objetivos simples de manera inmediata, y dos herramientas externas que podemos utilizar para localizar resultados en Mathlib. Además, veremos la forma en la que integrar estas herramientas en nuestro proceso de demostración de resultados.
 
@@ -1095,7 +1095,7 @@ Veamos por tanto como es el proceso de trabajar con \bluecode{exact?}. Considere
 \end{minipage}
 
 
-Con esta nueva hioótesis, parece probable que \bluecode{exact?} sea capaz de terminar la demostración. En efecto:
+Con esta nueva hipótesis, parece probable que \bluecode{exact?} sea capaz de terminar la demostración. En efecto:
 
 \begin{minipage}[t]{0.58\textwidth}
 \begin{lstlisting}[language=lean]
@@ -1115,7 +1115,7 @@ Con esta nueva hioótesis, parece probable que \bluecode{exact?} sea capaz de te
 \end{lstlisting}
 \end{minipage}
 
-La táctica \bluecode{exact?} es un ejemplo de motor de búsqueda formal: una herramienta que, mediante metaprogramación en Lean, compara el objetivo actual con los tipos de todos los lemas disponibles y devuelve aquellos con coincidencias exactas. Por tanto, la clave de usar \bluecode{exact?} de manera eficaz reside en \textbf{desarrollar gradualmente una cierta intuición} sobre qué resultados es probable que estén formalizados en Mathlib, y la forma concreta en la que están formulados.
+La táctica \bluecode{exact?} es un ejemplo de motor de búsqueda formal: una herramienta que, mediante meta-programación en Lean, compara el objetivo actual con los tipos de todos los lemas disponibles y devuelve aquellos con coincidencias exactas. Por tanto, la clave de usar \bluecode{exact?} de manera eficaz reside en \textbf{desarrollar gradualmente una cierta intuición} sobre qué resultados es probable que estén formalizados en Mathlib, y la forma concreta en la que están formulados.
 
 En efecto, reconocer que un lema de Mathlib sobre división por $x$ probablemente requería la hipótesis $x\neq0$ (y no simplemente $x>0$) ha sido esencial para poder aplicar \bluecode{exact?} con éxito en el ejemplo anterior.
 
@@ -1140,7 +1140,7 @@ Por ejemplo, si en el caso anterior no se nos hubiera ocurrido la idea de demost
   \includegraphics[width=1\textwidth]{figuras/moogle-example.png}
 \end{figure}
 
-Que no es el mismo resultado que proponía \bluecode{exact?}, pero parece incluso más simpe. Podríamos volver a nuestro ejemplo y escribir
+Que no es el mismo resultado que proponía \bluecode{exact?}, pero parece incluso más simple. Podríamos volver a nuestro ejemplo y escribir
 
 \begin{minipage}[t]{0.58\textwidth}
 \begin{lstlisting}[language=lean]
