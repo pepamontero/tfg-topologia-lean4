@@ -30,9 +30,9 @@ Veamos primero la demostración del recíproco, que es más sencilla.
   Supongamos que cualquier par de cerrados disjuntos de $X$ se pueden separar mediante una función continua y veamos que entonces $X$ es un espacio normal. Sean $C_1$ y $C_2$ cerrados disjuntos en $X$.
 
   \begin{lstlisting}
-    · intro h
-      rw [normal_space_def]
-      intro C1 C2 hC1 hC2 hinter \end{lstlisting}
+  · intro h
+    rw [normal_space_def]
+    intro C1 C2 hC1 hC2 hinter \end{lstlisting}
 
   Como en la definición de normal no pedimos que los cerrados sean no vacíos, tenemos que diferenciar estos casos. Sin embargo, estos casos son triviales porque basta tomar el conjunto vacío para recubrir el vacío y $X$ para recubrir el otro conjunto. En Lean hay que ser rigurosos con este paso, pero aquí lo obviaremos por simplicidad.
 
@@ -51,15 +51,15 @@ Veamos primero la demostración del recíproco, que es más sencilla.
 
   \begin{lstlisting}
     · apply hf -- aplicar def. de f continua
-      apply ico_open_in_Icc01 -- `[0, b)` es abierto en `[0, 1]`
+      apply ico_open_in_Icc01 -- [0, b) es abierto en [0, 1]
       · exact hY -- estamos en [0, 1]
       · exact hR -- estamos en la top. relativa
       · norm_num -- 0 < 1/2 < 1 \end{lstlisting}
 
-  Para ver que $C_1 \subseteq U_1$, basta ver que $f(C_1) \subseteq [0, \frac{1}{2})$. Que es trivial. Análogo para $U_2$.
+  Para ver que $C_1 \subseteq U_1$, basta ver que $f(C_1) \subseteq [0, \frac{1}{2})$, que es trivial. Análogo para $U_2$.
 
   \begin{lstlisting}
-    · rw [← Set.image_subset_iff, hfC1] -- `{0} ⊆ [0, 1/2)` ?
+    · rw [← Set.image_subset_iff, hfC1] -- {0} ⊆ [0, 1/2) ?
       simp \end{lstlisting}
 
   Para ver que son disjuntos, vemos que $[0, \frac{1}{2})$ y $(\frac{1}{2}, 1]$ son disjuntos. Obviamente lo son, pero para Lean es un poco más complicado, así que procedemos por reducción al absurdo para poder simplificar las expresiones. Finalmente llegamos a que no existe un $x$ con $x < 1/2$ y $x > 1/2$.
@@ -67,7 +67,8 @@ Veamos primero la demostración del recíproco, que es más sencilla.
   \begin{lstlisting}
     · apply Disjoint.preimage
       by_contra c
-      rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq, ← Set.nonempty_iff_ne_empty] at c
+      rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq,
+        ← Set.nonempty_iff_ne_empty] at c
       obtain ⟨x, hxu, hxv⟩ := c
       simp at hxu hxv
       linarith \end{lstlisting}
@@ -79,7 +80,7 @@ La otra implicación es mucho más compleja, especialmente en su formalización 
 
 \subsection{Esquema de la demostración}
 
-Para demostrar esta implicación, dados dos cerrados disjuntos no vacíos de $X$, queremos construir una función continua que los separe. La construcción de esta función ha constituido la parte más costosa de este trabajo.
+Para demostrar la implicación, dados dos cerrados disjuntos no vacíos de $X$, queremos construir una función continua que los separe. La construcción de esta función ha constituido la parte más costosa de este trabajo.
 
 Vamos a ver un esquema de los pasos a seguir para construir tal función.
 
@@ -89,16 +90,16 @@ Consideremos $U_1 = X$ abierto. Consideremos el cerrado $C_1$ el abierto $C_2^c$
 $$
 C_1 \subseteq U_0 \subseteq \overline{U_0} \subseteq C_2^c \subseteq U_1 = X
 $$
-Podemos hacer lo mismo para $\overline{U_0}$ cerrado y $C_2^c$ abierto, obteniendo $U_{\frac{1}{2}}$ de forma que
+Podemos hacer lo mismo para $\overline{U_0}$ cerrado y $C_2^c$ abierto, obteniendo, por ejemplo, $U_{\frac{1}{2}}$ de forma que
 $$
 C_1 \subseteq U_0 \subseteq \overline{U_0} \subseteq U_{\frac{1}{2}} \subseteq \overline{U_{\frac{1}{2}}} \subseteq C_2^c \subseteq U_1
 $$
-En general, vamos a construir una sucesión de abiertos sobre $\mathbb{Q}\cap[0, 1]$, $\{U_p | p \in \mathbb{Q}\cap[0, 1]\}$, de manera que
+Reiterando este proceso, vamos a construir una sucesión de abiertos sobre $\mathbb{Q}\cap[0, 1]$, $\{U_p | p \in \mathbb{Q}\cap[0, 1]\}$, de manera que
 \begin{equation}
   \forall p , q \in \mathbb{Q}, p < q \implies \overline{U_p} \subseteq U_q \tag{$\star$} \label{eq:star}
 \end{equation}
 
-Una vez tenemos esta sucesión, que en Lean será una función $G : \mathbb{Q}\cap[0, 1] \to \mathcal{P}(X)$, definimos otra función $F$ sobre $X$ que a cada $x \in X$ le hace corresponder el conjunto
+Una vez tenemos esta sucesión, la extenderemos a todo $\mathbb{Q}$, obteniendo lo que en Lean será una función $G : \mathbb{Q} \to \mathcal{P}(X)$. Después, definiremos otra función $F$ sobre $X$ que a cada $x \in X$ le hace corresponder el conjunto
 $$
 F(x) = \{p \in \mathbb{Q} ~|~ x \in G(p)\}
 $$
@@ -108,11 +109,11 @@ f(x) = \textnormal{inf}~F(x)
 $$
 Esta función será la que utilicemos. Tendremos que demostrar que efectivamente toma valores en $[0, 1]$, que es continua y que separa nuestros conjuntos cerrados.
 
-Sin embargo, una vez construidas estas funciones, este último paso es relativamente sencillo. La principal dificultad a la hora de formalizar esta demostración ha sido el uso de la inducción para construir la función $G$ y demostrar sus propiedades.
+Sin embargo, una vez construidas estas funciones, este último paso es relativamente sencillo. La principal dificultad a la hora de formalizar esta demostración ha sido construir función $G$ y demostrar sus propiedades.
 
 Como se puede apreciar en las primeras iteraciones de la construcción de cada $U_q$, esta sucesión se construye por inducción. Para poder hacer inducción sobre los racionales, nos basamos en que son numerables, y, en particular, en que $\mathbb{Q}\cap[0, 1]$ lo es. Vamos a encontrar una función $f : \mathbb{N} \to \mathbb{Q} \cap [0, 1]$ biyectiva (invertible), de manera que $f(0) = 1$ y $f(1) = 0$. Esto nos servirá para construir cada $U_q$.
 
-Después, para demostrar que efectivamente se cumple la condición (\ref{eq:star}), necesitaremos utilizar inducción sobre dos variables. Para ello, vamos a demostrar que el orden lexicográfico de $(\mathbb{N} \times \mathbb{N})$, definido por $(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')$, es una relación bien fundada, y por tanto admite inducción sobre pares de naturales.
+Después, para demostrar que efectivamente se cumple la condición (\ref{eq:star}), necesitaremos utilizar inducción sobre dos variables. Para ello, utilizaremos que el orden lexicográfico de $(\mathbb{N} \times \mathbb{N})$, definido por $(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')$, es una relación bien fundada, y por tanto admite inducción sobre pares de naturales.
 
 \begin{lstlisting}
   Nota: no se como poner que lo más difícil ha sido que no se me han ocurrido estas cosas a la primera jajajaja
