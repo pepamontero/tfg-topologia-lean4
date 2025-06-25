@@ -2,7 +2,7 @@
 
 A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones formales es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.
 
-Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de \quotes{verificación}, y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite[Sección~1]{avigad2024theorem}.
+Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que el usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de \quotes{verificación}, y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma \cite[Sección~1]{avigad2024theorem}.
 
 En este trabajo nos centraremos en el uso de \textbf{Lean Theorem Prover}, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar sub-problemas sencillos al sistema
 
@@ -225,7 +225,7 @@ En Lean, interpretamos los objetos de tipo \code{Prop} como tipos en sí mismos 
   #check h    -- h : p
 \end{lstlisting}
 
-Esto, junto con la teoría de tipos dependientes, nos proporciona una forma de definir cualquier resultado matemático: por ejemplo, \quotes{ser par} es una propiedad que depende de un número natural $n$, por lo que podríamos describirlo mediante \code{es\_par : $\mathbb{N} \to$ Prop}. Para cada \code{n} natural, obtenemos un término de tipo \code{Prop}.
+Esto, junto con la teoría de tipos dependientes, nos proporciona una forma de definir cualquier resultado matemático. Por ejemplo, \quotes{ser par} es una propiedad que depende de un número natural $n$, por lo que podríamos describirlo mediante \code{es\_par : $\mathbb{N} \to$ Prop}. Para cada \code{n} natural, obtenemos un término de tipo \code{Prop}.
 
 \begin{lstlisting}
   def es_par : ℕ → Prop := ...
@@ -237,7 +237,7 @@ En este caso, un término de tipo \code{es\_par n} será una prueba de que \code
 
 Además, si \code{p : Prop} es una proposición, Lean reconoce cualesquiera dos elementos de tipo \code{p} (\code{h1 h2 : p}) como iguales por definición: no importa qué prueba concreta tengamos, sólo importa su existencia. Esto se conoce como \quotes{irrelevacia de las demostraciones} (\textit{proof irrelevance}).
 
-Esta propiedad tiene consecuencias importantes. Por un lado, evita comportamientos no deseados cuando definimos estructuras que dependen de proposiciones. Por ejemplo, si quisiéramos definir un punto del primer cuadrante en $\mathbb{R}^2$ como un par de la forma \code{x y : $\mathbb{R} \times \mathbb{R}$} junto con una demostración \code{h : x $\geq$ 0 $\land$ y $\geq$ 0}, entonces gracias a la irrelevancia de las demostraciones podemos identificar dos puntos que tengan las mismas coordenadas, aunque las pruebas \code{h} y \code{h'} asociadas a cada uno sean distintos.
+Esta propiedad tiene consecuencias importantes. Por un lado, evita comportamientos no deseados cuando definimos estructuras que dependen de proposiciones. Por ejemplo, si quisiéramos definir un punto del primer cuadrante en $\mathbb{R}^2$ como un par de la forma \code{x y : $\mathbb{R} \times \mathbb{R}$} junto con una demostración \code{h : x $\geq$ 0 $\land$ y $\geq$ 0}, entonces, gracias a la irrelevancia de las demostraciones, podemos identificar dos puntos que tengan las mismas coordenadas, aunque las pruebas \code{h} y \code{h'} asociadas a cada uno sean distintas.
 
 Por otro lado, esta misma propiedad impide acceder al contenido de una prueba. En particular, no es posible extraer directamente el testigo de la demostración de una proposición existencial del tipo $\exists x, P(x)$, ya que todas las demostraciones de esa proposición se consideran iguales. Dada una demostración de $\exists x, P(x)$, contamos varios métodos para obtener un testigo, uno de los cuales es usar el axioma de elección. Sin embargo, estos métodos se comportan de maneras distintas. Volveremos sobre esta cuestión más adelante.
 
