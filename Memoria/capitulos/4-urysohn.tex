@@ -621,7 +621,7 @@ En nuestro caso, vamos a utilizar el orden lexicográfico sobre $\nat^2$, defini
   \begin{lstlisting}
     hi : ∀ (a b : ℕ), lt_pair (a, b) (n, m) → f a < f b → closure (G hT C1 C2 a) ⊆ G hT C1 C2 b \end{lstlisting}
 
-  Ahora dividimos entre distintos casos de valores de $n$ y $m$. Nos centramos en el caso $n >1, m>1$, que es el interesante, y el resto se pueden consultar en el anexo.
+  Ahora dividimos entre distintos casos de valores de $n$ y $m$. Nos centramos en el caso $n >1, m>1$, que es el más interesante, y el resto se pueden consultar en el anexo.
 
   Además, hay tres casos posibles: o bien $f(s(n)) < f(m)$, o bien $f(s(n)) = f(m)$, o bien $f(s(n)) > f(m)$.
 
@@ -752,7 +752,7 @@ Sin embargo, tenemos que asegurarnos de que podemos definir esta función, es de
 \end{lstlisting}
 
 \begin{lemma}
-  Para cada $x \in X$, si $q < 0$ entonces $q  F(x)$. Es decir, todos los elementos de $F(x)$ son no negativos.
+  Para cada $x \in X$, si $q < 0$ entonces $q \notin F(x)$. Es decir, todos los elementos de $F(x)$ son no negativos.
 \end{lemma}
 
 \begin{proof}
@@ -810,7 +810,7 @@ Por tanto, necesitamos definir en Lean una función auxiliar $\tilde{F}$ de form
 
 Esta nueva función $\tilde{F}$ es una función con las mismas propiedades que $F$, es decir, para cada $x \in X$, $\tilde{F}(x)$ es un conjunto no vacío con $0$ como cota inferior. Esto se prueba de manera inmediata utilizando las propiedades de $F$, aunque es necesario tener cuidado con la inferencia de tipos de Lean en algunos casos.
 
-Pero ahora $\tilde{F}$ que devuelve subconjuntos de $\mathbb{R}$, luego podemos asegurar que tiene un ínfimo en $\mathbb{R}$.
+Pero ahora $\tilde{F}$ devuelve subconjuntos de $\mathbb{R}$, luego podemos asegurar que tiene un ínfimo en $\mathbb{R}$.
 
 \begin{lstlisting}
   lemma F_Real_has_inf (...)
@@ -881,13 +881,14 @@ Obtenemos la siguiente propiedad, fruto de aplicar \code{Classical.choose\_spec}
     · by_contra c
       simp at c
       obtain ⟨q, hq1, hqk⟩ := exists_rat_btwn c -- obtener q
-      have hq := F_Real_1inf hT C1 C2 x q (by exact_mod_cast hq1) -- hq : q ∈ F_Real x
+      have hq := F_Real_1inf hT C1 C2 x q (by exact_mod_cast hq1)
+        -- hq : q ∈ F_Real x
       apply klb at hq -- hq : k x ≤ q
       apply not_lt.mpr at hq -- hq : ¬ q < k x
       exact hq hqk -- contradiccion \end{lstlisting}
 \end{proof}
 
-Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, damos varias propiedades de $k$ que necesitaremos. Recordemos que $H$ era $G \circ f^{-1}$ extendida a $\rat$.
+Por último, antes de pasar a la demostración del lema de Urysohn finalmente, damos varias propiedades de $k$ que necesitaremos. Recordemos que $H$ era $G \circ f^{-1}$ extendida a $\rat$.
 
 \begin{lemma}\label{claim1}
   Para cada $p \in \rat$ y cada $x \in X$, si $x \in \overline{H(p)}$ entonces $k(x) \leq p$.
@@ -895,7 +896,8 @@ Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, d
 
 \begin{lstlisting}
   lemma k_claim1 (...)
-    : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by sorry
+    : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) →
+    (k hT C1 C2 x) ≤ p := by sorry
 \end{lstlisting}
 
 \begin{proof}
@@ -930,7 +932,8 @@ Por último, antes de pasar a la demostración del Lema de Urysohn finalmente, d
 
 \begin{lstlisting}
   lemma k_claim2 (...)
-    : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) → (k hT C1 C2 x) ≥ p := by sorry
+    : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) →
+    (k hT C1 C2 x) ≥ p := by sorry
 \end{lstlisting}
 
 \begin{proof}
