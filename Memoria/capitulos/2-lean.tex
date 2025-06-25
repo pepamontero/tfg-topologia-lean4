@@ -29,9 +29,7 @@ En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con 
 
 Empecemos por lo más básico: la teoría de tipos. Cambiamos el paradigma de \quotes{cada objeto es un conjunto}, propio de ZFC, a \quotes{cada objeto es un término con un tipo asociado}. Esto nos permite estructurar con mayor claridad los objetos matemáticos y sus relaciones.
 
-Por ejemplo, $3$ es un término de tipo \quotes{natural} ($\mathbb{N}$), mientras que \quotes{true} es un término de tipo \quotes{booleano}. En Lean, podemos comprobar el tipo de estas expresiones utilizando el comando \bluecode{\#check}\footnote{En Lean, podemos escribir $\mathbb{N}$ escribiendo \code{$\backslash$nat} en el editor y luego pulsando espacio. En general, escribiremos los símbolos matemáticos de esta forma. Una lista comprensiva con los símbolos utilizados en el proyecto y sus respectivos comandos se puede encontrar en (un anexo)}:
-
-\newpage % lo he puesto porque se quedaba colgado el inicio de un listing
+Por ejemplo, $3$ es un término de tipo \quotes{natural} ($\mathbb{N}$), mientras que \quotes{true} es un término de tipo \quotes{booleano}. En Lean, podemos comprobar el tipo de estas expresiones utilizando el comando \bluecode{\#check}.
 
 \begin{lstlisting}
   #check 3    -- 3 : ℕ 
@@ -134,11 +132,10 @@ Esta jerarquía no es acumulativa, lo que significa que si \code{A : Type u}, no
 
 En Lean, la gran mayoría de tipos son instancias de una familia de tipos conocidos como \textbf{tipos inductivos}. Un tipo inductivo es una estructura formada por una lista finita de constructores, cada uno con su tipo correspondiente. Cada constructor describe una forma válida de construir un término de este nuevo tipo.
 
-
-En Lean, definimos un tipo inductivo utilizando la palabra clave \bluecode{inductive}\footnote{Aunque en Lean los tipos inductivos se introducen como una construcción primitiva del lenguaje, pueden definirse de manera equivalente sólo en términos de tipos dependientes. Esta reducción se explora formalmente en \cite{carneiro2019type}.}.
-
 \newpage % a priori este podría quedarse si no cambio nada
 % hay un problema con footnotes y listings.
+
+En Lean, definimos un tipo inductivo utilizando la palabra clave \bluecode{inductive}\footnote{Aunque en Lean los tipos inductivos se introducen como una construcción primitiva del lenguaje, pueden definirse de manera equivalente sólo en términos de tipos dependientes. Esta reducción se explora formalmente en \cite{carneiro2019type}.}.
 
 
 \begin{lstlisting}
@@ -416,7 +413,7 @@ Al escribir una táctica, el apartado \code{Tactic state} del InfoView se actual
 
 \subsubsection{Algunas tácticas básicas}
 
-En esta sección veremos algunas de las tácticas más básicas y útiles para construir demostraciones en Lean. Veremos cómo se aplican y qué efecto tienen en el InfoView. El resto de tácticas que aparecen a lo largo del trabajo pueden consultarse en el Anexo (letra, probablemente la A).
+En esta sección veremos algunas de las tácticas más básicas y útiles para construir demostraciones en Lean. Veremos cómo se aplican y qué efecto tienen en el InfoView. El resto de tácticas que aparecen a lo largo del trabajo pueden consultarse en el apartado de tácticas de la documentación de Lean, \cite{tacticas}.
 
 Para poder utilizar las tácticas mencionadas a continuación, es necesario importar el módulo de Mathlib correspondiente al modo táctico mediante
 
