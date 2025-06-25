@@ -2,7 +2,11 @@
 
 \section{El Lema de Urysohn}
 
-[Introducción] \redcode{no se que poner}
+El lema de Urysohn es uno de los resultados centrales de la topología general. Su importancia radica en que permite caracterizar la normalidad de un espacio topológico en términos de funciones continuas.
+
+Mientras que en los axiomas de separación clásicos se exige la existencia de abiertos disjuntos para separar puntos o conjuntos, existen versiones que requieren separar mediante funciones continuas. Estas versiones son más restrictivas y, por tanto, definen propiedades más fuertes. Sin embargo, el lema de Urysohn muestra que en el caso de los espacios normales, esto no ocurre, sino que separar conjuntos cerrados mediante funciones continuas es equivalente a hacerlo mediante abiertos.
+
+Este resultado tiene aplicaciones clave, como su uso en la demostración del teorema de metrización de Urysohn, que proporciona condiciones suficientes para que un espacio sea metrizable. Además, la demostración del lema es de gran interés por sí misma, especialmente para nuestros propósitos, ya que se basa en una construcción explícita y no trivial de la función buscada. Es precisamente la construcción de esta función a la que dedicaremos buena parte de esta sección.
 
 \begin{theorem}[\textbf{Lema de Urysohn}]
   Sea $(X, \mathcal{T})$ un espacio topológico. $X$ es un espacio normal si y solo si para cada par de conjuntos cerrados disjuntos $C$ y $D$ en $X$, existe una función $f : X \to [0, 1]$ de manera que $f(C) = \{0\}$ y $f(D) = \{1\}$.
@@ -22,6 +26,8 @@ Para la fomalización en Lean, pediremos que los cerrados $C$ y $D$ sean no vac�
           f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
           f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by sorry
 \end{lstlisting}
+
+\subsection{El recíproco}
 
 Veamos primero la demostración del recíproco, que es más sencilla.
 
