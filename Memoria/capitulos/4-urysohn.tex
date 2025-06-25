@@ -255,7 +255,7 @@ De nuevo, en Lean esto se codifica como funciones; queremos encontrar una funci�
   Se tiene que $r \in R$, luego $r < n$ y $f(r) < f(n)$. Sea entonces un $k < n$ con $f(k) < f(n)$. Por construcción, $k \in R$ y por tanto $f(k) \in f(R)$. Como $r$ es el argumento máximo de $f(R)$, $f(r)$ es el máximo de $f(R)$ y por tanto $f(k) \leq f(R)$, como queríamos.
 \end{proof}
 
-La demostración completa está en el anexo, así como el análogo para $s$.
+La demostración completa está en el repositorio, así como el análogo para $s$.
 
 Garantizada la existencia de estas funciones, podemos tomar ahora las funciones $r$ y $s$ y empezar a trabajar con ellas.
 
@@ -543,7 +543,7 @@ Para el siguiente resultado vamos a utilizar inducción completa. Yo he definido
   \begin{lstlisting}
     have normalpair : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))) \end{lstlisting}
 
-  Hemos visto que $r(n)$ es o bien $r(n) = 1$ o bien $r(n) > 1$ (\code{r\_options}) y $s(n)$ es o bien $s(n) = 0$ o bien $s(n) > 1$ (\code{s\_options}). Veamos por ejemplo el caso $r(n) = 1$, $s(n) > 1$. El resto son parecidos y se pueden consultar en el anexo.
+  Hemos visto que $r(n)$ es o bien $r(n) = 1$ o bien $r(n) > 1$ (\code{r\_options}) y $s(n)$ es o bien $s(n) = 0$ o bien $s(n) > 1$ (\code{s\_options}). Veamos por ejemplo el caso $r(n) = 1$, $s(n) > 1$. El resto son parecidos y se pueden consultar en el repositorio.
 
   (1) Ver que $G(s(n))$ es abierto es sencillo; ya hemos visto que $G$ siempre devuelve abiertos.
 
@@ -621,7 +621,7 @@ En nuestro caso, vamos a utilizar el orden lexicográfico sobre $\nat^2$, defini
   \begin{lstlisting}
     hi : ∀ (a b : ℕ), lt_pair (a, b) (n, m) → f a < f b → closure (G hT C1 C2 a) ⊆ G hT C1 C2 b \end{lstlisting}
 
-  Ahora dividimos entre distintos casos de valores de $n$ y $m$. Nos centramos en el caso $n >1, m>1$, que es el más interesante, y el resto se pueden consultar en el anexo.
+  Ahora dividimos entre distintos casos de valores de $n$ y $m$. Nos centramos en el caso $n >1, m>1$, que es el más interesante, y el resto se pueden consultar en el repositorio.
 
   Además, hay tres casos posibles: o bien $f(s(n)) < f(m)$, o bien $f(s(n)) = f(m)$, o bien $f(s(n)) > f(m)$.
 
@@ -937,7 +937,7 @@ Por último, antes de pasar a la demostración del lema de Urysohn finalmente, d
 \end{lstlisting}
 
 \begin{proof}
-  La demostración es muy parecida a la anterior y puede encontrarse en el anexo.
+  La demostración es muy parecida a la anterior y puede encontrarse en el repositorio.
 \end{proof}
 
 \subsubsection{Propiedades sobre los cerrados $C_1$ y $C_2$}
