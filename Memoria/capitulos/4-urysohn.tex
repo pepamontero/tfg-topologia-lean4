@@ -337,8 +337,7 @@ El análogo a este recibe el nombre de \code{sn\_eq\_srn}.
         trans s n
         · exact List.mem_range.mp (r_prop (s n) hsn).left
         · exact List.mem_range.mp (s_prop n hn).left
-      · exact f_rs_prop n hn hsn
-  \end{lstlisting}
+      · exact f_rs_prop n hn hsn \end{lstlisting}
 
   (2) Para ver que $f (r (n)) \leq f (r (s (n)))$, basta ver que $r(n) < s(n)$ por hipótesis y que $f(r(n)) < f(n) < f(s(n))$ por las propiedades de $r$ y $s$. Luego aplicando la tercera propiedad básica a $s(n) > 1$ y $r(n) < s(n)$ obtenemos el resultado.
 
@@ -353,7 +352,7 @@ El análogo a este recibe el nombre de \code{sn\_eq\_srn}.
 
 \subsubsection{Construcción de $G$} 
 
-La construcción de $G : \rat \to \mathcal{P}(X)$ es, como hemos explicado, una construcción por inducción. Para empezar, es más fácil construir $G : \nat \to \mathcal{P}(X)$, y después tomar $G \circ f^{-1} : Q \to \mathcal{P}(X)$ donde $f$ es la función que numera $Q$ que habíamos obtenido antes. Nos centraremos en esta función.
+La construcción de $G : \rat \to \mathcal{P}(X)$ es, como hemos explicado, una construcción por inducción. Para empezar, es más fácil construir $G : \nat \to \mathcal{P}(X)$, y después tomar $G \circ f^{-1} : Q \to \mathcal{P}(X)$ donde $f$ es la función que numera $Q$ que habíamos obtenido antes.
 
 Lean admite definiciones inductivas de una manera muy natural. Un ejemplo muy utilizado es la sucesión de Fibonacci: definir $Fib(0) = 0$ y $Fib(1) = 1$, y a partir de ahí, $Fib(n) = Fib(n-1)+Fib(n-2)$ para cada $n > 1$. En Lean, escribimos
 
@@ -369,7 +368,7 @@ En vista de esto, mi primer acercamiento a la construcción de $G$ fue el siguie
 \begin{itemize}
   \item Para $n = 0$, definir $G(0) = C_2^c$.
   \item Para $n = 1$, tomar $G(1)$ el resultado de aplicar la caracterización de espacios normales al abierto $C_2^c$ y el cerrado $C_1$.
-  \item Para $n >1$, tomar $G(n)$ el resultado de aplicar la caracterización de espacios normales al abierto $G(s(n))$ y el cerrado $\overline{G(r(n))}$.
+  \item Para $n >1$, tomar $G(n)$ el resultado de aplicar la caracterización de espacios normales (\ref{caracterizacion-normal}) al abierto $G(s(n))$ y el cerrado $\overline{G(r(n))}$.
 \end{itemize}
 
 \newpage %no entiendo a latex
@@ -420,7 +419,7 @@ Ahora, defino una función \code{from\_normality} que toma dos conjuntos cualesq
       else ∅
 \end{lstlisting}
 
-Ahora, al construir $G$, ya no me tengo que preocupar de si produce siempre conjuntos abiertos o no, porque lo puedo definir a partir de esta última función, que está definida para cualquieras dos abiertos. Una vez definida, puedo demostrar que cada conjunto obtenido es de hecho abierto.
+Ahora, al construir $G$, ya no me tengo que preocupar de si produce siempre conjuntos abiertos o no, porque lo puedo definir a partir de esta última función, que está definida para cualquieras dos conjuntos. Una vez definida, puedo demostrar que cada conjunto obtenido es de hecho abierto.
 
 \begin{lstlisting}
   def G {X : Type} [T : TopologicalSpace X]
@@ -468,7 +467,7 @@ Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error:
     (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
     :
-    ∀ n : ℕ, IsOpen (G hT C1 C2 n) := by sorry
+    ∀ n : ℕ, IsOpen (G hT C1 C2 n) := by 
 \end{lstlisting}
 
 \begin{proof}
@@ -482,8 +481,7 @@ Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error:
     intro n
     cases' Nat.eq_zero_or_pos n with hn hn -- n = 0 ∨ n > 0
     · simp [hn, G] -- si n = 0
-      exact { isOpen_compl := hC2 }
-  \end{lstlisting}
+      exact { isOpen_compl := hC2 } \end{lstlisting}
 
   (2) Si $n = 1$, entonces estamos aplicando la función \code{from\_normality} a $C_2^c$ y $C_1$. Luego es abierto.
 
@@ -545,11 +543,7 @@ Para el siguiente resultado vamos a utilizar inducción completa. Yo he definido
   \begin{lstlisting}
     have normalpair : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n))) \end{lstlisting}
 
-  Sabemos que $r(n)$ es o bien $r(n) = 1$ o bien $r(n) > 1$. No puede ser $r(n) = 0$ porque en ese caso sería $f(r(n)) = f(0) = 1 < f(n)$ (demostrado en \code{r\_options}). Análogamente, $s(n)$ es o bien $s(n) =0$ o bien $s(n) > 1$ (demostrado en \code{s\_options}).
-
-  Tenemos que diferenciar cada una de las cuatro combinaciones posibles.
-
-  Veamos por ejemplo el caso $r(n) = 1$, $s(n) > 1$. El resto son parecidos y se pueden consultar en el anexo.
+  Hemos visto que $r(n)$ es o bien $r(n) = 1$ o bien $r(n) > 1$ (\code{r\_options}) y $s(n)$ es o bien $s(n) = 0$ o bien $s(n) > 1$ (\code{s\_options}). Veamos por ejemplo el caso $r(n) = 1$, $s(n) > 1$. El resto son parecidos y se pueden consultar en el anexo.
 
   (1) Ver que $G(s(n))$ es abierto es sencillo; ya hemos visto que $G$ siempre devuelve abiertos.
 
@@ -569,7 +563,7 @@ Para el siguiente resultado vamos a utilizar inducción completa. Yo he definido
   $$
   \overline{G(r(s(n)))} \subseteq G(s(n)) \subseteq \overline{G(s(n))} \subseteq G(s(s(n)))
   $$
-  Pero utilizando que $r(n) = r(s(n))$, obtenemos $\overline{G(r(n))} \subseteq G(s(n))$.
+  Pero, puesto que $s(n) >1$, se tiene que $r(n) = r(s(n))$ (\code{rn\_eq\_rsn}), obteniendo $\overline{G(r(n))} \subseteq G(s(n))$.
 
   \begin{lstlisting}
     ...
