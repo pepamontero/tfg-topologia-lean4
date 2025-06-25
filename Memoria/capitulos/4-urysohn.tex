@@ -119,15 +119,13 @@ Como se puede apreciar en las primeras iteraciones de la construcción de cada $
 
 Después, para demostrar que efectivamente se cumple la condición (\ref{eq:star}), necesitaremos utilizar inducción sobre dos variables. Para ello, utilizaremos que el orden lexicográfico de $(\mathbb{N} \times \mathbb{N})$, definido por $(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')$, es una relación bien fundada, y por tanto admite inducción sobre pares de naturales.
 
-\begin{lstlisting}
-  Nota: no se como poner que lo más difícil ha sido que no se me han ocurrido estas cosas a la primera jajajaja
-\end{lstlisting}
+La principal dificultad de esta construcción ha sido encontrar los objetos adecuados para poder formalizar las ideas de la demostración, como la numerabilidad de los racionales o el orden lexicográfico, y aprender la forma correcta en la que trabajar con ciertas estructuras en Lean, como definir funciones recursivas con una recursión no usual.
 
 \subsection{Construcción de la sucesión de abiertos}
 
-Sea $Q = \mathbb{Q}\cap[0, 1]$ Para construir la sucesión $\{U_p ~|~ p \in Q\}$, o, lo que es lo mismo, la función $G : Q \to \mathcal{P}(X)$, $G(p) = U_p$, vamos a proceder de la siguiente forma.
+En primer lugar construiremos una sucesión de abiertos sobre $\mathbb{Q}\cap[0, 1]$, y después la extenderemos al resto de los racionales. Sea $Q = \mathbb{Q}\cap[0, 1]$. Para construir la sucesión $\{U_p ~|~ p \in Q\}$, o, lo que es lo mismo, la función $G : Q \to \mathcal{P}(X)$, $G(p) = U_p$, vamos a proceder de la siguiente forma.
 
-Como $Q$ es numerable, consideramos la numeración $Q = \{p_k ~|~ k \in \mathbb{N}\}$, y supongamos por simplicidad que $p_0 = 1$ y que $p_1 = 0$. Vamos a construir los abiertos con la condición (\ref{eq:star}) por inducción sobre $k$.
+Como $Q$ es numerable, consideramos la numeración $Q = \{p_k ~|~ k \in \mathbb{N}\}$, y suponemos por simplicidad que $p_0 = 1$ y que $p_1 = 0$. Vamos a construir los abiertos con la condición (\ref{eq:star}) por inducción completa sobre $k$.
 
 Tomamos entonces, como base de la inducción,
 
@@ -146,11 +144,11 @@ p_r < p_{n+1} < p_s
 $$
 y no existe $k\leq n$ de forma que $p_r < p_k < p_{n+1}$ ni $p_{n+1} < p_k < p_s$.
 
-Puesto que $p_r < p_s$, por la hipótesis de inducción se tiene que ambos son abiertos y que $\overline{U_{p_r}} \subseteq U_{p_s}$ (\ref{eq:star}). Aplicamos la caracterización de normalidad para encontrar un nuevo abierto $U = U_{p_{n+1}}$ tal que
+Puesto que $p_r < p_s$, por la hipótesis de inducción completa se tiene que ambos son abiertos y que $\overline{U_{p_r}} \subseteq U_{p_s}$ (\ref{eq:star}). Aplicamos de nuevo la caracterización de espacios normales (\ref{caracterizacion-normal}), para encontrar un nuevo abierto $U = U_{p_{n+1}}$ tal que
 $$
 \overline{U_{p_r}} \subseteq U \subseteq \overline{U} \subseteq U_{p_s}
 $$
-Con esto concluimos la inducción.
+Con lo que concluye la inducción.
 
 Veamos ahora como se traduce esto en Lean.
 
@@ -167,7 +165,7 @@ Los racionales son numerables, es decir existe una biyección entre $\nat$ y $\r
 
 Para demostrar la existencia de tal función necesitamos una serie de resultados previos.
 
-En primer lugar, la numerabilidad de los racionales ya está demostrada en Mathlib con el resultado \code{Rat.instDenumerable}. Para extraer una función biyectiva de este resultado, he escrito el siguiente lema:
+En primer lugar, la numerabilidad de los racionales ya está demostrada en Mathlib como \code{Rat.instDenumerable}. Para poder extraer una función biyectiva de este resultado, he escrito el siguiente lema:
 
 \begin{lstlisting}
   lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
@@ -180,7 +178,7 @@ Evidentemente, por la independencia de las demostraciones de Lean, no podremos e
 
 Ahora, quiero demostrar que existe una función biyectiva de $\nat$ en $Q$. Como ya tenemos una función biyectiva de $\nat$ en $\rat$, la idea es componerla con una biyección de $\rat$ en $Q$.
 
-Para demostrar que esta biyección existe, basta demostrar que $\rat$ y $Q$ tienen el mismo cardinal (\code{Cardinal.eq}). Pero, de hecho, cualquier subconjunto de $\rat$ no finito tiene cardinal $\aleph_0$ (demostrado en \code{non\_finite\_rat\_set\_cardinal\_aleph0}). Basta demostrar que $Q$ no es finito.
+Para demostrar que esta biyección existe, basta demostrar que $\rat$ y $Q$ tienen el mismo cardinal (\code{Cardinal.eq}). Pero, de hecho, cualquier subconjunto de $\rat$ no finito tiene cardinal $\aleph_0$ (demostrado en \code{non\_finite\_rat\_set\_cardinal\_aleph0}). Basta demostrar que $Q$ no es finito (queda demostrado en \code{Q\_not\_finite}).
 
 \begin{lstlisting}
   lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) :
@@ -199,10 +197,6 @@ Por último, cualquier permutación de dos valores de una función preserva la b
   lemma permute_f_bijectivity {X Y : Type} [DecidableEq X]
       {f : X → Y} (a b : X) (h : f.Bijective) :
       (permute_f f a b).Bijective := by sorry
-\end{lstlisting}
-
-\begin{lstlisting}
-  Nota: Todas estas demostraciones y la de hf son bastante largas y técnicas y no me parece que aporten mucho. Quizás se podrían dejar simplemente en el anexo.
 \end{lstlisting}
 
 Una vez demostrado \code{hf}, podemos definir $f$ mediante \code{Classical.choose} y empezar a trabajar con ella, aunque no la conozcamos explícitamente.
@@ -275,7 +269,7 @@ Garantizada la existencia de estas funciones, podemos tomar ahora las funciones 
     else 0
 \end{lstlisting}
 
-Veamos las principales propiedades de estas dos funciones. En primer lugar tenemos las propiedades básicas de $r$ y $s$ que son simplemente por construcción.
+Veamos las principales propiedades de estas dos funciones. En primer lugar, tenemos las propiedades básicas de $r$ y $s$ que son simplemente por construcción.
 
 \begin{lemma}
   Para cada $n > 1$, se tiene:
@@ -324,6 +318,8 @@ También se obtiene un resultado \code{rs\_options} que encapsula las cuatro com
   lemma rn_eq_rsn (n : ℕ) (hn : n > 1) (hsn : s n > 1)
       (h : r n < s n) : r n = r (s n) := by
 \end{lstlisting}
+
+El análogo a este recibe el nombre de \code{sn\_eq\_srn}.
 
 \begin{proof}
   Demostramos solo el primero y el segundo es parecido. Sea $n > 1$ y supongamos que $s(n) > 1$ y que $r(n) < s(n)$. Queremos ver que $r(n) = r(s(n))$. Por la inyectividad de $f$, podemos comprobar en su lugar que $ f (r (n)) = f (r (s (n)))$. Veamos que se cumplen ambas desigualdades.
