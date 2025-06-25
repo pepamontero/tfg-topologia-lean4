@@ -390,6 +390,8 @@ De hecho, en el InfoView también se muestran los resultados de las instruccione
 
 En general, mientras escribimos en Lean, tendremos abierta esta ventana paralelamente a nuestro código, para poder ir viendo el progreso de nuestra demostración.
 
+\newpage % la he puesto para que se viera la imagen en el sitio correcto
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\textwidth]{figuras/theorem-example-light-version.png}
@@ -969,7 +971,7 @@ La táctica \bluecode{simp} se puede utilizar en cualquier momento de la demostr
    simp
 \end{lstlisting}
 
-Solamente usando \bluecode{simp} podemos terminar la demostración en este caso. Realmente, lo único que hace es reescribir reiteradamente resultados de la forma \code{A = B} ó \code{A $leftrightarrow$ B}, hasta que no puede reescribir nada más, de manera mecánica. Por tanto, aunque es útil en muchos casos, en otros es posible que no nos ayude.
+Solamente usando \bluecode{simp} podemos terminar la demostración en este caso. Realmente, lo único que hace es reescribir reiteradamente resultados de la forma \code{A = B} ó \code{A $\leftrightarrow$ B}, hasta que no puede reescribir nada más, de manera mecánica. Por tanto, aunque es útil en muchos casos, en otros es posible que no nos ayude.
 
 En la práctica, cuando nos resulte sencillo utilizar otras tácticas o resultados conocidos, eso será preferible a utilizar \bluecode{simp}, primero porque al tratarse de una búsqueda exhaustiva, no es una táctica computacionalmente eficiente, y segundo porque empeora la legibilidad del código, ya que a veces es difícil saber cómo ocurren ciertas simplificaciones.
 
