@@ -1,41 +1,63 @@
 \section{Conclusión}
 
-Conclusión al trabajo.
+A lo largo de este trabajo se han perseguido tres objetivos principales: aprender a utilizar Lean como asistente de demostración, formalizar un resultado matemático de nivel avanzado, el lema de Urysohn, y, como resultado de ambas, adquirir una comprensión profunda del proceso de verificación formal, sus ventajas y sus dificultades. En esta sección se exponen las principales conclusiones que he extraído de esta experiencia.
 
-Posibles secciones:
+\subsection{Aprendizaje de Lean}
 
-1- Aprendiendo Lean
+El proceso de aprendizaje de Lean ha resultado muy fluido. La disponibilidad de recursos como el curso de Kevin Buzzard (\textit{Formalising Mathematics}), la documentación oficial y otros materiales creados por la comunidad, como el \textit{Natural Number Game}\footnote{El \textit{Natural number game} es un juego interactivo dedicado a aprender a trabajar con números naturales en el modo táctico de Lean. Ver: \url{https://adam.math.hhu.de/#/g/leanprover-community/nng4.}}, me han facilitado enormemente los primeros pasos.
 
-Algunas conclusiones: aprender es relativamente sencillo pero luego hay muchísima complejidad posible; me daba cuenta de que yo demostraba un resultado en 100 líneas y después comprobaba la solución de Buzzar y tenía 3 línas. A lo largo del recorrido del trabajo he ido intentando limpiar y sintetizar el código, así que muchas de las demostraciones que ahora son compactas y bonitas antes eran extremadamente liosas y largas. Aun así, siempre queda mucho por aprender a este respecto.
+Sin embargo, conforme avanzaba, fui detectando un segundo nivel de aprendizaje más sutil: aunque mis soluciones a los ejercicios propuestos por Buzzard eran correctas desde el punto de vista formal (aceptadas por Lean), eran considerablemente más largas y enrevesadas que las soluciones propuestas en el curso.
 
-Otra cosa: la intuición de que resultados es posible encontrar en mathlib si utilizas exact? y cuales vas a tener que re escribir de otra forma.
+Esto me hizo ver que, además de aprender a construir demostraciones válidas, hay un proceso adicional de aprendizaje centrado en cómo escribir demostraciones eficientes y elegantes en Lean, lo que requiere un entendimiento más profundo de las tácticas y las buenas prácticas del lenguaje (como evitar el abuso de \bluecode{simp}).
 
-2- Formalizando Urysohn
+Esta misma situación se ha repetido durante la formalización de los resultados de topología básica de la segunda sección. Muchas de las demostraciones que aparecen en esta memoria fueron inicialmente mucho más extensas, redundantes o confusas. El trabajo de revisión y simplificación ha sido constante; conforme iba aprendiendo nuevas formas de simplificar problemas, volvía sobre mis pasos para mejorar los resultados anteriores.
 
-El trabajo ha sido muy complicado porque uno está acostumbrado a pensar en formato matemáticas, y este es un formato completamente distinto.
+Aún así, todavía queda margen de mejora. En comparación con las versiones disponibles en Mathlib, mis demostraciones podrían reducirse todavía más. No obstante, considero que este esfuerzo de simplificación tiene un límite razonable en el contexto de los objetivos de este trabajo, pues optimizar al máximo suele ir en detrimento de la legibilidad del código. Algunas demostraciones de Mathlib son muy difíciles de seguir precisamente por su alto nivel de compacidad.
 
-No he encontrado ninguna fuente en la que se demuestre rigurosamente que la sucesión de los abiertos (diádicos o no) es monótona (cumple la propiedad \ref{eq:star}). En todas las fuentes se da como algo completamente trivial. A mi me ha llevado meses encontrar la forma de poder hacerlo.
+Durante esta etapa también comprendí la importancia de reutilizar las definiciones existentes en Mathlib. Aunque al principio definí por mi cuenta conceptos como la continuidad, la clausura o espacios normales, más adelante pasé a utilizar las definiciones estándar de la biblioteca, que resultaba mucho más práctico.
 
-Por supuesto, una vez terminada, son cientos de líneas de código, en comparación con las 500 de mathlib (que incluyen muchos comentarios).
+Este proceso también me obligó a consolidar mi comprensión de los conceptos matemáticos con los que estaba trabajando, ya que formalizarlos exige enfrentarse a sus definiciones con un nivel de precisión y detalle que habitualmente no se requiere al trabajar en papel. Además, obtuve una idea bastante clara de cómo se pueden formalizar ciertos objetos al comparar mis definiciones con las de la librería que utilicé posteriormente.
 
-Me parece que hay una cierta forma de pensar que se adquiere con el tiempo cuando formalizas con Lean. Quizás no se trata de intentar formalizarlo exactamente como lo lees en el papel, sino de buscar una forma que sea más computational-friendly.
+Por último, esta transición me permitió empezar a desarrollar cierta intuición sobre qué resultados ya están formalizados en Mathlib y de qué manera pueden estar escritos, para poder localizarlos mediante herramientas como \bluecode{exact?}. También, al encontrarme con las limitaciones de estas herramientas, aprendí a utilizar herramientas más potentes como LeanSearch o Moogle.
 
-Sin embargo, formalizar Urysohn siento que me ha dado un dominio muy avanzado de esta herramienta, y una vez estaba todo terminado, he ido simplificando todos los resultados que había escrito, reduciendo muchísimo el volumen.
+Por todo esto, incluir esta parte en el trabajo me parecía especialmente relevante.
 
-Además, puesto que la inducción ha sido especialmente un quebradero de cabeza, he terminado escribiendo por mi cuenta un montón de tipos distintos de inducción (y demostrándolos), para poder entenderlo a fondo y comprender por qué mis ideas no estaban funcionando.
+\subsection{Formalización del lema de Uryshon}
 
-Otra cosa que me ha resultado especialmente complicada ha sido la inferencia de tipos de Lean. Quiero decir: te ahorra un montón de trabajo todo el rato. Sin embargo, a veces puede ser un obstáculo. Ejemplos de esto son haber tenido que escribir una función especial $\tilde{F}$ en lugar de poder usar directamente $F$, porque $F$ devolvía conjuntos en $\rat$ y no en $\mathbb{R}$.
+La formalización del lema de Urysohn ha sido, sin duda, la parte más exigente del trabajo. Al tratarse de una demostración con ideas matemáticas relativamente complejas, intentar adaptarlas al paradigma de Lean, que es mucho más estructurado y restrictivo, ha supuesto una dificultad añadida. Muchas intuiciones que en papel resultan inmediatas requieren un esfuerzo considerable para ser traducidas al lenguaje formal.
 
-Sin embargo esta dificultad también me ha permitido aprender nuevas herramientas muy útiles como \bluecode{exact\_mod\_cast}, o utilizar la función \code{Subtype.val} de Mathlib.
+Un ejemplo de esto es la demostración de que la sucesión de abiertos obtenidos era monótona (la propiedad \ref{eq:star}). En todas las fuentes consultadas, esta propiedad se presenta como algo que se deduce trivialmente de la construcción. Sin embargo, en Lean fue necesario construir esta parte con cuidado, y encontrar la forma adecuada de hacerlo me llevó varios meses.
 
-\subsection{Posibles mejoras y amplicaciones}
+Por supuesto, una vez completada la formalización, el resultado era un código extenso de cientos de líneas. De la misma forma que en la anterior etapa, lo he ido simplificando, principalmente extrayendo resultados auxiliares fuera del archivo principal para después poder reutilizarlos. A pesar de todo, la prueba de Mathlib que hemos comentado al final sigue siendo significativamente más corta.
 
-(1) Intentar escribir todo utilizando definiciones de Mathlib.
+Más allá de esto, esta experiencia me ha hecho ver que existe una cierta forma de pensar que se desarrolla con el tiempo al trabajar con Lean: no se trata simplemente de traducir la demostración del papel línea por línea, sino de encontrar una formulación más adecuada computacionalmente. Por ejemplo, la topología en Mathlib se formaliza, en general, haciendo uso del lenguaje de filtros. En mi caso, al no estar familiarizada con esta herramienta, opté por una estrategia alternativa que se adaptara mejor a mis conocimientos, pero que finalmente ha resultado ser mucho menos eficiente.
 
-Nota: explicar que realmente solo es necesario que las definiciones usadas en el enunciado estén en Mathlib.
+En cualquier caso, este esfuerzo ha sido una gran oportunidad para mejorar mi manejo del lenguaje. Una parte especialmente difícil ha sido la utilización de distintos tipos de inducción a lo largo de la prueba. Como muchas de las ideas iniciales que tuve no funcionaban, terminé escribiendo y demostrando distintas variantes de inducción para comprender por qué ciertas aproximaciones no eran válidas y cómo adaptarlas correctamente.
 
-Aunque había utilizado mis propias definiciones de continuidad o clausura o espacio normal al principio, al final las cambié todas por las definiciones de Mathlib. No conseguí hacer lo mismo con TopoSubspace. Este es probablemente otro ejemplo de que yo todo el rato intentaba reflejar el papel, en lugar de quizás ver el problema más computacionalmente.
+Otro aspecto que me resultó complejo fue colaborar con la inferencia de tipos de Lean. Aunque en general Lean resuelve automáticamente muchos detalles del tipado, ahorrando mucho trabajo, en ocasiones esta automatización se convierte en un obstáculo. Un ejemplo claro de esto ha sido tener que definir una versión modificada de la función $F$ para que devolviera conjuntos en $\mathbb{R}$ en lugar de en $\mathbb{Q}$ y poder así definir su ínfimo real.
 
-La definición de la topología usual directamente no la he encontrado en Lean. No tengo claro como infiere en el archivo de Urysohn de Mathlib que está usando la topología usual, o si es que lo está haciendo de otra forma.
+Sin embargo, esta dificultad también me ha llevado a aprender a utilizar herramientas especialmente útiles como la táctica \bluecode{exact\_mod\_cast} o la función \code{Subtype.val} de Mathlib.
 
-(2) Escribir la documentación del código utilizando una herramienta como la utilizada en la documentación de Mathlib.
+En resumen, este proceso ha sido clave para consolidar mis conocimientos sobre Lean y entender cómo afrontar la formalización de resultados matemáticos complejos dentro de un entorno asistido.
+
+\subsection{Posibles mejoras y ampliaciones}
+
+Existen varias direcciones en las que podría ampliarse o mejorar el trabajo realizado:
+
+\begin{itemize}
+  \item \textbf{Uso sitemático de definciones de Mathlib}
+  
+  Aunque en versiones iniciales utilicé definiciones propias para ciertos conceptos, más adelante las reemplacé por las definiciones de Mathlib. Sin embargo, aún quedan algunos objetos que no he logrado integrar completamente, como la definición de subespacio topológico o la de topología usual.
+
+  El objetivo principal de esta mejora sería garantizar que todos los objetos que aparecen en el enunciado del teorema estén definidos en la biblioteca. Esto facilitaría la reutilización del resultado por otros usuarios de Lean. Los objetos que se emplean en la demostración, pero que no aparecen en el enunciado, no son tan relevantes en este sentido.
+
+  Además, sería interesante entender con más detalle cómo se representa exactamente la topología usual en Mathlib. Aunque en el archivo de Urysohn parece estar asumida, no he encontrado una definición explícita, lo que deja margen para estudiar mejor la forma en que se infiere o construye internamente.
+
+  \item \textbf{Documentación del código}
+  
+  Una posible mejora sería escribir la documentación del código siguiendo el estilo utilizado en la de Mathlib. La comunidad de Lean ofrece una herramienta que genera este tipo de documentación automáticamente a partir de los comentarios escritos en los archivos \texttt{.lean}, siguiendo un formato concreto\footnote{Ver: https://github.com/leanprover-community/doc-gen.}.
+
+  \item Una línea interesante sería diseñar un recurso similar al \textit{Natural Number Game}, pero centrado en introducir los conceptos básicos de topología formalizados en Lean. Esto no solo reforzaría el aprendizaje propio, sino que podría resultar útil para otras personas interesadas en iniciarse en la topología dentro de un entorno formal.
+  
+  Además, este tipo de juegos se desarrollan directamente en Lean utilizando una base ya disponible\footnote{Ver: \linebreak https://github.com/leanprover-community/lean4game/blob/main/doc/create\_game.md}, lo que ofrece también la oportunidad de explorar Lean como lenguaje de programación funcional, más allá de su uso como verificador de demostraciones.
+\end{itemize}
