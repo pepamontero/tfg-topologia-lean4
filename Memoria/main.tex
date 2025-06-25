@@ -101,23 +101,31 @@
 
 \begin{document}
 
+\pagenumbering{gobble} % Quita numeración
+
 \maketitle
+
+\newpage
 \tableofcontents
 
-\input{capitulos/1-introduccion.tex}
 
+\newpage
+\pagenumbering{arabic} % Reinicia numeración
+\input{capitulos/1-introduccion.tex}
 
 \newpage
 \input{capitulos/2-lean.tex}
 
-\newpage
+\newpage % quiero quitar esto
 
 \input{capitulos/3-espacios.tex}
 
-\newpage
+\newpage % quiero quitar esto
+
 \input{capitulos/4-urysohn.tex}
 
-\newpage
+\newpage % quiero quitar esto
+
 \input{capitulos/5-conclusion.tex}
 
 
