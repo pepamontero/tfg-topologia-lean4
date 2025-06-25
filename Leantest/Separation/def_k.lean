@@ -145,9 +145,7 @@ lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
     exact F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
 
   · intro hr
-    simp at hr
     rw [hr]
-    simp [k]
     obtain ⟨x, hx⟩ := nonempty_has_element C1 hC1_nonempty
     use x
     constructor

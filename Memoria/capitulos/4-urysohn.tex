@@ -942,7 +942,90 @@ Por último, antes de pasar a la demostración del lema de Urysohn finalmente, d
 
 \subsubsection{Propiedades sobre los cerrados $C_1$ y $C_2$}
 
-Propiedades.
+Por último, veamos cómo se comportan la función $k$ en los cerrados que queremos separar. Esto nos dejará el camino completamente allanado para completar la demostración del lema de Urysohn. Vamos a ver las demostraciones para $C_1$, y para $C_2$ son similares y se pueden comprobar en el repositorio.
+
+Queremos llegar a que $k(C_1) = \{0\}$. Esta propiedad se construye paso a paso, utilizando propiedades de las funciones en las que se apoya.
+
+\begin{lemma}
+  Consideremos $F : X \to \mathcal{P}(\rat)$. Para cada $x \in C_1$, se tiene que $F(x) = \{q \in \rat ~|~ q \geq 0\}$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma F_at_C1 (...)
+      : ∀ x : X, x ∈ C1 → F hT C1 C2 x = {q : ℚ | q ≥ 0} := by
+\end{lstlisting}
+
+\begin{proof}
+  Sea $x \in C_1$. Ver que $F(x) \subseteq \{q \in \rat ~|~ q \geq 0\}$ es sencillo, pues ya hemos visto que ningún valor de $F(x)$ es negativo (\code{hFx\_non\_neg}). Ahora, sea $q \geq 0$ y veamos que $q \in F(x)$, es decir, que $x \in H(q)$.
+
+  Si $q > 0$, por la propiedad (\ref{eq:star}) de $H$, $\overline{H(0)} \subseteq H(q)$. Y por construcción de $H$ se tiene $C_1 \subseteq H(0)$. Luego $x \in H(q)$. Si $q = 0$, como $C_1 \subseteq H(0)$, $x\in H(q)$.
+
+  \begin{lstlisting}
+      · cases' Decidable.lt_or_eq_of_le hq with hq hq
+        · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq -- si q > 0
+          apply subset_closure
+          exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
+        · rw [← hq] -- si q = 0
+          exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx \end{lstlisting}
+\end{proof}
+
+\begin{lemma}
+  Consideremos $F : X \to \mathcal{P}(\rat)$. Para cada $x \in C_1$, se tiene que $\inf{F}(x) = 0$.
+\end{lemma}
+
+\begin{lstlisting}
+lemma F_0_GLB_in_C1 (...)
+    : ∀ x : X, x ∈ C1 → IsGLB (F hT C1 C2 x) 0 := by sorry
+\end{lstlisting}
+
+Una vez sabemos que $F(x) = \{q \in \rat ~|~ q \geq 0\}$, ver que el ínfimo de este conjunto es 0 es directo. Notemos que aquí sí podemos definir el ínfimo sobre $F$ porque $0 \in \rat$. Ahora podemos afirmar lo mismo para $\tilde{F}$, simplemente teniendo cuidado con el tipo de $F(x)$ y de $0$.
+
+\begin{lemma}
+  Consideremos $\tilde{F} : X \to \mathcal{P}(\mathbb{R})$. Para cada $x \in C_1$, se tiene que $\inf{\tilde{F}}(x) = 0$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma F_Real_0_GLB_in_C1 (...)
+      : ∀ x : X, x ∈ C1 → IsGLB (F_Real hT C1 C2 x) 0 := by sorry
+\end{lstlisting}
+
+Por último, tenemos:
+
+\begin{lemma}\label{prop:kC1}
+  Consideremos $k : X \to \mathbb{R}$. Recordemos que $C_1$ es no vacío. Se tiene que $k (C_1) = \{0\}$.
+\end{lemma}
+
+\begin{lstlisting}
+  lemma k_in_C1_is_0 (...)
+      (hC1_nonempty : C1 ≠ ∅)
+      : k hT C1 C2 '' C1 = {0} := by
+\end{lstlisting}
+
+\begin{proof}
+  Para ver que $k(C_1) \subseteq \{0\}$, puesto que $k(x) := \inf \tilde{F}(x)$, y $\inf \tilde{F}(x) = 0$ para $x \in C_1$ por el resultado anterior, basta utilizar el el ínfimo es único.
+
+  \begin{lstlisting}
+    ext r
+    constructor
+    · intro ⟨x, hx, hr⟩ -- hr : k x = r
+      rw [← hr]
+      apply IsGLB.unique (k_prop hT C1 C2 x)
+      exact F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx \end{lstlisting}
+
+  Para ver que $\{0\} \subseteq k(x)$, necesitamos ver que existe un $x \in C_1$ tal que $k(x) = 0$. Como $C_1$ es no vacío, sea $x \in C_1$ cualquiera. Entonces $k(x) = 0$, procediendo de la misma forma que en el primer contenido.
+
+  \begin{lstlisting}
+    · intro hr -- hr : r = 0
+      rw [hr]
+      obtain ⟨x, hx⟩ := nonempty_has_element C1 hC1_nonempty -- hx : x ∈ C1
+      use x
+      constructor
+      · exact hx
+      · have aux := F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
+        have aux' := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
+        exact IsGLB.unique aux' aux \end{lstlisting}
+\end{proof}
+
 
 \subsection{La demostración}
 
@@ -1134,7 +1217,7 @@ Para empezar, notemos que $f(A) = g(A)$ para cualquier $A \subseteq X$.
 
 Luego podemos reducir el objetivo a $g(C_1) = \{0\}$ y que $g(C_2) = \{1\}$.
 
-El resultado se deduce entonces de [las propiedades estas que aún no expliqué].
+El resultado se deduce entonces del lema \ref{prop:kC1} y su análogo para $C_2$.
 
 \begin{lstlisting}
     constructor
@@ -1142,14 +1225,12 @@ El resultado se deduce entonces de [las propiedades estas que aún no expliqué]
     · exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
 \end{lstlisting}
 
-Lo que concluye la prueba del Lema de Urysohn.
+Lo que concluye la prueba del lema de Urysohn.
 
 
 \subsection{La prueba de Mathlib}
 
-La prueba del Lema de Urysohn que he descrito en este capítulo ha sido implementada por mí de manera completamente independiente a la de Mathlib, la cual no leí hasta haber escrito completamente mi demostración.
-
-Para cerrar este capítulo me gustaría hacer una breve comparación de ambas.
+La prueba del lema de Urysohn que he descrito en este capítulo ha sido implementada por mí de manera completamente independiente a la de Mathlib, la cual no leí hasta haber escrito completamente mi demostración. Para cerrar este capítulo me gustaría hacer una breve comparación de ambas.
 
 La implementación que se encuentra en Mathlib está documentada en \cite{mathlib2023urysohn}.
 
@@ -1159,9 +1240,7 @@ Como comentamos al principio del capítulo, la parte más complicada de la demos
   La mayoría de las fuentes prueban el lema de Urysohn utilizando una familia de conjuntos abiertos indexada por los números racionales diádicos en $[0, 1]$. Hay mcuhas dificultades ténicas al formalizar esta demostración (por ejemplo, es necesario formalizar la \quotes{inducción diádica}, y luego probar que la familia resultante de conjuntos abiertos es monótona).
 \end{quote}
 
-En efecto, es posible construir la sucesión que nosotros hemos construido tomando sólo los diádicos, pero uno se encuentra con problemas parecidos a los que hemos encontrado nosotros.
-
-El obejtivo de la prueba de Mathlib, es, por tanto, evitar esta complicación. A continuación veremos un esquema de la demostración de Mathlib.
+En efecto, es posible construir la sucesión que nosotros hemos construido tomando sólo los diádicos, pero uno se encuentra con problemas parecidos a los que hemos encontrado nosotros. El obejtivo de la prueba de Mathlib, es, por tanto, evitar esta complicación. A continuación veremos un esquema de la demostración de Mathlib.
 
 Sea $X$ un espacio normal. Sea $\mathcal{CU}_X$ el conjunto de los pares normales de $X$, es decir, los pares de la forma $(C, U)$ con $U$ abierto, $C$ cerrado y $C \subseteq U$. Definimos las funciones:
 
@@ -1195,7 +1274,3 @@ f(x) = \lim_{n \to \infty} f_n^{(C, D^c)}
 $$
 
 Entonces $f$ es una función continua que separa $C$ y $D$.
-
-\begin{lstlisting}
-  Nota: la verdad es que no se cuanto mas meterme en esto.
-\end{lstlisting}
