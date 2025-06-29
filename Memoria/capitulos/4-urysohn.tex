@@ -371,8 +371,6 @@ En vista de esto, mi primer acercamiento a la construcción de $G$ fue el siguie
   \item Para $n >1$, tomar $G(n)$ el resultado de aplicar la caracterización de espacios normales (\ref{caracterizacion-normal}) al abierto $G(s(n))$ y el cerrado $\overline{G(r(n))}$.
 \end{itemize}
 
-\newpage %no entiendo a latex
-
 \begin{lstlisting}
   def G {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
@@ -393,6 +391,8 @@ Donde en los últimos \redcode{sorry} habría que demostrar que $G(s(n))$ es abi
 Todo esto nosotros \quotes{lo sabemos}: es la hipótesis de inducción. Pero a Lean todavía no le hemos dicho nada de eso. ¿Cómo podemos probar algo sobre un objeto que aún no hemos definido, porque necesitamos haberlo probado para poder definirlo?
 
 Para evitar este problema, tomé una estrategia distinta. Primero, defino la noción de \textit{par normal} de la siguiente manera.
+
+\newpage %no entiendo a latex
 
 \begin{definition}
   Dados $U, C \subseteq X$, decimos que $(U, C)$ es un \textnormal{par normal} si $U$ es abierto, $C$ es cerrado y $C \subseteq U$. Es decir, si satisfacen las condiciones para poder aplicar la caracterización de espacios normales (\ref{caracterizacion-normal}).
@@ -438,6 +438,9 @@ Ahora, al construir $G$, ya no me tengo que preocupar de si produce siempre conj
 
 Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error: \redcode{fail to show termination for G}. Esto es, estamos definiendo una función recursiva, $G$, pero no es evidente que las veces que estamos llamando a $G$ dentro de $G$ constituyan conjuntos ya definidos. Es decir, no es evidente que $r(n) < n$ y $s(n) < n$. Por tanto, al final de la definición tenemos que añadir una demostración de que sí es así.
 
+\newpage %aux
+
+
 \begin{lstlisting}
   ...
       else ∅
@@ -482,6 +485,8 @@ Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error:
     cases' Nat.eq_zero_or_pos n with hn hn -- n = 0 ∨ n > 0
     · simp [hn, G] -- si n = 0
       exact { isOpen_compl := hC2 } \end{lstlisting}
+
+\newpage % problemas con listings
 
   (2) Si $n = 1$, entonces estamos aplicando la función \code{from\_normality} a $C_2^c$ y $C_1$. Luego es abierto.
 
