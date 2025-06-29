@@ -77,20 +77,20 @@ Como ocurre en el ejemplo anterior, Lean puede deducir automáticamente el tipo 
 
 \subsection{El cálculo lambda}
 
-El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal en el que todos los términos se interpretan como funciones (llamadas abstracciones) y se operan entre sí mediante aplicación de funciones (el uso de una función sobre un argumento) \cite{pierce2002types}. A pesar de su simplicidad, este sistema se ha convertido en la base formal de muchos lenguajes de programación modernos, incluido Lean.
+El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal que permite construir expresiones mediante dos operaciones básicas: la abstracción y la aplicación \cite{pierce2002types}. En este sistema, algunas expresiones representan funciones (usando la notación lambda) y otras representan valores sobre los que pueden aplicarse dichas funciones. Dos expresiones pueden yuxtaponerse para formar una nueva expresión; si la primera es una abstracción, entonces se interpreta como aplicación funcional. A partir de ahí, pueden realizarse reducciones para simplificar la expresión resultante si corresponde.
 
-Por ejemplo, un término válido podría ser $n \mapsto 2n : \mathbb{N} \rightarrow \mathbb{N}$, que representa una función que puede aplicarse a un valor para obtener otro.
+Por ejemplo, un término válido podría ser $\lambda n, n + 2$, que representa una función que puede aplicarse a un valor para obtener otro.
 
-En Lean, definimos funciones utilizando el comando \bluecode{fun}, que corresponde a la notación $\lambda n, 2n$ del cálculo lambda clásico\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, 2 * n}, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ 2 * n} para mejorar la legibilidad del código.}. Por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
+En Lean, definimos funciones utilizando el comando \bluecode{fun}, que corresponde a la notación $\lambda$ del cálculo lambda clásico\footnote{En la versión anterior de Lean, se utilizaba la notación \code{$\lambda$ n, n + 2}, sin embargo en esta última versión se ha cambiado a \code{fun n $\mapsto$ n + 2} para mejorar la legibilidad del código.}. Por ejemplo\footnote{Estudiaremos el comando \bluecode{def} en detalle más adelante.}:
 
 \begin{lstlisting}
-  def f := fun n ↦ 2 * n
+  def f := fun n ↦ n + 2
 \end{lstlisting}
 
-Además, Lean admite reducción por aplicación funcional sobre estos términos. Por ejemplo, si aplicamos la anterior función a $3$, $(n \mapsto 2n)3$, se puede reducir a $2 \cdot 3$ por aplicación funcional, y luego a $6$ por definición de la multiplicación. Podemos comprobar el resultado de esta reducción utilizando el comando \bluecode{\#eval}.
+Además, Lean admite reducción por aplicación funcional sobre estos términos. Por ejemplo, si aplicamos la anterior función a $3$, $(n \mapsto n + 2)3$, se puede reducir a $3 + 2$ por aplicación funcional, y, suponiendo que la operación $+$ estaba definida anteriormente, podemos reducir esta expresión a $5$. Podemos comprobar el resultado de esta reducción utilizando el comando \bluecode{\#eval}.
 
 \begin{lstlisting}
-  #eval f 3    -- 6
+  #eval f 3    -- 5
 \end{lstlisting}
 
 Diremos que dos términos que pueden reducirse de esta manera al mismo valor son \textbf{iguales por definición}. Lean trata términos que sean iguales por definición como literalmente iguales, como veremos en la práctica.
@@ -111,15 +111,16 @@ Aquí, estamos indicando que $f$ tiene tipo $\nat \to \nat$, es decir, que es un
 
 Para poder expresar los distintos objetos matemáticos en esta teoría, necesitamos introducir los tipos dependientes. Un tipo dependiente es aquel que puede variar en función de un término. 
 
-
-Por ejemplo, en Lean, el tipo \code{Matrix n m $\alpha$} representa las matrices de dimensión $n \times m$ con entradas en $\alpha$. El tipo en sí depende de tres parámetros: los tipos \code{m} y \code{n}, que indexan las filas y columnas, y el tipo \code{$\alpha$} de los elementos. Internamente, se define como una función de tipo \code{m $\to$ n $\to$ $\alpha$}.
+Por ejemplo, en Lean, el tipo \code{List $\alpha$} representa una lista de elementos de tipo $\alpha$. Si definimos un objeto de tipo \code{List $\alpha$}, el tipo de este objeto dependerá del tipo $\alpha$ que le asignemos Internamente, se define como una función de tipo \code{Type u $\to$ Type u}.
 
 \begin{lstlisting}
-  #check Matrix (Fin 3) (Fin 2) ℝ    -- Matrix (Fin 3) (Fin 2) ℝ : Type
+  #check List    -- List.{u} (α : Type u) : Type u
+  #check List ℝ    -- List ℝ : Type
 \end{lstlisting}
 
-Una forma importante en la que aparecen los tipos dependientes es en las proposiciones cuantificadas. Por ejemplo, la proposición $\forall x \in \nat, P x$ se representa en Lean como un tipo dependiente: el tipo de las funciones que, dado un $x$, devuelven una prueba de $P x$. La notación de Lean para este tipo de proposiciones dependientes es \code{$\Pi$ x, P x}.
+Podemos pensar en los tipos dependientes como una generalización de las funciones que van de un tipo en otro tipo, y el tipo de llegada puede depender del tipo de entrada. Llamamos \quotes{funciones dependientes} a este tipo de funciones.
 
+En particular, la proposición $\forall x \in \nat, P x$ se representa en Lean mediante un tipo dependiente que expresa el conjunto de las funciones que, dado un elemento $x \in \nat$, devuelve una prueba de $P x$.  La notación de Lean para este tipo de construcción es \code{$\Pi$ x : $\nat$, P x}. El operador $\Pi$ sirve para denotar que el tipo de salida puede depender del valor de entrada.
 
 \subsubsection{Jerarquía de universos}
 
