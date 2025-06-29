@@ -49,15 +49,34 @@ Existen varias direcciones en las que podría ampliarse o mejorar el trabajo rea
   
   Aunque en versiones iniciales utilicé definiciones propias para ciertos conceptos, más adelante las reemplacé por las definiciones de Mathlib. Sin embargo, aún quedan algunos objetos que no he logrado integrar completamente, como la definición de subespacio topológico o la de topología usual.
 
-  El objetivo principal de esta mejora sería garantizar que todos los objetos que aparecen en el enunciado del teorema estén definidos en la biblioteca. Esto facilitaría la reutilización del resultado por otros usuarios de Lean. Los objetos que se emplean en la demostración, pero que no aparecen en el enunciado, no son tan relevantes en este sentido.
+  El objetivo de este trabajo no era principalmente conseguir que el resultado fuera reutilizable en otros desarrollos, ya que la formalización del lema de Urysohn ya existe en Mathlib, sino entender en detalle el proceso de formalización y reflexionar sobre las dificultades que pueden surgir. No obstante, sería interesante reescribir la demostración de manera que se utilicen exclusivamente definiciones y construcciones estándar de Mathlib, para profundizar en sus implementaciones y modos de uso.
 
-  Además, sería interesante entender con más detalle cómo se representa exactamente la topología usual en Mathlib. Aunque en el archivo de Urysohn parece estar asumida, no he encontrado una definición explícita, lo que deja margen para estudiar mejor la forma en que se infiere o construye internamente.
+  En particular, se propone expresar el teorema en la forma siguiente:
+
+  \begin{lstlisting}
+  theorem Urysohn {X : Type} [T : TopologicalSpace X]
+    [N : NormalSpace X] {s t : Set X} (hs : IsClosed s)
+    (ht : IsClosed t) (hd : Disjoint s t) :
+    ∃ f : X → ℝ, Continuous f ∧ Set.EqOn f 0 s ∧ Set.EqOn f 1 t
+      ∧ ∀ x, f x ∈ Set.Icc 0 1 \end{lstlisting}
+
+  En este enunciado, la topología que acompaña al espacio de los números reales se asume automáticamente en la definición de continuidad mediante una instancia que Lean infiere por defecto. Por tanto, únicamente faltaría comprobar que dicha instancia se corresponde con la definición que he utilizado de topología usual, demostrando este resultado:
+
+  \begin{lstlisting}
+  lemma my_usual_equiv : @UniformSpace.toTopologicalSpace ℝ
+    (by exact PseudoEMetricSpace.toUniformSpace) = UsualTopology \end{lstlisting}
 
   \item \textbf{Documentación del código}
   
-  Una posible mejora sería escribir la documentación del código siguiendo el estilo utilizado en la de Mathlib. La comunidad de Lean ofrece una herramienta que genera este tipo de documentación automáticamente a partir de los comentarios escritos en los archivos \texttt{.lean}, siguiendo un formato concreto\footnote{Ver: https://github.com/leanprover-community/doc-gen.}.
+  Una posible mejora sería escribir la documentación del código siguiendo el estilo utilizado en la de Mathlib. La comunidad de Lean ofrece una herramienta que genera este tipo de documentación automáticamente a partir de los comentarios escritos en los archivos \texttt{.lean}\footnote{Ver: \texttt{https://github.com/leanprover-community/doc-gen}.}. Otra opción podría ser utilizar una herramienta como \textit{leanblueprint}, que permite crear y publicar de manera automatizada una presentación del proyecto en forma de \quotes{blueprint}\footnote{Ver: \texttt{https://github.com/PatrickMassot/leanblueprint}.}.
 
-  \item Una línea interesante sería diseñar un recurso similar al \textit{Natural Number Game}, pero centrado en introducir los conceptos básicos de topología formalizados en Lean. Esto no solo reforzaría el aprendizaje propio, sino que podría resultar útil para otras personas interesadas en iniciarse en la topología dentro de un entorno formal.
+  \item \textbf{Topology Game}
   
-  Además, este tipo de juegos se desarrollan directamente en Lean utilizando una base ya disponible\footnote{Ver: \linebreak https://github.com/leanprover-community/lean4game/blob/main/doc/create\_game.md}, lo que ofrece también la oportunidad de explorar Lean como lenguaje de programación funcional, más allá de su uso como verificador de demostraciones.
+  Una línea interesante sería diseñar un recurso similar al \textit{Natural Number Game}, pero centrado en introducir los conceptos básicos de topología formalizados en Lean. Esto no solo reforzaría el aprendizaje propio, sino que podría resultar útil para otras personas interesadas en iniciarse en Lean en el contexto de la topología. De hecho, ya existe un juego con esta idea\footnote{Ver: \url{https://mmasdeu.github.io/topologygame/}}, pero utiliza la versión Lean 3, por lo que sería interesante actualizarlo.
+  
+  Además, este tipo de juegos se desarrollan directamente en Lean utilizando una base ya disponible\footnote{Ver: \linebreak \url{https://github.com/leanprover-community/lean4game/blob/main/doc/create\_game.md}.}, lo que ofrece también la oportunidad de explorar Lean como lenguaje de programación funcional, más allá de su uso como verificador de demostraciones.
+
+  \item \textbf{Lean como verificador de programas}
+  
+  Por último, cabe mencionar que he sido admitida en el Máster en Métodos Formales en Ingeniería Informática (UCM con UPM). Esto me permitirá continuar explorando Lean y otros verificadores desde una nueva perspectiva: el uso de estas herramientas en la verificación de programas y especificaciones formales. Creo que esta formación complementará de forma natural el trabajo realizado en este proyecto, ya que me permitirá profundizar en otra faceta relevante y actual de los sistemas de verificación.
 \end{itemize}
