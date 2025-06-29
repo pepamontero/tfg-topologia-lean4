@@ -236,7 +236,7 @@ Además, si \code{p : Prop} es una proposición, Lean reconoce cualesquiera dos 
 
 Esta propiedad tiene consecuencias importantes. Por un lado, evita comportamientos no deseados cuando definimos estructuras que dependen de proposiciones. Por ejemplo, si quisiéramos definir un punto del primer cuadrante en $\mathbb{R}^2$ como un par de la forma \code{x y : $\mathbb{R} \times \mathbb{R}$} junto con una demostración \code{h : x $\geq$ 0 $\land$ y $\geq$ 0}, entonces, gracias a la irrelevancia de las demostraciones, podemos identificar dos puntos que tengan las mismas coordenadas, porque las pruebas \code{h} y \code{h'} asociadas a cada uno son la misma.
 
-Por otro lado, esta misma propiedad impide acceder al contenido de una prueba. En particular, no es posible extraer directamente el testigo de la demostración de una proposición existencial del tipo $\exists x, P(x)$, ya que todas las demostraciones de esa proposición se consideran iguales. Dada una demostración de $\exists x, P(x)$, contamos varios métodos para obtener un testigo, uno de los cuales es usar el axioma de elección. Sin embargo, estos métodos se comportan de maneras distintas. Volveremos sobre esta cuestión más adelante.
+Por otro lado, esta misma propiedad impide acceder al contenido de una prueba. En particular, no es posible extraer directamente el testigo de la demostración de una proposición existencial del tipo $\exists x, P(x)$, ya que todas las demostraciones de esa proposición se consideran iguales. Dada una demostración de $\exists x, P(x)$, contamos varios métodos para obtener un testigo, uno de los cuales es usar el axioma de elección. Volveremos sobre esta cuestión más adelante.
 
 Una última característica destacable de las proposiciones en Lean es que la implicación lógica se representa directamente mediante funciones: dadas dos proposiciones \code{p q : Prop}, una prueba de \code{p $\to$ q} es simplemente una función que, dada una prueba de \code{p}, devuelve una prueba de \code{q}. Esta identificación entre funciones e implicaciones es otra manifestación de la correspondencia de Curry-Howard.
 
@@ -369,7 +369,7 @@ En una demostración informal, solemos avanzar mediante pasos lógicos encadenad
 Además, el modo táctico nos permite trabajar de manera \textbf{interactiva} con Lean. Si escribimos un enunciado, e inmediatamente después de \code{:=} escribimos \bluecode{by}, estamos indicando a Lean que para la construcción de este término vamos a utilizar el modo táctico. Por ejemplo:
 
 \begin{lstlisting}
-  theorem and (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
+  example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
 \end{lstlisting}
 
 Estamos indicando que queremos construir un término de tipo \code{p $\land$ q} a partir de las hipótesis \code{hp : p} y \code{hq : q}, y que para esa construcción vamos a utilizar el modo táctico.
@@ -557,6 +557,13 @@ La táctica \bluecode{exact} se utiliza cuando ya tenemos, en nuestro contexto, 
 \end{lstlisting}
 \end{minipage}
 
+A modo de comparación, podríamos construir esta demostración utilizando sólo términos de la siguiente forma:
+
+\begin{lstlisting}
+  example : ∀ (p : Prop), p → p := fun p ↦ (fun hp : p ↦ hp)
+\end{lstlisting}
+
+En este caso puede resultar más sencillo, pero en demostraciones más complejas perdemos legibilidad.
 
 \vspace{1em}
 \noindent\textbf{$~$ \largebluecode{apply}}
