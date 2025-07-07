@@ -1,0 +1,19 @@
+\frametitle{El Lema de Urysohn}
+
+  \begin{block}{Lema de Urysohn}
+    Sea $(X, \mathcal{T})$ un espacio topológico. $X$ es un espacio normal si y solo si para cada par de conjuntos cerrados disjuntos $C_1$ y $C_2$ en $X$, existe una función $f : X \to [0, 1]$ de manera que $f(C_1) = \{0\}$ y $f(C_2) = \{1\}$.
+  \end{block}
+
+  \begin{lstlisting}
+  lemma Urysohn {X : Type} (T : TopologicalSpace X)
+      {Y : Set ℝ} {hY : Y = Set.Icc 0 1}
+      [T' : TopologicalSpace ℝ] (hT' : T' = UsualTopology)
+      {R : TopologicalSpace Y} {hR : R = TopoSubspace T' Y} :
+    NormalSpace X ↔
+      ∀ C1 : Set X, ∀ C2 : Set X, C1 ≠ ∅ → C2 ≠ ∅ →
+      IsClosed C1 → IsClosed C2 → Disjoint C1 C2 →
+      ∃ f : X → Y,
+        Continuous f ∧
+        f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
+        f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by sorry \end{lstlisting}
+
