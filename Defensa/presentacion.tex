@@ -98,7 +98,7 @@
     \item Resultados de topología general
     \item Formalización del Lema de Urysohn
     \begin{itemize}
-      \item Comparación con la demostración de Mathlib
+      \item Comparación con la de Mathlib
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -127,6 +127,7 @@
 
   \begin{lstlisting}
     def f := fun n ↦ n + 2
+    #check f    -- ℕ → ℕ
     #eval f 3    -- 5 \end{lstlisting}
 
   \begin{itemize}
@@ -135,7 +136,9 @@
 
   \begin{lstlisting}
     #check List    -- List.{u} (α : Type u) : Type u
-    #check List ℝ    -- List ℝ : Type \end{lstlisting}
+    #check List ℝ    -- List ℝ : Type
+    #check List.nil    -- {α : Type u} → List α
+                       -- Π α : Type, List α \end{lstlisting}
 
 \end{frame}
 
@@ -161,13 +164,12 @@
     #check Prop    -- Prop : Type
     variable (P : Prop)
     #check P    -- P : Prop
-    #check ¬P    -- ¬P : Prop
     variable (D : P)
     #check D    -- D : P \end{lstlisting}
 
 \end{frame}
 
-\begin{frame}{Uso práctico de Lean}
+\begin{frame}[fragile]{Uso práctico de Lean}
   \begin{itemize}
     \item Modo táctico
     \item Lean InfoView
@@ -176,6 +178,15 @@
   \hspace{1cm}
 
   \includegraphics[width=\linewidth]{figuras/infoview.png}
+
+  \hspace{1cm}
+
+  \begin{itemize}
+    \item Utilizar términos
+  \end{itemize}
+
+  \begin{lstlisting}
+    example (p : Prop) : p → p := fun hp ↦ hp \end{lstlisting}
 \end{frame}
 
 \section{Espacios Topológicos en Lean}
