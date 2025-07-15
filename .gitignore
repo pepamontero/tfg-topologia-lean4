@@ -12,8 +12,10 @@
 *.synctex.gz
 *.toc
 *.synctex(busy)
+
 # Archivos PDF generados
 *.pdf
+!Memoria/main.pdf
 
 # Archivos de backup
 *~
