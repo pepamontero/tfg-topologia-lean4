@@ -1,5 +1,7 @@
 --- English version below ---
 
+[English version](#formalising-mathematics-in-lean-.-topics-on-general-topology-.) 
+
 # Formalización de las matemáticas con Lean 4. Resultados de Topología General.
 
 Este repositorio contiene el código (en [Leantest/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) y la documentación (en [Memoria/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) de mi
