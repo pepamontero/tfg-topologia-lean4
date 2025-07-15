@@ -2,7 +2,7 @@
 
 # Formalización de las matemáticas con Lean 4. Resultados de Topología General.
 
-Este repositorio contiene el código (en Leantest/) y la documentación (en Memoria/) de mi
+Este repositorio contiene el código (en [Leantest/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) y la documentación (en [Memoria/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) de mi
 Trabajo de Fin de Grado en Matemáticas en la Universidad Complutense de Madrid.
 
 El objetivo principal del trabajo es documentar mi proceso de **aprendizaje de Lean 4**.
