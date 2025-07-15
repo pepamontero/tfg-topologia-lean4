@@ -1,4 +1,3 @@
---- English version below ---
 
 [English version](#english) 
 
