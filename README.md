@@ -1,6 +1,6 @@
 --- English version below ---
 
-[English version](#formalising-mathematics-in-lean-.-topics-on-general-topology-.) 
+[English version](#english) 
 
 # Formalización de las matemáticas con Lean 4. Resultados de Topología General.
 
@@ -28,7 +28,9 @@ las distintas formas de aplicar razonamientos inductivos en Lean, completando as
 mi dominio de esta herramienta.
 
 
+<a name="english">
 # Formalising mathematics in Lean. Topics on General Topology.
+</a>
 
 This repository contains the code (at [Leantest/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) and documentation (at [Memoria/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest))
 of my Bachelor's Final Project in Mathematics at Complutense University of Madrid.
