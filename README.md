@@ -26,7 +26,7 @@ mi dominio de esta herramienta.
 
 # Formalising mathematics in Lean. Topics on General Topology.
 
-This repository contains the code (at Leantest/) and documentation (at Memoria/)
+This repository contains the code (at [Leantest/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) and documentation (at [Memoria/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest))
 of my Bachelor's Final Project in Mathematics at Complutense University of Madrid.
 
 The main goal of this project is to document my **learning process of Lean 4**.
