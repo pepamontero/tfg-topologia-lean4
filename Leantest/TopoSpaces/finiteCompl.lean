@@ -1,11 +1,5 @@
 import Mathlib.Tactic
 
-/-
-EJERCICIO INCOMPLETO
-Sinceramente no se si se puede hacer con estas definiciones
-de intersección... ¡qué raro!
--/
-
 -- ex 5
 -- prove that the topology with finite complementaries is top
 
@@ -76,46 +70,43 @@ lemma CF.isOpen_inter (A B : Set ℝ) (hA : IsOpen A) (hB : IsOpen B) : IsOpen (
 
 
 lemma CF.isOpen_sUnion (S : Set (Set ℝ)) (hS : ∀ t ∈ S, IsOpen t) : IsOpen (⋃₀ S) := by
-  rw [IsOpen] at *
 
-  have aux : (∃ t, t ∈ S) ∨ ¬ (∃ t, t ∈ S)
-  exact Classical.em (∃ t, t ∈ S)
+  rw [IsOpen] at ⊢
+
+  have aux : (∃ t, t ≠ ∅ ∧ t ∈ S) ∨ ¬ (∃ t, t ≠ ∅ ∧ t ∈ S)
+  exact Classical.em (∃ t, t ≠ ∅ ∧ t ∈ S)
 
   cases' aux with aux aux
 
   -- en caso de que S tenga conjuntos
-  · rw [Set.compl_sUnion]
+  · left
+    rw [Set.compl_sUnion]
     -- también hay que separar entre que contenga al vacío o no lo contenga...
-    left
+
     cases' aux with t ht
       -- la demo de ht1 y ht2 quizás se podría autocompletar? nose
     have ht1 : tᶜ.Finite
-    specialize hS t ht
-    rw [IsOpen] at hS
-    cases' hS with hS hS
-    exact hS
-
-    exact Set.finite_empty hS
+    · specialize hS t ht.right
+      rw [IsOpen] at hS
+      simp [ht.left] at hS
+      exact hS
 
     have ht2 : tᶜ ∈ compl '' S
-    simp
-    exact ht
+    · simp
+      exact ht.right
+
+--- TENGO QUE ESCRIBRI ESTA DEMO EN PAPEL PRIMERO
 
     exact Set.Finite.sInter ht2 ht1
 
   -- en caso de que S sea empty?? deberia ser facil no ????
   · right
-    ext x
-    constructor
-    all_goals intro hx
-    rw [Set.mem_sUnion] at hx
-    cases' hx with t ht
-    have h : ∃ t, t ∈ S
-    use t
-    exact ht.left
-    exact aux h
-    by_contra
-    exact hx
+    simp at aux
+    have : ∀ t ∈ S, t = ∅ := by
+      intro t ht
+      by_contra c
+      exact (aux t c) ht
+    exact Set.sUnion_eq_empty.mpr this
 
 
 /-
