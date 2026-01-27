@@ -143,7 +143,7 @@ lemma permute_f_injectivity {X Y : Type} [DecidableEq X]
       if hab : a = b then rw [hxa, hyb, hab]
       else
         have hab : ¬ b = a := by exact fun a_1 ↦ hab (h (congrArg f (id (Eq.symm a_1))))
-        simp [hxa, hya, hyb, hab, permute_f] at hxy
+        simp [hxa, hyb, hab, permute_f] at hxy
         apply h at hxy
         exact False.elim (hab hxy)
     else
@@ -156,18 +156,18 @@ lemma permute_f_injectivity {X Y : Type} [DecidableEq X]
       if hab : a = b then rw [hxb, hya, hab.symm]
       else
         have hab : ¬ b = a := by exact fun a_1 ↦ hab (h (congrArg f (id (Eq.symm a_1))))
-        simp [hxa, hxb, hya, hab, permute_f] at hxy
+        simp [hxb, hya, hab, permute_f] at hxy
         apply h at hxy
         exact False.elim (hab hxy.symm)
     else if hyb : y = b then rw [hyb, hxb]
     else
       if hab : a = b then
-        simp [hxa, hxb, hya, hyb, permute_f, hab] at hxy
+        simp [hxb, hyb, permute_f, hab] at hxy
         apply h at hxy
         exact False.elim (hyb hxy.symm)
       else
         have hab : ¬ b = a := by exact fun a_1 ↦ hab (h (congrArg f (id (Eq.symm a_1))))
-        simp [hxa, hxb, hya, hyb, permute_f, hab] at hxy
+        simp [hxb, hya, hyb, permute_f, hab] at hxy
         apply h at hxy
         exact False.elim (hya hxy.symm)
 
@@ -178,12 +178,12 @@ lemma permute_f_injectivity {X Y : Type} [DecidableEq X]
       exact False.elim (hxb hxy)
     else if hyb : y = b then
       if hab : a = b then
-        simp [hxa, hxb, hya, hyb, permute_f, hab] at hxy
+        simp [hxb, hyb, permute_f, hab] at hxy
         apply h at hxy
         exact False.elim (hxb hxy)
       else
         have hab : ¬ b = a := by exact fun a_1 ↦ hab (h (congrArg f (id (Eq.symm a_1))))
-        simp [hxa, hxb, hya, hyb, permute_f, hab] at hxy
+        simp [hxa, hxb, hyb, permute_f, hab] at hxy
         apply h at hxy
         exact False.elim (hxa hxy)
     else
@@ -216,7 +216,7 @@ lemma permute_f_surjectivity {X Y : Type} [DecidableEq X]
       rw [← hab, hyb, hab]
     else
       have hab : b ≠ a := by exact fun a_1 ↦ hab (id (Eq.symm a_1))
-      simp [permute_f, hab]
+      simp [permute_f]
       exact hyb.symm
 
   else
