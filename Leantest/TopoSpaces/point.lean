@@ -26,7 +26,6 @@ lemma neg_left_or_then_right (P Q : Prop) (hP : ¬ P) (hPQ : P ∨ Q) : Q := by
   exact hQ h2
 
 
-#check and_iff_not_or_not
 def PointTopology (X : Type) (a : X) : TopologicalSpace X where
   IsOpen (s : Set X) : Prop := a ∈ s ∨ s = ∅
 
