@@ -45,8 +45,7 @@ lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = 
 #check subset_closure
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     A ⊆ closure A := by
-  intro x hx
-  intro K hK
+  intro x hx K hK
   apply hK.right
   exact hx
 
