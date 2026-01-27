@@ -31,13 +31,11 @@ def PointTopology (X : Type) (a : X) : TopologicalSpace X where
   IsOpen (s : Set X) : Prop := a ∈ s ∨ s = ∅
 
   isOpen_univ := by
-    dsimp
     left
     trivial
     -- or just simp
 
   isOpen_inter := by
-    dsimp
     intro s t hs ht
     cases' hs with hs hs
     · cases' ht with ht ht
@@ -49,7 +47,6 @@ def PointTopology (X : Type) (a : X) : TopologicalSpace X where
       exact Set.inter_of_empty_left hs
 
   isOpen_sUnion := by
-    dsimp
     intro S hS
 
     have c : (∃ t ∈ S, a ∈ t) ∨ ¬ (∃ t ∈ S, a ∈ t)
