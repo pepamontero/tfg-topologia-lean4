@@ -18,7 +18,6 @@ lemma Set.inter_of_empty_right {X : Type} {A B : Set X} (hB : B = ∅) : A ∩ B
   rw [Set.inter_comm]
   apply Set.inter_of_empty_left hB
 
-#check Classical.not_and_iff_or_not_not
 
 lemma neg_left_or_then_right (P Q : Prop) (hP : ¬ P) (hPQ : P ∨ Q) : Q := by
   by_contra hQ
@@ -27,18 +26,15 @@ lemma neg_left_or_then_right (P Q : Prop) (hP : ¬ P) (hPQ : P ∨ Q) : Q := by
   exact hQ h2
 
 
-
 def PointTopology (X : Type) (a : X) : TopologicalSpace X where
   IsOpen (s : Set X) : Prop := a ∈ s ∨ s = ∅
 
   isOpen_univ := by
-    dsimp
     left
     trivial
     -- or just simp
 
   isOpen_inter := by
-    dsimp
     intro s t hs ht
     cases' hs with hs hs
     · cases' ht with ht ht
@@ -50,7 +46,6 @@ def PointTopology (X : Type) (a : X) : TopologicalSpace X where
       exact Set.inter_of_empty_left hs
 
   isOpen_sUnion := by
-    dsimp
     intro S hS
 
     have c : (∃ t ∈ S, a ∈ t) ∨ ¬ (∃ t ∈ S, a ∈ t)
@@ -66,7 +61,9 @@ def PointTopology (X : Type) (a : X) : TopologicalSpace X where
       · intro t ht
         specialize hS t ht
         specialize c t
-        rw [Classical.not_and_iff_or_not_not] at c
+
+        rw [and_iff_not_or_not] at c
+        apply of_not_not at c
         apply neg_left_or_then_right at c
         apply neg_left_or_then_right at hS
         exact hS

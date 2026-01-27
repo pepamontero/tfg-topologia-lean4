@@ -47,7 +47,7 @@ lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
   intro x p hp
   have aux : ¬ p ≤ 0 := by linarith
   have aux' : ¬ (0 ≤ p ∧ p ≤ 1) := by by_contra; linarith
-  simp [F, H, aux, aux', hp]
+  simp [F, H, aux']
   linarith
 
 -------- COMPORTAMIENTO DE F EN C1
@@ -73,7 +73,8 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
     apply hFx_non_neg hT C1 C2 x at c
     exact c hq
 
-  · cases' Decidable.lt_or_eq_of_le hq with hq hq
+  · simp at hq
+    cases' Decidable.lt_or_eq_of_le hq with hq hq
 
     · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq
       apply subset_closure
@@ -132,7 +133,7 @@ lemma F_1_LB_in_C2 {X : Type} [T : TopologicalSpace X]
   by_contra c
   simp at c
 
-  rw [←  Set.not_mem_compl_iff, ← H_value1 hT C1 C2] at hx
+  rw [← Set.notMem_compl_iff, ← H_value1 hT C1 C2] at hx
   have aux : H hT C1 C2 q ⊆ H hT C1 C2 1
   · trans closure (H hT C1 C2 q)
     · exact subset_closure
@@ -334,7 +335,7 @@ lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     simp
     exact hx
 
-example (a b : ℝ) (h : a < b) : ¬ a ≥ b := by exact not_le_of_lt h
+example (a b : ℝ) (h : a < b) : ¬ a ≥ b := by exact not_le_of_gt h
 
 lemma F_Real_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
@@ -372,5 +373,5 @@ lemma F_Real_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
     have hp : p ∈ F hT C1 C2 x
     · exact hF_contains_bt1 hT C1 C2 x p hp1
     specialize aux p hp
-    apply not_le_of_lt at hpr
+    apply not_le_of_gt at hpr
     exact hpr aux

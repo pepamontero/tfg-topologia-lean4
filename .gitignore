@@ -31,3 +31,6 @@ Memoria/sources/
 
 # Anotaciones
 *.xopp
+
+# Virtual environment
+.venv/
