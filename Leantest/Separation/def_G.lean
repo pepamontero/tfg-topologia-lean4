@@ -164,13 +164,14 @@ lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
     simp [hn, G]
     exact { isOpen_compl := hC2 }
 
-  cases' LE.le.eq_or_gt hn with hn hn
+  change 1 ≤ n at hn
+  cases' (Or.symm (Decidable.lt_or_eq_of_le' hn)) with hn hn
   · -- n = 1
     simp [hn, G]
     exact from_normality_open hT C2ᶜ C1
 
   · -- n > 1
-    have aux := Nat.not_eq_zero_of_lt hn
+    have aux := ne_zero_of_lt hn
     have aux' := Ne.symm (Nat.ne_of_lt hn)
 
     rw [G]
@@ -208,7 +209,7 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
 
 
 
-  have aux : n ≠ 0 := by exact Nat.not_eq_zero_of_lt hn
+  have aux : n ≠ 0 := by exact ne_zero_of_lt hn
   have aux' : n ≠ 1 := by exact Ne.symm (Nat.ne_of_lt hn)
 
   let U := G hT C1 C2 n
@@ -389,8 +390,7 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
   apply WellFounded.induction lt_pair_wf
   simp [P]
 
-  intro n m
-  intro hi hnm
+  intro n m hi hnm
   simp [lt_pair] at hi
 
   have n_neq_m : n ≠ m
@@ -429,7 +429,7 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
     cases' cases with hm0 hm0
 
     · -- caso n > 0, m = 0
-      have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn0
+      have cases : n = 1 ∨ n > 1 := by exact (Or.symm (Decidable.lt_or_eq_of_le' hn0))
       cases' cases with hn1 hn1
 
       · -- caso n = 1, m = 0
@@ -472,14 +472,14 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
 
 
     · -- caso n > 0, m > 0
-      have cases : m = 1 ∨ m > 1 := by exact LE.le.eq_or_gt hm0
+      have cases : m = 1 ∨ m > 1 := by exact (Or.symm (Decidable.lt_or_eq_of_le' hm0))
       cases' cases with hm1 hm1
 
       · -- caso n > 0, m = 1 (imposible)
         simp [hm1] at lema2
 
       · -- caso n > 0, m > 1
-        have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn0
+        have cases : n = 1 ∨ n > 1 := by exact (Or.symm (Decidable.lt_or_eq_of_le' hn0))
         cases' cases with hn1 hn1
 
         · -- caso n = 1, m > 1
@@ -523,7 +523,7 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
           have r_prop := r_prop m hm1
           simp at s_prop r_prop
 
-          have cases : f (s n) < f m ∨ f m ≤ f (s n) := by exact lt_or_le (f (s n)) (f m)
+          have cases : f (s n) < f m ∨ f m ≤ f (s n) := by exact lt_or_ge (f (s n)) (f m)
           cases' cases with h h
 
           · -- si f (s n) < f m
@@ -543,7 +543,7 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
 
           · -- si f m < f (s n)
 
-            have cases : f n < f (r m) ∨ f (r m) ≤ f n := by exact lt_or_le (f n) (f (r m))
+            have cases : f n < f (r m) ∨ f (r m) ≤ f n := by exact lt_or_ge (f n) (f (r m))
             cases' cases with h' h'
 
             · -- si f n < f (r m)
