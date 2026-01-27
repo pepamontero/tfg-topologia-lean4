@@ -26,7 +26,7 @@ lemma neg_left_or_then_right (P Q : Prop) (hP : ¬ P) (hPQ : P ∨ Q) : Q := by
   exact hQ h2
 
 
-
+#check and_iff_not_or_not
 def PointTopology (X : Type) (a : X) : TopologicalSpace X where
   IsOpen (s : Set X) : Prop := a ∈ s ∨ s = ∅
 
@@ -62,7 +62,9 @@ def PointTopology (X : Type) (a : X) : TopologicalSpace X where
       · intro t ht
         specialize hS t ht
         specialize c t
-        rw [Classical.not_and_iff_or_not_not] at c
+
+        rw [and_iff_not_or_not] at c
+        apply of_not_not at c
         apply neg_left_or_then_right at c
         apply neg_left_or_then_right at hS
         exact hS
