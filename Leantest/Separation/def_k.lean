@@ -120,7 +120,7 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
     exact le_of_lt hr
 
   specialize kglb p_inf
-  apply not_le_of_lt at c
+  apply not_le_of_gt at c
   exact c kglb
 
 
