@@ -208,7 +208,7 @@ lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by
   by_contra
   have hs := r_is_not_0 n hn
   exact hs c1
-  exact LE.le.eq_or_gt c2
+  exact Or.symm (Decidable.lt_or_eq_of_le' c2)
 
 
 lemma s_is_not_1 (n : ℕ) (hn : n > 1) : s n ≠ 1 := by
@@ -225,7 +225,7 @@ lemma s_options (n : ℕ) (hn : n > 1) : s n = 0 ∨ s n > 1 := by
   left; exact c1
   right
   have cases : s n = 1 ∨ s n > 1
-  exact LE.le.eq_or_gt c2
+  exact Or.symm (Decidable.lt_or_eq_of_le' c2)
   cases' cases with c1 c2
   by_contra
   have hs := s_is_not_1 n hn
@@ -399,7 +399,7 @@ lemma fr_leq (n : ℕ) : f (r n) ≤ f (n) := by
   · simp [hn, r, f_prop]
     trivial
 
-  have cases : n = 1 ∨ n > 1 := by exact LE.le.eq_or_gt hn
+  have cases : n = 1 ∨ n > 1 := by exact Or.symm (Decidable.lt_or_eq_of_le' hn)
   cases' cases with hn hn
 
   · simp [hn, r]
