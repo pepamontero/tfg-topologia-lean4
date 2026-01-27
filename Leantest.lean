@@ -30,6 +30,3 @@ import Leantest.TopoSpaces.point
 import Leantest.TopoSpaces.sorgenfrey
 import Leantest.TopoSpaces.trivial
 import Leantest.TopoSpaces.usual
-import Leantest.ejemplo
-import Leantest.hoja_en_sucio
-import Leantest.memoria
