@@ -18,7 +18,6 @@ lemma Set.inter_of_empty_right {X : Type} {A B : Set X} (hB : B = ∅) : A ∩ B
   rw [Set.inter_comm]
   apply Set.inter_of_empty_left hB
 
-#check Classical.not_and_iff_or_not_not
 
 lemma neg_left_or_then_right (P Q : Prop) (hP : ¬ P) (hPQ : P ∨ Q) : Q := by
   by_contra hQ
