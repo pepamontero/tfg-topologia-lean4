@@ -43,7 +43,7 @@ lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) : Card
     exact aux
 
   · rw [← @Cardinal.lt_aleph0_iff_set_finite ℚ A] at hA
-    exact le_of_not_lt hA
+    exact Std.not_lt.mp hA
 
 
 /-
@@ -72,8 +72,7 @@ lemma Q_not_finite : ¬ Q.Finite := by
     constructor
     · apply inv_nonneg_of_nonneg
       linarith
-    · apply inv_le_one
-      linarith
+    · exact_mod_cast Nat.cast_inv_le_one (n := n+1)
 
   have f_injective : f.Injective
   · intro n m hnm
