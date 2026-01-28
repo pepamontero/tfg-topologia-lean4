@@ -5,3 +5,14 @@
 % If you want to split the blueprint content into several files then
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
+
+\section{Preliminares}
+
+Son cosas que he definido yo aunque probablemente estaban en Mathlib porque no tenía las herramientas aún para encontrarlas en Mathlib.
+
+\begin{definition}
+\label{def:base}
+\lean{Leantest.Basic.isTopoBase}
+\leanok
+Sea $\mathcal{T}$ una topología. Una \emph{base de la topología} $\mathcal{T}$ es una colección de abiertos $\mathcal{B} \subset \mathcal{T}$ de forma que cada abierto de $\mathcal{T}$ es unión de abiertos de $\mathcal{B}.
+\end{definition}

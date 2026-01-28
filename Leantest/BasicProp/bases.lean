@@ -1,5 +1,6 @@
 import Leantest.TopoSpaces.usual
 
+namespace Leantest.Basic
 
 /-
     DEF: Given B ⊆ P(X), is B a Base for X?
@@ -53,3 +54,5 @@ lemma BaseOfRealTopo [T : TopologicalSpace ℝ]
         obtain ⟨v, hI⟩ := hI
         rw [hI] at hu
         exact (δspec v).right u hu
+
+end Leantest.Basic

@@ -1,7 +1,7 @@
 import Leantest.BasicProp.bases
 import Leantest.Continuous.subspaces
 
-
+open Leantest.Basic
 /-
   Result:
     f : X → Y is continuous iff

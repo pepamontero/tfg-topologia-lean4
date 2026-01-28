@@ -8,10 +8,12 @@ import Leantest.BasicProp.interior
       LEMA DE URYSOHN
 -/
 
+open Leantest.Basic
+
 #check (inferInstance : TopologicalSpace ℝ)
 #check Set.EqOn
 
-
+#check isTopoBase
 
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X)
