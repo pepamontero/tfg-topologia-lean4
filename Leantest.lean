@@ -1,3 +1,31 @@
--- This module serves as the root of the `Leantest` library.
--- Import modules here that should be built as part of the library.
-import Leantest.Basic
+import Leantest.BasicProp.bases
+import Leantest.BasicProp.basic
+import Leantest.BasicProp.closed
+import Leantest.BasicProp.closure
+import Leantest.BasicProp.interior
+import Leantest.BasicProp.open
+import Leantest.BasicProp.subspaces
+import Leantest.Continuous.bases
+import Leantest.Continuous.basic
+import Leantest.Continuous.examples
+import Leantest.Continuous.homeom
+import Leantest.Continuous.subspaces
+import Leantest.MyDefs.my_denumerableQ
+import Leantest.MyDefs.my_induction
+import Leantest.MyDefs.my_inf
+import Leantest.MyDefs.my_lex_order
+import Leantest.MyDefs.my_rs_functions
+import Leantest.MyDefs.sets
+import Leantest.Separation.def_F
+import Leantest.Separation.def_G
+import Leantest.Separation.def_H
+import Leantest.Separation.def_k
+import Leantest.Separation.hausdorff
+import Leantest.Separation.normal
+import Leantest.Separation.urysohn
+import Leantest.TopoSpaces.discrete
+import Leantest.TopoSpaces.finiteCompl
+import Leantest.TopoSpaces.point
+import Leantest.TopoSpaces.sorgenfrey
+import Leantest.TopoSpaces.trivial
+import Leantest.TopoSpaces.usual
