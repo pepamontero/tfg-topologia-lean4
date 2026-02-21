@@ -336,7 +336,7 @@ lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     simp
     exact hx
 
-example (a b : ℝ) (h : a < b) : ¬ a ≥ b := by exact not_le_of_lt h
+example (a b : ℝ) (h : a < b) : ¬ a ≥ b := by exact not_le_of_gt h
 
 lemma F_Real_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
@@ -374,5 +374,5 @@ lemma F_Real_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
     have hp : p ∈ F hT C1 C2 x
     · exact hF_contains_bt1 hT C1 C2 x p hp1
     specialize aux p hp
-    apply not_le_of_lt at hpr
+    apply not_le_of_gt at hpr
     exact hpr aux
