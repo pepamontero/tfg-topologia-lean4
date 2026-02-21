@@ -78,6 +78,8 @@ Extra results needed:
 Lemma: open intervals (a, b) are open in ℝ with the usual topology
 -/
 
+example (a b : ℝ) (h : a < b) : 0 < b - a := by exact sub_pos.mpr h
+
 lemma ioo_open_in_R (a b : ℝ) :
     UsualTopology.IsOpen ((Set.Ioo a b) : Set ℝ) := by
 
@@ -94,7 +96,7 @@ lemma ioo_open_in_R (a b : ℝ) :
   · -- (x - δ, x + δ) ⊆ (a, b) ?
     -- hay que diferenciar cuando δ = x-a y δ = b-x
     intro y hy
-    have cases := lt_or_le (x - a) (b - x)
+    have cases := lt_or_ge (x - a) (b - x)
     cases' cases with h h
     all_goals
       try rw [min_eq_left_of_lt h] at hy
