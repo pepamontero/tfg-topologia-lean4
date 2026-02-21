@@ -48,7 +48,7 @@ lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
   intro x p hp
   have aux : ¬ p ≤ 0 := by linarith
   have aux' : ¬ (0 ≤ p ∧ p ≤ 1) := by by_contra; linarith
-  simp [F, H, aux, aux', hp]
+  simp [F, H, aux']
   linarith
 
 -------- COMPORTAMIENTO DE F EN C1
