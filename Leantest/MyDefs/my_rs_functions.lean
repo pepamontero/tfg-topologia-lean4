@@ -396,7 +396,6 @@ lemma fr_leq (n : ℕ) : f (r n) ≤ f (n) := by
   cases' cases with hn hn
 
   · simp [hn, r, f_prop]
-    trivial
 
   have cases : n = 1 ∨ n > 1 := Or.symm (Decidable.lt_or_eq_of_le' hn)
   cases' cases with hn hn
