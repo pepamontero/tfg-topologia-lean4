@@ -134,7 +134,7 @@ lemma F_1_LB_in_C2 {X : Type} [T : TopologicalSpace X]
   by_contra c
   simp at c
 
-  rw [←  Set.not_mem_compl_iff, ← H_value1 hT C1 C2] at hx
+  rw [← Set.notMem_compl_iff, ← H_value1 hT C1 C2] at hx
   have aux : H hT C1 C2 q ⊆ H hT C1 C2 1
   · trans closure (H hT C1 C2 q)
     · exact subset_closure
