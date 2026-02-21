@@ -71,15 +71,20 @@ lemma Q_not_finite : ¬ Q.Finite := by
     simp [f] at hn
     rw [← hn]
     constructor
-    · apply inv_nonneg_of_nonneg
+    · ring_nf
+      apply inv_nonneg_of_nonneg
       linarith
-    · apply inv_le_one
+    · ring_nf
+      apply inv_le_one_of_one_le₀
       linarith
 
   have f_injective : f.Injective
   · intro n m hnm
     simp [f] at hnm
-    exact hnm
+    ring_nf at hnm
+    apply inv_inj.mp at hnm
+    apply (add_right_inj 1).mp at hnm
+    exact_mod_cast hnm
 
   have f_infinite : Set.Infinite (Set.range f)
   · exact Set.infinite_range_of_injective f_injective
