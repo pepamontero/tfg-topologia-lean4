@@ -301,7 +301,6 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0,
       · by_contra c
         rw [← c] at hm
         simp [g, permute_f, hn] at hm
-        exact ne_of_beq_false rfl hm.symm
       simp [h, permute_f, aux]
       simp [g, permute_f, hn]
     · simp [h, permute_f, hm]
