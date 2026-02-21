@@ -44,7 +44,7 @@ lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) : Card
     exact aux
 
   · rw [← @Cardinal.lt_aleph0_iff_set_finite ℚ A] at hA
-    exact le_of_not_lt hA
+    exact le_of_not_gt hA
 
 
 /-
