@@ -208,8 +208,7 @@ lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by
   by_contra
   have hs := r_is_not_0 n hn
   exact hs c1
-  exact LE.le.eq_or_gt c2
-
+  exact Or.symm (Decidable.lt_or_eq_of_le' c2)
 
 lemma s_is_not_1 (n : ℕ) (hn : n > 1) : s n ≠ 1 := by
   by_contra c
