@@ -88,8 +88,8 @@ lemma ioo_open_in_R (a b : ℝ) :
 
   constructor
   · -- δ > 0 ?
-    simp
-    exact hx
+    simp only [lt_inf_iff]
+    exact ⟨sub_pos.mpr hx.1, sub_pos.mpr hx.2⟩
 
   · -- (x - δ, x + δ) ⊆ (a, b) ?
     -- hay que diferenciar cuando δ = x-a y δ = b-x
