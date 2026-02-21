@@ -60,7 +60,8 @@ example [T : TopologicalSpace ℝ] (hT : T = UsualTopology) : Hausdorff T := by
   · rfl
   have hδ' : δ > 0
   · rw [hδ]
-    simp
+    refine div_pos ?_ (by norm_num)
+    apply abs_pos.mpr
     exact sub_ne_zero_of_ne h
 
   use Set.Ioo (x1 - δ) (x1 + δ)
