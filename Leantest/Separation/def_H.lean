@@ -59,13 +59,13 @@ lemma H_isOpen {X : Type} [T : TopologicalSpace X]
     : (∀ q, IsOpen (H hT C1 C2 q)) := by
 
   intro q
-  have cases : q < 0 ∨ q ≥ 0 := by exact lt_or_le q 0
+  have cases : q < 0 ∨ q ≥ 0 := by exact lt_or_ge q 0
   cases' cases with hq hq
 
   · -- q < 0 -> H q = ∅ (trivial)
     simp [H, hq]
 
-  have cases : q ≤ 1 ∨ q > 1 := by exact le_or_lt q 1
+  have cases : q ≤ 1 ∨ q > 1 := by exact le_or_gt q 1
   have aux : ¬ q < 0 := by linarith
   cases' cases with hq' hq'
 
@@ -94,26 +94,26 @@ lemma H_isOrdered {X : Type} [T : TopologicalSpace X]
 
   intro p q hpq
 
-  have cases : q < 0 ∨ q ≥ 0 := by exact lt_or_le q 0
+  have cases : q < 0 ∨ q ≥ 0 := by exact lt_or_ge q 0
   cases' cases with hq hq
 
   · -- q < 0 -> p < q < 0 -> H p = H q = ∅
     have aux : p < 0 := by linarith
     simp [H, aux, hq]
 
-  have cases : q ≤ 1 ∨ q > 1 := by exact le_or_lt q 1
+  have cases : q ≤ 1 ∨ q > 1 := by exact le_or_gt q 1
   have aux : ¬ q < 0 := by linarith
   cases' cases with hq' hq'
 
   · -- 0 ≤ q ≤ 1
 
-    have cases : p < 0 ∨ p ≥ 0 := by exact lt_or_le p 0
+    have cases : p < 0 ∨ p ≥ 0 := by exact lt_or_ge p 0
     cases' cases with hp hp
 
     · -- p < 0 -> H p = ∅ (trivial)
       simp [H, hp]
 
-    have cases : p ≤ 1 ∨ p > 1 := by exact le_or_lt p 1
+    have cases : p ≤ 1 ∨ p > 1 := by exact le_or_gt p 1
     have aux' : ¬ p < 0 := by linarith
     cases' cases with hp' hp'
 
