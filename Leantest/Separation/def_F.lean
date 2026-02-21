@@ -74,7 +74,8 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
     apply hFx_non_neg hT C1 C2 x at c
     exact c hq
 
-  · cases' Decidable.lt_or_eq_of_le hq with hq hq
+  · simp only [ge_iff_le, Set.mem_setOf_eq] at hq
+    cases' Decidable.lt_or_eq_of_le hq with hq hq
 
     · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq
       apply subset_closure
