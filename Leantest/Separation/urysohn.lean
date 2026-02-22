@@ -8,12 +8,6 @@ import Leantest.BasicProp.interior
       LEMA DE URYSOHN
 -/
 
-#check (inferInstance : TopologicalSpace ℝ)
-#check Set.EqOn
-
-example ( p q : Prop) : (p ↔ q) ↔ (¬ p ↔ ¬ q) := by exact Iff.symm not_iff_not
-
-
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X)
     [T' : TopologicalSpace ℝ]
@@ -231,10 +225,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     · exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
 
 
-
-
-
-theorem Urysohn' {X : Type} [T : TopologicalSpace X] [N : NormalSpace X]
+/--
+Version of Urysohn's Lemma as written in Mathlib, i.e.
+`exists_continuous_zero_one_of_isClosed`
+-/
+theorem Urysohn_Mathlib {X : Type} [T : TopologicalSpace X] [N : NormalSpace X]
     {s t : Set X} (hs : IsClosed s) (ht : IsClosed t)
     (hd : Disjoint s t)
     : ∃ f : X → ℝ, Continuous f ∧ Set.EqOn f 0 s ∧ Set.EqOn f 1 t ∧ ∀ x, f x ∈ Set.Icc 0 1 := by
@@ -342,9 +337,7 @@ theorem Urysohn' {X : Type} [T : TopologicalSpace X] [N : NormalSpace X]
           {s | ∃ a b : ℝ, s = Set.Ioo a b}
           (by exact aux)).mpr
 
-        have aux : @UniformSpace.toTopologicalSpace ℝ (by exact PseudoEMetricSpace.toUniformSpace) = UsualTopology
-        · sorry
-        rw [aux]
+        rw [mathlib_open_eq_my_open]
         apply aux'
 
 
@@ -428,7 +421,10 @@ theorem Urysohn' {X : Type} [T : TopologicalSpace X] [N : NormalSpace X]
         intro x hx
         simp
         have aux' : k N s t x = 0
-        · sorry
+        · have : k N s t x ∈ k N s t '' s := by
+            use x
+          rw [aux] at this
+          exact this
         exact aux'
       /-
               3. f(C2) = {1}
@@ -439,7 +435,10 @@ theorem Urysohn' {X : Type} [T : TopologicalSpace X] [N : NormalSpace X]
         intro x hx
         simp
         have aux' : k N s t x = 1
-        · sorry
+        · have : k N s t x ∈ k N s t '' t := by
+            use x
+          rw [aux] at this
+          exact this
         exact aux'
 
 
