@@ -78,8 +78,6 @@ Extra results needed:
 Lemma: open intervals (a, b) are open in ℝ with the usual topology
 -/
 
-example (a b : ℝ) (h : a < b) : 0 < b - a := by exact sub_pos.mpr h
-
 lemma ioo_open_in_R (a b : ℝ) :
     UsualTopology.IsOpen ((Set.Ioo a b) : Set ℝ) := by
 
@@ -104,3 +102,30 @@ lemma ioo_open_in_R (a b : ℝ) :
       simp at hy
       constructor
       all_goals linarith
+
+/--
+Proof that my Usual Topology is equivalent to the one Mathlib tipically uses.
+-/
+lemma mathlib_open_eq_my_open : @UniformSpace.toTopologicalSpace ℝ (by exact PseudoEMetricSpace.toUniformSpace) = UsualTopology := by
+  apply TopologicalSpace.ext
+  apply funext
+  intro s
+  rw [isOpen_iff_nhds]
+  simp
+  constructor
+  · intro hs x hx
+    obtain ⟨δ, ⟨hδ0, hδ⟩⟩ := Metric.mem_nhds_iff.mp (hs x hx)
+    refine ⟨δ, hδ0, ?_⟩
+    intro y hy
+    apply hδ
+    simp [Real.dist_eq, abs_lt]
+    exact ⟨lt_add_of_tsub_lt_left hy.1, sub_left_lt_of_lt_add hy.2⟩
+  · intro hs x hx
+    rw [Metric.mem_nhds_iff]
+    obtain ⟨δ, ⟨hδ0, hδ⟩⟩ := hs x hx
+    refine ⟨δ, hδ0, ?_⟩
+    intro y hy
+    apply hδ y
+    simp [Real.dist_eq] at hy
+    exact ⟨sub_lt_of_abs_sub_lt_left hy,
+      lt_add_of_tsub_lt_left (abs_lt.mp hy).2⟩
