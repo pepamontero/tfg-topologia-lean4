@@ -1,4 +1,5 @@
 import Mathlib.Tactic
+import Mathlib.Data.Rat.Denumerable
 
 lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
     have f := (Rat.instDenumerable.eqv).symm
@@ -43,7 +44,7 @@ lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) : Card
     exact aux
 
   · rw [← @Cardinal.lt_aleph0_iff_set_finite ℚ A] at hA
-    exact le_of_not_lt hA
+    exact le_of_not_gt hA
 
 
 /-
@@ -70,15 +71,20 @@ lemma Q_not_finite : ¬ Q.Finite := by
     simp [f] at hn
     rw [← hn]
     constructor
-    · apply inv_nonneg_of_nonneg
+    · ring_nf
+      apply inv_nonneg_of_nonneg
       linarith
-    · apply inv_le_one
+    · ring_nf
+      apply inv_le_one_of_one_le₀
       linarith
 
   have f_injective : f.Injective
   · intro n m hnm
     simp [f] at hnm
-    exact hnm
+    ring_nf at hnm
+    apply inv_inj.mp at hnm
+    apply (add_right_inj 1).mp at hnm
+    exact_mod_cast hnm
 
   have f_infinite : Set.Infinite (Set.range f)
   · exact Set.infinite_range_of_injective f_injective
@@ -295,7 +301,6 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0,
       · by_contra c
         rw [← c] at hm
         simp [g, permute_f, hn] at hm
-        exact ne_of_beq_false rfl hm.symm
       simp [h, permute_f, aux]
       simp [g, permute_f, hn]
     · simp [h, permute_f, hm]

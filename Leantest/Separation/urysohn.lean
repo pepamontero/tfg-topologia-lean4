@@ -11,6 +11,7 @@ import Leantest.BasicProp.interior
 #check (inferInstance : TopologicalSpace ℝ)
 #check Set.EqOn
 
+example ( p q : Prop) : (p ↔ q) ↔ (¬ p ↔ ¬ q) := by exact Iff.symm not_iff_not
 
 
 lemma Urysohn {X : Type} {Y : Set ℝ}
@@ -105,7 +106,8 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -- * is `U1 ∩ U2 = ∅` ?
     · apply Disjoint.preimage
       by_contra c
-      rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq, ← Set.nonempty_iff_ne_empty] at c
+      apply (not_iff_not.mpr (Set.disjoint_iff_inter_eq_empty)).mp at c
+      rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at c
       obtain ⟨x, hxu, hxv⟩ := c
       simp at hxu hxv
       linarith
@@ -212,7 +214,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -/
 
     have aux : ∀ A : Set X, f '' A = g '' A
-    · intro A; ext x; simp
+    · intro A; ext x; simp [f]
 
     rw [← Set.image_val_inj, ← Set.image_val_inj]
     rw [aux C1, aux C2]
