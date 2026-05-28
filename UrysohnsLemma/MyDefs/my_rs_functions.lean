@@ -1,4 +1,4 @@
-import Leantest.MyDefs.my_denumerableQ
+import UrysohnsLemma.MyDefs.my_denumerableQ
 
 /-
 definición de las funciones r y s:

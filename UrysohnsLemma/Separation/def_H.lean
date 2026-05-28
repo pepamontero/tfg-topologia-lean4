@@ -1,4 +1,4 @@
-import Leantest.Separation.def_G
+import UrysohnsLemma.Separation.def_G
 
 def H {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)

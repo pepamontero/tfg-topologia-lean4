@@ -1,8 +1,8 @@
-import Leantest.Separation.normal
-import Leantest.MyDefs.sets
-import Leantest.Continuous.bases
-import Leantest.Separation.def_k
-import Leantest.BasicProp.interior
+import UrysohnsLemma.Separation.normal
+import UrysohnsLemma.MyDefs.sets
+import UrysohnsLemma.Continuous.bases
+import UrysohnsLemma.Separation.def_k
+import UrysohnsLemma.BasicProp.interior
 
 /-
       LEMA DE URYSOHN

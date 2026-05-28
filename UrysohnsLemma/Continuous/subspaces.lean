@@ -1,5 +1,5 @@
-import Leantest.Continuous.basic
-import Leantest.BasicProp.subspaces
+import UrysohnsLemma.Continuous.basic
+import UrysohnsLemma.BasicProp.subspaces
 
 
 /-

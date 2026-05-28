@@ -21,10 +21,10 @@
 *~
 
 # Hoja en sucio
-Leantest/hoja_en_sucio.lean
-Leantest/ejemplo.lean
-Leantest/lean_get_infos.py
-Leantest/resumen.md
+UrysohnsLemma/hoja_en_sucio.lean
+UrysohnsLemma/ejemplo.lean
+UrysohnsLemma/lean_get_infos.py
+UrysohnsLemma/resumen.md
 
 # Libros
 Memoria/sources/

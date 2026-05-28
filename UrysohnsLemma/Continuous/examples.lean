@@ -1,8 +1,8 @@
-import Leantest.Continuous.basic
-import Leantest.TopoSpaces.discrete
-import Leantest.TopoSpaces.trivial
-import Leantest.TopoSpaces.usual
-import Leantest.TopoSpaces.sorgenfrey
+import UrysohnsLemma.Continuous.basic
+import UrysohnsLemma.TopoSpaces.discrete
+import UrysohnsLemma.TopoSpaces.trivial
+import UrysohnsLemma.TopoSpaces.usual
+import UrysohnsLemma.TopoSpaces.sorgenfrey
 
 #check DiscreteTopo
 #check TrivialTopology

@@ -1,5 +1,5 @@
-import Leantest.BasicProp.basic
-import Leantest.TopoSpaces.usual
+import UrysohnsLemma.BasicProp.basic
+import UrysohnsLemma.TopoSpaces.usual
 
 /-
   DEF: Topological subspace

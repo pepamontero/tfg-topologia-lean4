@@ -1,9 +1,9 @@
-import Leantest.BasicProp.basic
-import Leantest.BasicProp.open
-import Leantest.TopoSpaces.discrete
-import Leantest.TopoSpaces.trivial
-import Leantest.TopoSpaces.usual
-import Leantest.TopoSpaces.point
+import UrysohnsLemma.BasicProp.basic
+import UrysohnsLemma.BasicProp.open
+import UrysohnsLemma.TopoSpaces.discrete
+import UrysohnsLemma.TopoSpaces.trivial
+import UrysohnsLemma.TopoSpaces.usual
+import UrysohnsLemma.TopoSpaces.point
 
 #check Neighbourhood
 

@@ -1,5 +1,5 @@
-import Leantest.Separation.def_H
-import Leantest.MyDefs.my_inf
+import UrysohnsLemma.Separation.def_H
+import UrysohnsLemma.MyDefs.my_inf
 
 def F {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
@@ -16,7 +16,7 @@ lemma hF_non_empty {X : Type} [T : TopologicalSpace X]
   intro x
   use 2
   simp [F, H]
-  norm_num
+
 
 lemma hFx_non_neg {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)

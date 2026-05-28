@@ -1,5 +1,7 @@
 import Mathlib.Tactic
 import Mathlib.Data.Rat.Denumerable
+import Mathlib.Data.Rat.Cardinal
+
 
 lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
     have f := (Rat.instDenumerable.eqv).symm
@@ -81,11 +83,7 @@ lemma Q_not_finite : ¬ Q.Finite := by
   have f_injective : f.Injective
   · intro n m hnm
     simp [f] at hnm
-    ring_nf at hnm
-    apply inv_inj.mp at hnm
-    apply (add_right_inj 1).mp at hnm
-    exact_mod_cast hnm
-
+    exact hnm
   have f_infinite : Set.Infinite (Set.range f)
   · exact Set.infinite_range_of_injective f_injective
 

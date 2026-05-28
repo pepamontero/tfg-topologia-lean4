@@ -1,4 +1,4 @@
-import Leantest.BasicProp.open
+import UrysohnsLemma.BasicProp.open
 
 open TopologicalSpace
 
