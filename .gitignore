@@ -1,5 +1,7 @@
 # Archivos de Lean
 /.lake
+.lake/
+**/.lake/
 
 # Archivos generados por LaTeX
 *.aux
