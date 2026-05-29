@@ -3,6 +3,9 @@
 .lake/
 **/.lake/
 
+# Archivos HTML de verso
+**/_out/
+
 # Archivos generados por LaTeX
 *.aux
 *.bbl
