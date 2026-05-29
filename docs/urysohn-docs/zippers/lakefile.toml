@@ -1,0 +1,10 @@
+name = "zipper-example"
+defaultTargets = ["Zippers"]
+
+[[require]]
+name = "subverso"
+git = "https://github.com/leanprover/subverso"
+rev = "no-modules/52b9dfbd2658408e37ae6e8b72601ddeaaa25a0c"
+
+[[lean_lib]]
+name = "Zippers"
