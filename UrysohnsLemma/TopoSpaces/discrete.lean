@@ -5,6 +5,8 @@ import Mathlib.Tactic
 
 open TopologicalSpace
 
+-- ANCHOR: DiscreteTopo
+@[reducible]
 def DiscreteTopo (X : Type) : TopologicalSpace X where
   IsOpen (_ : Set X) := true
   isOpen_univ := by
@@ -15,3 +17,4 @@ def DiscreteTopo (X : Type) : TopologicalSpace X where
   isOpen_sUnion := by
     intros
     trivial
+-- ANCHOR_END: DiscreteTopo
