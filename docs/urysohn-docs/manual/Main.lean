@@ -21,5 +21,8 @@ def config : RenderConfig where
   emitHtmlSingle := .no
   emitHtmlMulti := .immediately
   htmlDepth := 2
+  extraFiles := [
+    ("figuras", "figuras")
+  ]
 
 def main := manualMain (%doc Docs) (config := config)

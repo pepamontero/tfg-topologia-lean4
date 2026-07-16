@@ -9,6 +9,7 @@ package "urysohnslemma" where
   ]
 
 require "leanprover-community" / "mathlib"
+require subverso from git "https://github.com/leanprover/subverso.git"@"ce893b9042128037e2d3c0158b9567fab9fae268"
 
 @[default_target]
 lean_lib «UrysohnsLemma» where
