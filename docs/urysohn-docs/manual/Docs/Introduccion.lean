@@ -1,7 +1,10 @@
 import VersoManual
 import Docs.Referencias
+import Docs.Papers
 
 open Verso.Genre Manual
+open Verso.Genre.Manual.Docs (citetOther citepOther citehereOther)
+open Docs (refTrinh2024Solving refGeuvers2009Proof refBuzzard2024Formalising)
 
 set_option pp.rawOnError true
 
@@ -12,11 +15,11 @@ tag := "introduccion"
 
 En los últimos años, ha vuelto con fuerza una pregunta que ronda desde hace décadas: ¿pueden las máquinas hacer matemáticas?
 
-La respuesta, en general, sigue siendo no. Pero con los avances recientes en inteligencia artificial y verificación formal, esta barrera empieza a tambalearse. Algunos sistemas ya han conseguido demostrar de manera automatizada resultados del nivel de las olimpiadas matemáticas {ref "ref-trinh2024solving"}[\[1\]].
+La respuesta, en general, sigue siendo no. Pero con los avances recientes en inteligencia artificial y verificación formal, esta barrera empieza a tambalearse. Algunos sistemas ya han conseguido demostrar de manera automatizada resultados del nivel de las olimpiadas matemáticas{citep refTrinh2024Solving}[].
 
 Un primer desafío a la hora de intentar que un ordenador haga matemáticas es cerrar la brecha entre el lenguaje que nosotros entendemos y el que una máquina puede procesar. A pesar de que el lenguaje matemático es ya bastante preciso, todavía existe un desfase considerable entre una demostración escrita en un artículo y una que un ordenador pueda validar.
 
-Algunos primeros intentos de crear un lenguaje en el que las matemáticas fueran comprensibles para una máquina se remotan a proyectos como _Automath_ (1967) y _Mizar_ (1973). A día de hoy, herramientas como Coq, Isabelle, HOL o Lean permiten escribir y verificar matemáticas con asistencia del ordenador. A este tipo de herramientas se las conoce como verificadores de demostraciones interactivos o ITP (_Interactive Theorem Provers_) {ref "ref-geuvers2009proof"}[\[2\]].
+Algunos primeros intentos de crear un lenguaje en el que las matemáticas fueran comprensibles para una máquina se remotan a proyectos como _Automath_ (1967) y _Mizar_ (1973). A día de hoy, herramientas como Coq, Isabelle, HOL o Lean permiten escribir y verificar matemáticas con asistencia del ordenador. A este tipo de herramientas se las conoce como verificadores de demostraciones interactivos o ITP (_Interactive Theorem Provers_){citep refGeuvers2009Proof}[].
 
 En este trabajo me centro en el aprendizaje y uso de Lean, una de estas herramientas. Me interesa especialmente esta intersección entre matemáticas y computación: el proceso de escribir matemáticas de forma que un ordenador las acepte como válidas. Para mí, formalizar demostraciones en Lean es parecido a resolver un puzzle complejo y desafiante.
 
@@ -38,7 +41,7 @@ Finalmente, mediante este proceso de aprendizaje y puesta a prueba se quiere lle
 
 El primer paso fue adquirir los conocimientos básicos sobre Lean. Para ello, me inscribí al curso de Lean impartido por CompuMates en la Facultad de Matemáticas durante el curso 2023/24. Esto me permitió tener unas primeras nociones básicas y empezar a escribir pequeñas demostraciones en Lean 3, centradas principalmente lógica proposicional.
 
-A partir de entonces, mi interés por Lean creció, y comencé a estudiar de manera autodidacta la versión Lean 4, más reciente y actualmente en desarrollo activo. En particular, seguí con detalle el curso en línea _Formalising Mathematics 2024_ impartido por Kevin Buzzard {ref "ref-buzzard2024formalising"}[\[3\]], completando los ejercicios propuestos hasta el capítulo 10, dedicado a los espacios topológicos.
+A partir de entonces, mi interés por Lean creció, y comencé a estudiar de manera autodidacta la versión Lean 4, más reciente y actualmente en desarrollo activo. En particular, seguí con detalle el curso en línea _Formalising Mathematics 2024_ impartido por Kevin Buzzard{citepOther refBuzzard2024Formalising}[], completando los ejercicios propuestos hasta el capítulo 10, dedicado a los espacios topológicos.
 
 Dicho capítulo era muy escueto, e incluía únicamente dos ejemplos de espacios topológicos concretos y algunas cuestiones sobre continuidad de funciones. Los ejercicios que resolví en esta etapa inicial pueden consultarse en el repositorio [https://github.com/pepamontero/Lean4-Buzzard-Exercises](https://github.com/pepamontero/Lean4-Buzzard-Exercises).
 

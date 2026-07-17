@@ -1,8 +1,13 @@
 import VersoManual
 import Docs.Referencias
+import Docs.Papers
 
 open Verso.Genre Manual
 open Verso.Code.External
+open Verso.Genre.Manual.Docs (citetOther citepOther citehereOther)
+open Docs (refAvigad2024Theorem refAvigad2021Theorem refMathlib refBailey2024Type
+  refSorensen2006Lectures refCoquand1986Calculus refPierce2002Types refCarneiro2019Type
+  refCarneiro2024Lean4Lean refTacticas refMoogle refGao2024Semantic)
 
 set_option pp.rawOnError true
 
@@ -16,25 +21,25 @@ tag := "lean-theorem-prover"
 
 A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones formales es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.
 
-Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que el usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de "verificación", y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma {ref "ref-avigad2024theorem"}[\[4, Sección 1\]].
+Dentro de este campo, distinguimos dos tipos de sistemas de verificación formal: interactivos (ITP), que proporcionan un entorno en el que el usuario guía el proceso de la demostración paso a paso, centrándose en el aspecto de "verificación", y automáticos (ATP), que buscan completar demostraciones de manera completamente autónoma{citepOther refAvigad2024Theorem}[] (Sección 1).
 
 En este trabajo nos centraremos en el uso de *Lean Theorem Prover*, introducido en 2013 por Leonardo de Moura desde Microsoft Research. Se trata de un verificador cuyo objetivo es reducir la distancia entre demostraciones asistidas y automatizadas, combinando un lenguaje basado en la teoría de tipos dependientes con herramientas que permiten delegar sub-problemas sencillos al sistema
 
-Aunque aquí nos limitaremos a su uso como asistente de demostración, Lean es también un lenguaje de programación funcional completo, lo que ofrece amplias posibilidades de personalización y automatización al usuario {ref "ref-avigad2024theorem"}[\[4, Sección 1\]].
+Aunque aquí nos limitaremos a su uso como asistente de demostración, Lean es también un lenguaje de programación funcional completo, lo que ofrece amplias posibilidades de personalización y automatización al usuario{citepOther refAvigad2024Theorem}[] (Sección 1).
 
-En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen. Esta tarea se ve facilitada por _Mathlib_, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada de manera colaborativa por una comunidad activa y en constante crecimiento {ref "ref-mathlib"}[\[5\]].
+En este sistema, es posible definir objetos matemáticos, especificar propiedades sobre ellos y demostrar que dichas propiedades se cumplen. Esta tarea se ve facilitada por _Mathlib_, una extensa biblioteca de matemáticas formalizadas en Lean desarrollada de manera colaborativa por una comunidad activa y en constante crecimiento{citepOther refMathlib}[].
 
-Las demostraciones son verificadas automáticamente por el núcleo lógico de Lean, que garantiza su corrección mediante un sistema de tipos expresivo y riguroso. La fiabilidad de Lean como asistente de demostración reside precisamente en la simplicidad y robustez de este núcleo {ref "ref-bailey2024type"}[\[6\]].
+Las demostraciones son verificadas automáticamente por el núcleo lógico de Lean, que garantiza su corrección mediante un sistema de tipos expresivo y riguroso. La fiabilidad de Lean como asistente de demostración reside precisamente en la simplicidad y robustez de este núcleo{citepOther refBailey2024Type}[].
 
-En esta sección seguiremos principalmente el manual en línea _Theorem Proving in Lean 4_ {ref "ref-avigad2024theorem"}[\[4\]] que es una versión actualizada del libro _Theorem Proving in Lean_ {ref "ref-avigad2021theorem"}[\[7\]] publicado en 2021 para adaptarse a la nueva versión de Lean. A nivel teórico, no existe una gran diferencia entre los dos, por lo que ambas referencias son válidas para comprender los fundamentos que exponemos aquí.
+En esta sección seguiremos principalmente el manual en línea _Theorem Proving in Lean 4_{citepOther refAvigad2024Theorem}[] que es una versión actualizada del libro _Theorem Proving in Lean_{citepOther refAvigad2021Theorem}[] publicado en 2021 para adaptarse a la nueva versión de Lean. A nivel teórico, no existe una gran diferencia entre los dos, por lo que ambas referencias son válidas para comprender los fundamentos que exponemos aquí.
 
 # La teoría de tipos de Lean
 
 La teoría de conjuntos de Zermelo-Fraenkel con el axioma de elección (ZFC) es la base fundacional elegida para formalizar la mayoría de las matemáticas que conocemos. En este marco, todos los objetos matemáticos (números, funciones, estructuras algebraicas, etc.) pueden representarse como conjuntos, construidos a partir de unos pocos axiomas básicos.
 
-Sin embargo, este sistema carece de una estructura interna diferenciada: todo objeto matemático, como un número, una función o incluso una colección de funciones son, en última instancia, conjuntos. Para lograr una representación más clara y diferenciada de los objetos matemáticos, Lean utiliza, en su lugar, un sistema basado en tipos. Además, este enfoque nos ofrece la posibilidad de establecer una correspondencia entre programas y demostraciones matemáticas, conocida como la correspondencia de Curry-Howard{margin}[La correspondencia de Curry-Howard establece una relación entre lógica y programación; permite entender como pueden ser equivalentes "demostrar una proposición" y "construir un término de cierto tipo". Veremos qué quiere decir esto en la práctica más adelante, pero las ideas más profundas, que quedan fuera del alcance de este trabajo, se exponen detalladamente en {ref "ref-sorensen2006lectures"}[\[8\]].].
+Sin embargo, este sistema carece de una estructura interna diferenciada: todo objeto matemático, como un número, una función o incluso una colección de funciones son, en última instancia, conjuntos. Para lograr una representación más clara y diferenciada de los objetos matemáticos, Lean utiliza, en su lugar, un sistema basado en tipos. Además, este enfoque nos ofrece la posibilidad de establecer una correspondencia entre programas y demostraciones matemáticas, conocida como la correspondencia de Curry-Howard{margin}[La correspondencia de Curry-Howard establece una relación entre lógica y programación; permite entender como pueden ser equivalentes "demostrar una proposición" y "construir un término de cierto tipo". Veremos qué quiere decir esto en la práctica más adelante, pero las ideas más profundas, que quedan fuera del alcance de este trabajo, se exponen detalladamente en {citehereOther refSorensen2006Lectures}[].].
 
-En particular, Lean se fundamenta en el _Cálculo de Construcciones Inductivas_, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no acumulativa de universos {ref "ref-coquand1986calculus"}[\[9\]]. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales: la teoría de tipos, el cálculo lambda, la incorporación de tipos a esta última, y la introducción de tipos dependientes.
+En particular, Lean se fundamenta en el _Cálculo de Construcciones Inductivas_, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no acumulativa de universos{citep refCoquand1986Calculus}[]. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales: la teoría de tipos, el cálculo lambda, la incorporación de tipos a esta última, y la introducción de tipos dependientes.
 
 En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con un compilador interactivo que procesa cada línea cuando el cursor se encuentra sobre ella, mostrando el resultado por pantalla. A partir de ahora, los comentarios que acompañan al código reflejan la salida que Lean devuelve en cada línea. Los comentarios en Lean se escriben empezando con doble guión ($`--`) y están en color gris.
 
@@ -89,7 +94,7 @@ Como ocurre en el ejemplo anterior, Lean puede deducir automáticamente el tipo 
 
 # El cálculo lambda
 
-El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal que permite construir expresiones mediante dos operaciones básicas: la abstracción y la aplicación {ref "ref-pierce2002types"}[\[10\]]. En este sistema, algunas expresiones representan funciones (usando la notación lambda) y otras representan valores sobre los que pueden aplicarse dichas funciones. Dos expresiones pueden yuxtaponerse para formar una nueva expresión; si la primera es una abstracción, entonces se interpreta como aplicación funcional. A partir de ahí, pueden realizarse reducciones para simplificar la expresión resultante si corresponde.
+El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal que permite construir expresiones mediante dos operaciones básicas: la abstracción y la aplicación{citepOther refPierce2002Types}[]. En este sistema, algunas expresiones representan funciones (usando la notación lambda) y otras representan valores sobre los que pueden aplicarse dichas funciones. Dos expresiones pueden yuxtaponerse para formar una nueva expresión; si la primera es una abstracción, entonces se interpreta como aplicación funcional. A partir de ahí, pueden realizarse reducciones para simplificar la expresión resultante si corresponde.
 
 Por ejemplo, un término válido podría ser $`\lambda n, n + 2`, que representa una función que puede aplicarse a un valor para obtener otro.
 
@@ -144,7 +149,7 @@ Esta jerarquía no es acumulativa, lo que significa que si `A : Type u`, no se a
 
 En Lean, la gran mayoría de tipos son instancias de una familia de tipos conocidos como *tipos inductivos*. Un tipo inductivo es una estructura formada por una lista finita de constructores, cada uno con su tipo correspondiente. Cada constructor describe una forma válida de construir un término de este nuevo tipo.
 
-En Lean, definimos un tipo inductivo utilizando la palabra clave `inductive`{margin}[Aunque en Lean los tipos inductivos se introducen como una construcción primitiva del lenguaje, pueden definirse de manera equivalente sólo en términos de tipos dependientes. Esta reducción se explora formalmente en {ref "ref-carneiro2019type"}[\[11\]].].
+En Lean, definimos un tipo inductivo utilizando la palabra clave `inductive`{margin}[Aunque en Lean los tipos inductivos se introducen como una construcción primitiva del lenguaje, pueden definirse de manera equivalente sólo en términos de tipos dependientes. Esta reducción se explora formalmente en {citehereOther refCarneiro2019Type}[].].
 
 ```
 inductive Foo where
@@ -250,9 +255,9 @@ Ahora que hemos descrito la manera en la que un resultado se considera demostrad
 
 Como hemos señalado, demostrar un resultado en Lean consiste en construir correctamente un término que tiene un determinado tipo. Este proceso es análogo al de verificar programas: se trata de comprobar que un término está bien formado (siguiendo unas reglas concretas) y satisface una especificación dada, expresada como un tipo. Esta tarea recae sobre el núcleo (o _kernel_) de Lean, un pequeño programa que contiene la implementación mínima de la lógica interna de Lean.
 
-El resto de componentes de Lean con el que interactuamos para construir demostraciones (como por ejemplo las tácticas que veremos después) devuelven construcciones expresadas en el lenguaje del kernel de Lean {ref "ref-bailey2024type"}[\[6\]]. Esto quiere decir que confiar en Lean realmente se reduce a confiar en su kernel{margin}[Esta idea se conoce como _criterio de de Bruijn_, que propone que un verificador formal debe producir sus pruebas en el lenguaje de un núcleo pequeño, incluso aunque utilicen otros métodos más complicados para construir dichas pruebas a priori {ref "ref-bailey2024type"}[\[6\]].].
+El resto de componentes de Lean con el que interactuamos para construir demostraciones (como por ejemplo las tácticas que veremos después) devuelven construcciones expresadas en el lenguaje del kernel de Lean{citepOther refBailey2024Type}[]. Esto quiere decir que confiar en Lean realmente se reduce a confiar en su kernel{margin}[Esta idea se conoce como _criterio de de Bruijn_, que propone que un verificador formal debe producir sus pruebas en el lenguaje de un núcleo pequeño, incluso aunque utilicen otros métodos más complicados para construir dichas pruebas a priori ({citehereOther refBailey2024Type}[]).].
 
-Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel {ref "ref-bailey2024type"}[\[6\]]. Por ejemplo, en {ref "ref-carneiro2024lean4lean"}[\[12\]], Carneiro describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de Mathlib.
+Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel{citepOther refBailey2024Type}[]. Por ejemplo, Carneiro{citepOther refCarneiro2024Lean4Lean}[] describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de Mathlib.
 
 # Demostraciones en Lean
 
@@ -389,7 +394,7 @@ Al escribir una táctica, el apartado `Tactic state` del InfoView se actualizar�
 
 ## Algunas tácticas básicas
 
-En esta sección veremos algunas de las tácticas más básicas y útiles para construir demostraciones en Lean. Veremos cómo se aplican y qué efecto tienen en el InfoView. El resto de tácticas que aparecen a lo largo del trabajo pueden consultarse en el apartado de tácticas de la documentación de Lean, {ref "ref-tacticas"}[\[13\]].
+En esta sección veremos algunas de las tácticas más básicas y útiles para construir demostraciones en Lean. Veremos cómo se aplican y qué efecto tienen en el InfoView. El resto de tácticas que aparecen a lo largo del trabajo pueden consultarse en el apartado de tácticas de la documentación de Lean{citepOther refTacticas}[].
 
 Para poder utilizar las tácticas mencionadas a continuación, es necesario importar el módulo de Mathlib correspondiente al modo táctico mediante
 
@@ -729,7 +734,7 @@ A parte de `exact?`, existen tácticas similares como `apply?` y `rw?`, que func
 
 ### Otras herramientas
 
-A lo largo de este proyecto he utilizado fundamentalmente dos herramientas externas de búsqueda en Mathlib: Moogle {ref "ref-moogle"}[\[14\]] y LeanSearch {ref "ref-gao2024semantic"}[\[15\]]. Ambos son motores de búsqueda semántica, lo que significa que no se limitan a buscar coincidencias literales en el texto, sino que intentan interpretar el significado matemático de nuestra consulta y compararlo con los resultados de Mathlib. Para ello utilizan modelos de lenguaje de gran escala (LLMs), que permiten establecer relaciones entre enunciados aunque estén formulados de distinta manera. En particular, admiten consultas con los siguientes formatos {ref "ref-gao2024semantic"}[\[15\]]:
+A lo largo de este proyecto he utilizado fundamentalmente dos herramientas externas de búsqueda en Mathlib: Moogle{citepOther refMoogle}[] y LeanSearch{citep refGao2024Semantic}[]. Ambos son motores de búsqueda semántica, lo que significa que no se limitan a buscar coincidencias literales en el texto, sino que intentan interpretar el significado matemático de nuestra consulta y compararlo con los resultados de Mathlib. Para ello utilizan modelos de lenguaje de gran escala (LLMs), que permiten establecer relaciones entre enunciados aunque estén formulados de distinta manera. En particular, admiten consultas con los siguientes formatos{citep refGao2024Semantic}[]:
 
 * Descripciones en lenguaje natural
 * Nombres de teoremas conocidos

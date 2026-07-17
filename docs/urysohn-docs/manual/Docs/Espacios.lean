@@ -1,8 +1,11 @@
 import VersoManual
 import Docs.Referencias
+import Docs.Papers
 
 open Verso.Genre Manual
 open Verso.Code.External
+open Verso.Genre.Manual.Docs (citetOther citepOther citehereOther)
+open Docs (refWillard2012General)
 
 set_option pp.rawOnError true
 set_option verso.exampleProject "../../.."
@@ -15,7 +18,7 @@ tag := "espacios-topologicos"
 
 En esta sección veremos cómo se representan en Lean algunos conceptos básicos de topología general. El objetivo no es desarrollar la teoría completa, sino mostrar ejemplos concretos de definiciones y demostraciones formales, que sirvan como primer contacto con el trabajo en Lean sobre espacios topológicos.
 
-Las definiciones y resultados matemáticos utilizados son los habituales en topología general. Aunque inicialmente me basé en los apuntes que tomé en la asignatura Topología Elemental, posteriormente los he contrastado con {ref "ref-willard2012general"}[\[16\]] como referencia estándar.
+Las definiciones y resultados matemáticos utilizados son los habituales en topología general. Aunque inicialmente me basé en los apuntes que tomé en la asignatura Topología Elemental, posteriormente los he contrastado con{citepOther refWillard2012General}[] como referencia estándar.
 
 # Espacios topológicos
 

@@ -1,9 +1,12 @@
 import VersoManual
 import Docs.Referencias
 import Docs.Espacios
+import Docs.Papers
 
 open Verso.Genre Manual
 open Verso.Code.External
+open Verso.Genre.Manual.Docs (citetOther citepOther citehereOther)
+open Docs (refWillard2012General refMathlib2023Urysohn)
 
 set_option pp.rawOnError true
 set_option verso.exampleProject "../../.."
@@ -26,7 +29,7 @@ tag := "thm-urysohn"
 number := false
 %%%
 
-{ref "ref-willard2012general"}[\[16, p. 102, 15.6. Urysohn's Lemma\]]
+{citepOther refWillard2012General}[] (p. 102, 15.6. Urysohn's Lemma).
 
 Sea $`(X, \mathcal{T})` un espacio topológico. $`X` es un espacio normal si y solo si para cada par de conjuntos cerrados disjuntos $`C` y $`D` en $`X`, existe una función $`f : X \to [0, 1]` de manera que $`f(C) = \{0\}` y $`f(D) = \{1\}`.
 
@@ -1452,7 +1455,7 @@ Lo que concluye la prueba del lema de Urysohn.
 
 La prueba del lema de Urysohn que he descrito en este capítulo ha sido implementada por mí de manera completamente independiente a la de Mathlib, la cual no leí hasta haber escrito completamente mi demostración. Para cerrar este capítulo me gustaría hacer una breve comparación de ambas.
 
-La implementación que se encuentra en Mathlib está documentada en {ref "ref-mathlib2023urysohn"}[\[17\]].
+La implementación que se encuentra en Mathlib está documentada{citepOther refMathlib2023Urysohn}[].
 
 Como comentamos al principio del capítulo, la parte más complicada de la demostración ha sido construir la función $`G`, por requerir inducción completa para construir los abiertos e inducción sobre dos variables para probar sus propiedades. En efecto, en la documentación de Mathlib, escriben:
 
