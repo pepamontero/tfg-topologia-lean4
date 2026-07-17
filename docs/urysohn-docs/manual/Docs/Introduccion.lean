@@ -43,7 +43,7 @@ El primer paso fue adquirir los conocimientos básicos sobre Lean. Para ello, me
 
 A partir de entonces, mi interés por Lean creció, y comencé a estudiar de manera autodidacta la versión Lean 4, más reciente y actualmente en desarrollo activo. En particular, seguí con detalle el curso en línea _Formalising Mathematics 2024_ impartido por Kevin Buzzard{citepOther refBuzzard2024Formalising}[], completando los ejercicios propuestos hasta el capítulo 10, dedicado a los espacios topológicos.
 
-Dicho capítulo era muy escueto, e incluía únicamente dos ejemplos de espacios topológicos concretos y algunas cuestiones sobre continuidad de funciones. Los ejercicios que resolví en esta etapa inicial pueden consultarse en el repositorio [https://github.com/pepamontero/Lean4-Buzzard-Exercises](https://github.com/pepamontero/Lean4-Buzzard-Exercises).
+Dicho capítulo era muy escueto, e incluía únicamente dos ejemplos de espacios topológicos concretos y algunas cuestiones sobre continuidad de funciones. Los ejercicios que resolví en esta etapa inicial pueden consultarse en [este repositorio](https://github.com/pepamontero/Lean4-Buzzard-Exercises).
 
 Ante la escasez de contenidos sobre topología, decidí reforzar este aprendizaje tomando como referencia los apuntes que había tomado durante el curso de Topología Elemental del grado. Comencé a formalizar los principales resultados que había visto en clase. Parte de este trabajo se presenta en la sección 3 de este documento.
 
@@ -59,6 +59,6 @@ A continuación, se introducen algunos resultados de topología general. El obje
 
 La tercera parte constituye el núcleo del trabajo: se expone de manera detallada el proceso de formalización del lema de Urysohn y su demostración. Se detalla el camino a seguir junto con las principales dificultades encontradas durante el proceso y las estrategias seguidas para resolverlas. La sección concluye con la comparación con las ideas utilizadas en la demostración de Mathlib.
 
-Todo el código desarrollado durante el proyecto, incluyendo las definiciones y demostraciones en Lean, se encuentra disponible en este repositorio público: `https://github.com/pepamontero/tfg-topologia-lean4`. Este repositorio complementa la memoria escrita y permite reproducir o consultar fácilmente los resultados formales obtenidos.
+Todo el código desarrollado durante el proyecto, incluyendo las definiciones y demostraciones en Lean, se encuentra disponible en [este repositorio público](https://github.com/pepamontero/tfg-topologia-lean4). Este repositorio complementa la memoria escrita y permite reproducir o consultar fácilmente los resultados formales obtenidos.
 
 Por último, se presentan las conclusiones, centradas en las dificultades y ventajas que plantea la escritura de demostraciones en un entorno formal como Lean.
