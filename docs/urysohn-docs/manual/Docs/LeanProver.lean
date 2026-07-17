@@ -4,6 +4,7 @@ import Docs.Papers
 
 open Verso.Genre Manual
 open Verso.Code.External
+open InlineLean
 open Verso.Genre.Manual.Docs (citetOther citepOther citehereOther)
 open Docs (refAvigad2024Theorem refAvigad2021Theorem refMathlib refBailey2024Type
   refSorensen2006Lectures refCoquand1986Calculus refPierce2002Types refCarneiro2019Type
@@ -12,7 +13,6 @@ open Docs (refAvigad2024Theorem refAvigad2021Theorem refMathlib refBailey2024Typ
 set_option pp.rawOnError true
 
 set_option verso.exampleProject "../../.."
-set_option verso.exampleModule "UrysohnsLemma.Docs.TypeTheory"
 
 #doc (Manual) "Lean Theorem Prover" =>
 %%%
@@ -41,53 +41,104 @@ Sin embargo, este sistema carece de una estructura interna diferenciada: todo ob
 
 En particular, Lean se fundamenta en el _Cálculo de Construcciones Inductivas_, una extensión del cálculo de tipos dependientes que incorpora tipos inductivos y una jerarquía numerable no acumulativa de universos{citep refCoquand1986Calculus}[]. Aunque no es necesario entender este sistema para utilizar Lean como asistente de demostración, a continuación daremos una breve explicación de los conceptos fundamentales: la teoría de tipos, el cálculo lambda, la incorporación de tipos a esta última, y la introducción de tipos dependientes.
 
-En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con un compilador interactivo que procesa cada línea cuando el cursor se encuentra sobre ella, mostrando el resultado por pantalla. A partir de ahora, los comentarios que acompañan al código reflejan la salida que Lean devuelve en cada línea. Los comentarios en Lean se escriben empezando con doble guión ($`--`) y están en color gris.
+En esta sección, veremos varios fragmentos de código en Lean. Lean cuenta con un compilador interactivo que procesa cada línea cuando el cursor se encuentra sobre ella, mostrando el resultado por pantalla. A partir de ahora, cuando un fragmento de código produzca una salida (por ejemplo, mediante `#check` o `#eval`), esta se mostrará en un bloque aparte justo debajo del código, con el mismo texto que Lean devolvería.
 
 ## Teoría de tipos
 
 Empecemos por lo más básico: la teoría de tipos. Cambiamos el paradigma de "cada objeto es un conjunto", propio de ZFC, a "cada objeto es un término con un tipo asociado". Esto nos permite estructurar con mayor claridad los objetos matemáticos y sus relaciones.
 
-Por ejemplo, $`3` es un término de tipo "natural" ($`\mathbb{N}`), mientras que "true" es un término de tipo "booleano". En Lean, podemos comprobar el tipo de estas expresiones utilizando el comando `#check`.
+Por ejemplo, $`3` es un término de tipo "natural" (`Nat`), mientras que "true" es un término de tipo "booleano". En Lean, podemos comprobar el tipo de estas expresiones utilizando el comando `#check`.
 
-```anchor check_basic (module := UrysohnsLemma.Docs.TypeTheory)
-#check 3    -- 3 : ℕ
-#check true   -- Bool.true : Bool
+```lean (name := checkBasic1)
+#check 3
+```
+```leanOutput checkBasic1
+3 : Nat
+```
+```lean (name := checkBasic2)
+#check true
+```
+```leanOutput checkBasic2
+Bool.true : Bool
 ```
 
 Como en este ejemplo, en Lean utilizamos el símbolo $`:` para describir la información sobre el tipado. Es decir, si $`x` es un término de tipo $`X`, escribimos $`x : X`.
 
-Por otro lado, un tipo, como es $`\mathbb{N}`, también es un término. Podemos comprobar su tipo:
+Por otro lado, un tipo, como es `Nat`, también es un término. Podemos comprobar su tipo:
 
-```anchor check_nat_type (module := UrysohnsLemma.Docs.TypeTheory)
-#check ℕ    -- ℕ : Type
+```lean (name := checkNatType)
+#check Nat
+```
+```leanOutput checkNatType
+Nat : Type
 ```
 
 En Lean, los tipos tienen su propio tipo, que recibe el nombre de `Type`. Esto nos permite definir nuevos tipos. Podemos utilizar el comando `variable` para definir objetos en nuestro código{margin}[Veremos este comando en detalle más adelante.].
 
-```anchor var_x (module := UrysohnsLemma.Docs.TypeTheory)
+```lean -show
+section VarX
+```
+```lean (name := varX1)
 variable (X : Type)
-#check X    -- X : Type
+#check X
+```
+```leanOutput varX1
+X : Type
+```
+```lean (name := varX2)
 variable (x : X)
-#check x    -- x : X
+#check x
+```
+```leanOutput varX2
+x : X
+```
+```lean -show
+end VarX
 ```
 
 Ahora, podemos combinar distintos tipos para obtener tipos más complejos. Sean $`X` e $`Y` dos tipos. Podemos considerar el tipo $`X \times Y`, que denota los pares formados por un elemento de $`X` y otro de $`Y`. El tipo que más utilizaremos es $`X \to Y`, que denota las funciones de $`X` en $`Y`. Escribimos esto en Lean.
 
-```anchor var_xy (module := UrysohnsLemma.Docs.TypeTheory)
+```lean -show
+section VarXY
+```
+```lean (name := varXY1)
 variable (X Y : Type)
-#check X × Y    -- X × Y : Type
+#check X × Y
+```
+```leanOutput varXY1
+X × Y : Type
+```
+```lean (name := varXY2)
 variable (x : X) (y : Y)
-#check (x, y)    -- (x, y) : X × Y
-
-#check X → Y    -- X → Y : Type
+#check (x, y)
+```
+```leanOutput varXY2
+(x, y) : X × Y
+```
+```lean (name := varXY3)
+#check X → Y
+```
+```leanOutput varXY3
+X → Y : Type
+```
+```lean (name := varXY4)
 variable (f : X → Y)
-#check f    -- f : X → Y
+#check f
+```
+```leanOutput varXY4
+f : X → Y
 ```
 
 Por otro lado, a partir de la yuxtaposición de términos simples, podemos formar términos más complejos. En Lean, las reglas de tipado dictan el tipo de estos nuevos términos obtenidos. Por ejemplo, si $`x` es de tipo $`X` y $`f` es de tipo $`A \to B`, como en el ejemplo anterior, entonces $`f x` tiene tipo $`B`. En efecto:
 
-```anchor apply_fx (module := UrysohnsLemma.Docs.TypeTheory)
-#check f x    -- f x : Y
+```lean (name := applyFx)
+#check f x
+```
+```leanOutput applyFx
+f x : Y
+```
+```lean -show
+end VarXY
 ```
 
 Como ocurre en el ejemplo anterior, Lean puede deducir automáticamente el tipo de muchos términos a partir del contexto. Esta capacidad se conoce como *inferencia de tipos* y en muchas ocasiones nos facilita el trabajo, permitiendo un código más conciso.
@@ -100,14 +151,23 @@ Por ejemplo, un término válido podría ser $`\lambda n, n + 2`, que representa
 
 En Lean, definimos funciones utilizando el comando `fun`, que corresponde a la notación $`\lambda` del cálculo lambda clásico{margin}[En la versión anterior de Lean, se utilizaba la notación `λ n, n + 2`, sin embargo en esta última versión se ha cambiado a `fun n ↦ n + 2` para mejorar la legibilidad del código.]. Por ejemplo{margin}[Estudiaremos el comando `def` en detalle más adelante.]:
 
-```anchor lambda_f_def (module := UrysohnsLemma.Docs.TypeTheory)
+```lean -show
+namespace LambdaEx1
+```
+```lean (name := lambdaFDef)
 def f := fun n ↦ n + 2
 ```
 
 Además, Lean admite reducción por aplicación funcional sobre estos términos. Por ejemplo, si aplicamos la anterior función a $`3`, $`(n \mapsto n + 2)3`, se puede reducir a $`3 + 2` por aplicación funcional, y, suponiendo que la operación $`+` estaba definida anteriormente, podemos reducir esta expresión a $`5`. Podemos comprobar el resultado de esta reducción utilizando el comando `#eval`.
 
-```anchor lambda_f_eval (module := UrysohnsLemma.Docs.TypeTheory)
-#eval f 3    -- 5
+```lean (name := lambdaFEval)
+#eval f 3
+```
+```leanOutput lambdaFEval
+5
+```
+```lean -show
+end LambdaEx1
 ```
 
 Diremos que dos términos que pueden reducirse de esta manera al mismo valor son *iguales por definición*. Lean trata términos que sean iguales por definición como literalmente iguales, como veremos en la práctica.
@@ -118,8 +178,14 @@ El cálculo lambda clásico no incorpora tipos: cualquier función puede aplicar
 
 Podemos escribir el ejemplo anterior de la siguiente forma en Lean:
 
-```anchor typed_lambda_f (module := UrysohnsLemma.Docs.TypeTheory)
-def f : ℕ → ℕ := fun n => 2 * n
+```lean -show
+namespace LambdaEx2
+```
+```lean (name := typedLambdaF)
+def f : Nat → Nat := fun n => 2 * n
+```
+```lean -show
+end LambdaEx2
 ```
 
 Aquí, estamos indicando que $`f` tiene tipo $`\mathbb{N} \to \mathbb{N}`, es decir, que es una función que toma valores en $`\mathbb{N}` y devuelve valores en $`\mathbb{N}`. Esta información permite a Lean verificar que las expresiones están bien formadas.
@@ -130,9 +196,17 @@ Para poder expresar los distintos objetos matemáticos en esta teoría, necesita
 
 Por ejemplo, en Lean, el tipo `List α` representa una lista de elementos de tipo $`\alpha`. Si definimos un objeto de tipo `List α`, el tipo de este objeto dependerá del tipo $`\alpha` que le asignemos Internamente, se define como una función de tipo `Type u → Type u`.
 
-```anchor list_dependent (module := UrysohnsLemma.Docs.TypeTheory)
-#check List    -- List.{u} (α : Type u) : Type u
-#check List ℝ    -- List ℝ : Type
+```lean (name := listDep1)
+#check List
+```
+```leanOutput listDep1
+List.{u} (α : Type u) : Type u
+```
+```lean (name := listDep2)
+#check List Nat
+```
+```leanOutput listDep2
+List Nat : Type
 ```
 
 Podemos pensar en los tipos dependientes como una generalización de las funciones que van de un tipo en otro tipo, y el tipo de llegada puede depender del tipo de entrada. Llamamos "funciones dependientes" a este tipo de funciones.
@@ -161,10 +235,16 @@ inductive Foo where
 
 Un ejemplo clásico de definición inductiva es el conjunto de los números naturales, $`\mathbb{N}`. En Lean, podemos describir el tipo `Nat` de los números naturales como
 
-```anchor inductive_nat_demo (module := UrysohnsLemma.Docs.TypeTheory)
+```lean -show
+namespace Scratch
+```
+```lean (name := inductiveNatDemo)
 inductive Nat where
   | zero : Nat
   | succ : Nat → Nat
+```
+```lean -show
+end Scratch
 ```
 
 Internamente, la declaración `inductive` genera automáticamente una colección de axiomas que definen el tipo:
@@ -173,9 +253,19 @@ Internamente, la declaración `inductive` genera automáticamente una colección
 * Una serie de reglas de introducción o constructores, que indican las posibles formas de construir términos del nuevo tipo.
 * Una regla de eliminación, `Nat.rec`, que indica la forma de "usar" un término de este tipo{margin}[El comando `#print` muestra la definición completa del objeto, a diferencia de `#check`, que solo muestra su tipo.].
 
-```anchor print_nat_rec (module := UrysohnsLemma.Docs.TypeTheory)
+```lean (name := printNatRec)
 #print Nat.rec
-    -- recursor Nat.rec.{u}  :  {motive : ℕ → Sort u} → motive Nat.zero → ((n : ℕ) → motive n → motive n.succ) → (t : ℕ) → motive t
+```
+```leanOutput printNatRec
+recursor Nat.rec.{u} : {motive : Nat → Sort u} →
+  motive Nat.zero → ((n : Nat) → motive n → motive n.succ) → (t : Nat) → motive t
+number of parameters: 0
+number of indices: 0
+number of motives: 1
+number of minors: 2
+rules:
+for Nat.zero (0 fields): fun motive zero succ => zero
+for Nat.succ (1 fields): fun motive zero succ n => succ n (Nat.rec zero succ n)
 ```
 
 Es decir, `inductive` puede verse como _azúcar sintáctico_ que genera automáticamente el siguiente código en Lean{margin}[Estudiaremos el comando `axiom` en detalle más adelante.]:
@@ -191,7 +281,7 @@ axiom (Nat.rec : {motive : Nat → Sort u} → motive Nat.zero →
 
 Este último objeto, `Nat.rec`, codifica el principio de inducción sobre los naturales{margin}[`Nat.rec` es un tipo que depende de `motive`, que es una propiedad cualquiera sobre los naturales. `Nat.rec` nos dice que si se cumple `motive` para `Nat.zero` (`motive Nat.zero`), entonces si para cada `n` (`n : Nat`) que cumpla `motive` (`motive n`) se tiene que `n+1` cumple `motive` (`motive Nat.succ n`), entonces se cumple `motive` para cualquier `n` (`(t : Nat) → motive t`).]. Este principio se utiliza implícitamente en muchas definiciones por casos, como por ejemplo:
 
-```anchor add_def (module := UrysohnsLemma.Docs.TypeTheory)
+```lean (name := addDef)
 def add (m n : Nat) : Nat :=
   match n with
   | Nat.zero   => m
@@ -210,23 +300,57 @@ En el cálculo de construcciones inductivas, en cambio, la lógica se expresa de
 
 Las proposiciones, como cualquier otro objeto en esta teoría, son términos con un tipo asociado. En Lean, este tipo recibe el nombre de `Prop`.
 
-```anchor prop_check (module := UrysohnsLemma.Docs.TypeTheory)
-#check Prop    -- Prop : Type
-#print True    -- inductive True : Prop
+```lean (name := propCheck1)
+#check Prop
+```
+```leanOutput propCheck1
+Prop : Type
+```
+```lean (name := propCheck2)
+#print True
+```
+```leanOutput propCheck2
+inductive True : Prop
+number of parameters: 0
+constructors:
+True.intro : True
 ```
 
-```anchor prop_var_p (module := UrysohnsLemma.Docs.TypeTheory)
+```lean -show
+section PropVarP
+```
+```lean (name := propVarP1)
 variable (P : Prop)
-#check P    -- P : Prop
-#check ¬ P    -- ¬ P : Prop
+#check P
+```
+```leanOutput propVarP1
+P : Prop
+```
+```lean (name := propVarP2)
+#check ¬ P
+```
+```leanOutput propVarP2
+¬P : Prop
+```
+```lean -show
+end PropVarP
 ```
 
 En Lean, interpretamos los objetos de tipo `Prop` como tipos en sí mismos y las demostraciones de cada proposición como términos que habitan este tipo, siguiendo la correspondencia de Curry-Howard. Es decir, una proposición `p : Prop` es el tipo de las demostraciones de `p`; una expresión de la forma `h : p` quiere decir que `h` es una demostración de `p`. Decimos que una proposición `p` es verdadera si podemos construir término de tipo `p`.
 
-```anchor prop_var_ph (module := UrysohnsLemma.Docs.TypeTheory)
+```lean -show
+section PropVarPH
+```
+```lean (name := propVarPH)
 variable (p : Prop)
 variable (h : p)
-#check h    -- h : p
+#check h
+```
+```leanOutput propVarPH
+h : p
+```
+```lean -show
+end PropVarPH
 ```
 
 Esto, junto con la teoría de tipos dependientes, nos proporciona una forma de definir cualquier resultado matemático. Por ejemplo, "ser par" es una propiedad que depende de un número natural $`n`, por lo que podríamos describirlo mediante `es_par : ℕ → Prop`. Para cada `n` natural, obtenemos un término de tipo `Prop`.
@@ -279,16 +403,28 @@ Podemos introducir nueva información en el contexto de distintas formas. Distin
 
 Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que x "es de tipo X" es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos{margin}[En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. `inductive Nat` se puede ver como una versión estructurada de `axiom Nat : Type`, `axiom zero : Nat`, `axiom succ : Nat to Nat`, etc.]. Por ejemplo:
 
-```anchor axiom_p_h (module := UrysohnsLemma.Docs.Definitions)
+```lean -show
+namespace AxiomP
+```
+```lean (name := axiomPH)
 axiom P : Prop
 axiom h : P → P
+```
+```lean -show
+end AxiomP
 ```
 
 Estamos declarando una proposición $`P` y una prueba de que $`P` implica $`P`.
 
-```anchor axiom_n_hn (module := UrysohnsLemma.Docs.Definitions)
-axiom n : ℕ
+```lean -show
+namespace AxiomN
+```
+```lean (name := axiomNHn)
+axiom n : Nat
 axiom hn : n > 2
+```
+```lean -show
+end AxiomN
 ```
 
 Aquí estamos suponiendo que $`n` es un número natural mayor que $`2`.
@@ -299,27 +435,45 @@ Así, los axiomas nos permiten fijar hechos que queremos asumir como válidos a 
 
 Introducen objetos nuevos a partir de otros ya conocidos. A diferencia de los axiomas, no basta con indicar el tipo del nuevo objeto, sino que también hay que dar su construcción. Por ejemplo:
 
-```anchor defs_f_n_espar (module := UrysohnsLemma.Docs.Definitions)
-def f : ℕ → ℕ := fun n ↦ 2 * n
-def n : ℕ := 3
-def es_par : ℕ → Prop := fun n ↦ ∃ m, n = f m
+```lean -show
+namespace DefsBlock
+```
+```lean (name := defsFNEspar)
+def f : Nat → Nat := fun n ↦ 2 * n
+def n : Nat := 3
+def es_par : Nat → Prop := fun n ↦ ∃ m, n = f m
+```
+```lean -show
+end DefsBlock
 ```
 
 Además, cuando el tipo puede inferirse a partir de la construcción, no es necesario indicarlo explícitamente:
 
-```anchor def_n_infer (module := UrysohnsLemma.Docs.Definitions)
+```lean (name := defNInfer)
 def n := 3
-#check n    -- n : ℕ
+#check n
+```
+```leanOutput defNInfer
+n : Nat
 ```
 
 * *Variables*
 
 En la mayoría de lenguajes de programación, estamos acostumbrados a que definir una variable implique asignarle un valor concreto. Sin embargo, en Lean las variables se comportan más bien como en lógica. Al introducir una variable $`x`, lo que se introduce es un contexto universal: siempre que $`x` aparezca de forma libre, Lean interpretará que lo que sigue está cuantificado universalmente respecto a $`x`. Por ejemplo{margin}[Las variables, a diferencia de los axiomas y las definiciones, se escriben entre paréntesis. Lo mismo ocurre con los argumentos que toman las proposiciones, como veremos más adelante. Esto está relacionado con la correspondencia de Curry–Howard: declarar una variable equivale a abstraer sobre ella, lo que corresponde a cuantificar universalmente.]:
 
-```anchor var_x_axiom_hx (module := UrysohnsLemma.Docs.Definitions)
-variable (x : ℕ)
+```lean -show
+section VarXAxiomHx
+```
+```lean (name := varXAxiomHx)
+variable (x : Nat)
 axiom hx : x ≥ 0
-#print hx    -- axiom hx : ∀ (x : ℕ), x ≥ 0
+#print hx
+```
+```leanOutput varXAxiomHx
+axiom hx : ∀ (x : Nat), x ≥ 0
+```
+```lean -show
+end VarXAxiomHx
 ```
 
 ## Proposiciones
