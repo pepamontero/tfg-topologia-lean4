@@ -6,15 +6,20 @@ import UrysohnsLemma.TopoSpaces.usual
 Note: needs proof that it is actually a topological space
 -/
 
+-- ANCHOR: TopoSubspace_isOpen_field
 def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
   TopologicalSpace Y where
 
   IsOpen (V : Set Y) := ∃ U : Set X, T.IsOpen U ∧ V = U ∩ Y
+-- ANCHOR_END: TopoSubspace_isOpen_field
+-- ANCHOR: TopoSubspace_isOpen_univ
   isOpen_univ := by
     use (Set.univ : Set X)
     constructor
     · exact T.isOpen_univ
     · simp
+-- ANCHOR_END: TopoSubspace_isOpen_univ
+-- ANCHOR: TopoSubspace_isOpen_inter
   isOpen_inter := by
     intro V1 V2 h1 h2
     obtain ⟨U1, h1open, h1inter⟩ := h1
@@ -25,6 +30,7 @@ def TopoSubspace {X : Type} (T : TopologicalSpace X) (Y : Set X) :
     · simp
       rw [h1inter, h2inter]
       exact Eq.symm (Set.inter_inter_distrib_right U1 U2 Y)
+-- ANCHOR_END: TopoSubspace_isOpen_inter
   isOpen_sUnion := by
     intro S hS
 
@@ -79,6 +85,7 @@ Example: [0, b) is open for b < 1 in [0, 1]
 seen as a topological subspace of ℝ with the usual topology
 -/
 
+-- ANCHOR: ico_open_in_Icc01
 lemma ico_open_in_Icc01 {Y : Set ℝ}
     {hY : Y = Set.Icc 0 1}
     {R : TopologicalSpace Y}
@@ -100,6 +107,7 @@ lemma ico_open_in_Icc01 {Y : Set ℝ}
         constructor
         all_goals linarith
       · exact hx.right
+-- ANCHOR_END: ico_open_in_Icc01
 
 
 

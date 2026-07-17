@@ -1,9 +1,11 @@
 import Mathlib.Tactic
 
 
+-- ANCHOR: lt_pair_defs
 def lt_pair : (ℕ × ℕ) → (ℕ × ℕ) → Prop := Prod.Lex (Nat.lt) (Nat.lt)
 def lt_pair_wfr : WellFoundedRelation (ℕ × ℕ) := Prod.lex (Nat.lt_wfRel) (Nat.lt_wfRel)
 lemma lt_pair_wf : WellFounded lt_pair := lt_pair_wfr.wf
+-- ANCHOR_END: lt_pair_defs
 
 
 

@@ -3,8 +3,11 @@ import Docs.Referencias
 import Docs.Espacios
 
 open Verso.Genre Manual
+open Verso.Code.External
 
 set_option pp.rawOnError true
+set_option verso.exampleProject "../../.."
+set_option verso.exampleModule "UrysohnsLemma.Separation.urysohn"
 
 #doc (Manual) "El Lema de Urysohn" =>
 %%%
@@ -29,17 +32,23 @@ Sea $`(X, \mathcal{T})` un espacio topológico. $`X` es un espacio normal si y s
 
 Para la fomalización en Lean, pediremos que los cerrados $`C` y $`D` sean no vacíos. Obviamente, si uno de los dos es vacío, basta tomar la función continua $`f(x) \equiv 1`, pero podemos descartar estos casos triviales.
 
-```
-  lemma Urysohn {X : Type} {Y : Set ℝ} (T : TopologicalSpace X)
-      [T' : TopologicalSpace ℝ] (hT' : T' = UsualTopology)
-      {R : TopologicalSpace Y} {hY : Y = Set.Icc 0 1}
-      {hR : R = TopoSubspace T' Y} :
-      NormalSpace X ↔
-        ∀ C1 : Set X, ∀ C2 : Set X, C1 ≠ ∅ → C2 ≠ ∅ →
-        IsClosed C1 → IsClosed C2 → Disjoint C1 C2 →
-        ∃ f : X → Y, Continuous f ∧
-          f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
-          f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by sorry
+```anchor Urysohn_sig (module := UrysohnsLemma.Separation.urysohn)
+lemma Urysohn {X : Type} {Y : Set ℝ}
+    (T : TopologicalSpace X)
+    [T' : TopologicalSpace ℝ]
+    (hT' : T' = UsualTopology)
+    {R : TopologicalSpace Y}
+    {hY : Y = Set.Icc 0 1}
+    {hR : R = TopoSubspace T' Y} :
+    NormalSpace X ↔
+      ∀ C1 : Set X, ∀ C2 : Set X,
+      C1 ≠ ∅ → C2 ≠ ∅ →
+      IsClosed C1 → IsClosed C2 →
+      Disjoint C1 C2 →
+      ∃ f : X → Y,
+        Continuous f ∧
+        f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
+        f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by
 ```
 
 # El recíproco
@@ -48,54 +57,54 @@ Veamos primero la demostración del recíproco, que es más sencilla.
 
 *Demostración.* Supongamos que cualquier par de cerrados disjuntos de $`X` se pueden separar mediante una función continua y veamos que entonces $`X` es un espacio normal. Sean $`C_1` y $`C_2` cerrados disjuntos en $`X`.
 
-```
-· intro h
-  rw [normal_space_def]
-  intro C1 C2 hC1 hC2 hinter
+```anchor Urysohn_reciprocal_intro (module := UrysohnsLemma.Separation.urysohn)
+    intro h
+    rw [normal_space_def] -- `1`
+    intro C1 C2 hC1 hC2 hinter -- `2`
 ```
 
 Como en la definición de normal no pedimos que los cerrados sean no vacíos, tenemos que diferenciar estos casos. Sin embargo, estos casos son triviales porque basta tomar el conjunto vacío para recubrir el vacío y $`X` para recubrir el otro conjunto. En Lean hay que ser rigurosos con este paso, pero aquí lo obviaremos por simplicidad.
 
 Supongamos entonces que $`C_1` y $`C_2` son no vacíos. Por hipótesis, existe una función continua $`f : X \to [0, 1]` de forma que $`f(C_1) = \{0\}` y $`f(C_2) = \{1\}`.
 
-```
-  obtain ⟨f, hf, hfC1, hfC2⟩ := h C1 C2 hC1nempty hC2nempty hC1 hC2 hinter
+```anchor Urysohn_reciprocal_obtain (module := UrysohnsLemma.Separation.urysohn)
+    obtain ⟨f, hf, hfC1, hfC2⟩ := h C1 C2 hC1nempty hC2nempty hC1 hC2 hinter
 ```
 
 Consideremos entonces los conjuntos $`U_1 = f^{-1}([0, \frac{1}{2}))` y $`U_2 = f^{-1}((\frac{1}{2}, 1])`. Queremos ver que son los abiertos que necesitamos de la definición de normal, es decir, que son abiertos en $`X`, que $`C_i \subseteq U_i` y que son disjuntos.
 
-```
-  use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)})
-  use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1})
+```anchor Urysohn_reciprocal_use (module := UrysohnsLemma.Separation.urysohn)
+    use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)})
+    use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1})
 ```
 
 Para ver que $`U_1` es abierto, utilizamos que $`f` es continua. Basta ver que $`[0, \frac{1}{2})` es abierto en $`[0, 1]`. Pero ya vimos que los intervalos de la forma $`[0, b)` son abiertos en $`[0, 1]`, así que basta aplicar esta propiedad. Análogo para $`U_2`.
 
-```
-  · apply hf -- aplicar def. de f continua
-    apply ico_open_in_Icc01 -- [0, b) es abierto en [0, 1]
-    · exact hY -- estamos en [0, 1]
-    · exact hR -- estamos en la top. relativa
-    · norm_num -- 0 < 1/2 < 1
+```anchor Urysohn_reciprocal_U1_open (module := UrysohnsLemma.Separation.urysohn)
+    · apply hf -- aplicar def. de f continua
+      apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
+      · exact hY
+      · exact hR
+      · norm_num
 ```
 
 Para ver que $`C_1 \subseteq U_1`, basta ver que $`f(C_1) \subseteq [0, \frac{1}{2})`, que es trivial. Análogo para $`U_2`.
 
-```
-  · rw [← Set.image_subset_iff, hfC1] -- {0} ⊆ [0, 1/2) ?
-    simp
+```anchor Urysohn_reciprocal_C1_subset_U1 (module := UrysohnsLemma.Separation.urysohn)
+    · rw [← Set.image_subset_iff, hfC1] -- `{0} ⊆ [0, 1/2)` ?
+      simp
 ```
 
 Para ver que son disjuntos, vemos que $`[0, \frac{1}{2})` y $`(\frac{1}{2}, 1]` son disjuntos. Obviamente lo son, pero para Lean es un poco más complicado, así que procedemos por reducción al absurdo para poder simplificar las expresiones. Finalmente llegamos a que no existe un $`x` con $`x < 1/2` y $`x > 1/2`.
 
-```
-  · apply Disjoint.preimage
-    by_contra c
-    rw [Set.disjoint_iff_inter_eq_empty, ← ne_eq,
-      ← Set.nonempty_iff_ne_empty] at c
-    obtain ⟨x, hxu, hxv⟩ := c
-    simp at hxu hxv
-    linarith
+```anchor Urysohn_reciprocal_disjoint (module := UrysohnsLemma.Separation.urysohn)
+    · apply Disjoint.preimage
+      by_contra c
+      apply (not_iff_not.mpr (Set.disjoint_iff_inter_eq_empty)).mp at c
+      rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at c
+      obtain ⟨x, hxu, hxv⟩ := c
+      simp at hxu hxv
+      linarith
 ```
 ∎
 
@@ -176,19 +185,16 @@ Veamos ahora como se traduce esto en Lean.
 
 Los racionales son numerables, es decir existe una biyección entre $`\mathbb{N}` y $`\mathbb{Q}`. En particular, necesitamos una función $`f : \mathbb{N} \to Q` donde $`Q = \mathbb{Q} \cap [0, 1]`, de forma que $`f` sea biyectiva, $`f(0) = 1` y $`f(1) = 0`. Es decir, la función que nos lleva cada $`k \in \mathbb{N}` a $`p_k`.
 
-```
-  lemma hf : ∃ f : ℕ → Q,
-      (f.Bijective ∧
-      f 0 = ⟨1, Q1⟩ ∧
-      f 1 = ⟨0, Q0⟩) := by sorry
+```anchor hf_sig (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0, Q0⟩) := by
 ```
 
 Para demostrar la existencia de tal función necesitamos una serie de resultados previos.
 
 En primer lugar, la numerabilidad de los racionales ya está demostrada en Mathlib como `Rat.instDenumerable`. Para poder extraer una función biyectiva de este resultado, he escrito el siguiente lema:
 
-```
-  lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
+```anchor bijective_nat_rat_full (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
     have f := (Rat.instDenumerable.eqv).symm
     use f
     exact f.bijective
@@ -200,38 +206,42 @@ Ahora, quiero demostrar que existe una función biyectiva de $`\mathbb{N}` en $`
 
 Para demostrar que esta biyección existe, basta demostrar que $`\mathbb{Q}` y $`Q` tienen el mismo cardinal (`Cardinal.eq`). Pero, de hecho, cualquier subconjunto de $`\mathbb{Q}` no finito tiene cardinal $`\aleph_0` (demostrado en `non_finite_rat_set_cardinal_aleph0`). Basta demostrar que $`Q` no es finito (queda demostrado en `Q_not_finite`).
 
-```
-  lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) :
-      Cardinal.mk ↑A = Cardinal.aleph0 := by sorry
+```anchor non_finite_rat_set_cardinal_aleph0_sig (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) : Cardinal.mk ↑A = Cardinal.aleph0 := by
 ```
 
 Por último, cualquier permutación de dos valores de una función preserva la biyectividad (demostrado en `permute_f_bijectivity`). Por tanto, podemos forzar que $`f(0) = 1` y $`f(1) = 0`.
 
-```
-  def permute_f {X Y : Type} [DecidableEq X]
-    (f : X → Y) (a b : X) : X → Y := fun x ↦
+```anchor permute_f_def (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+def permute_f {X Y : Type} [DecidableEq X]
+    (f : X → Y) (a b : X)
+    : X → Y :=
+    fun x ↦
       if x = a then f b
       else if x = b then f a
       else f x
+```
 
-  lemma permute_f_bijectivity {X Y : Type} [DecidableEq X]
-      {f : X → Y} (a b : X) (h : f.Bijective) :
-      (permute_f f a b).Bijective := by sorry
+```anchor permute_f_bijectivity_sig (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+lemma permute_f_bijectivity {X Y : Type} [DecidableEq X]
+    {f : X → Y} (a b : X)
+    (h : f.Bijective) :
+    (permute_f f a b).Bijective := by
 ```
 
 Una vez demostrado `hf`, podemos definir $`f` mediante `Classical.choose` y empezar a trabajar con ella, aunque no la conozcamos explícitamente.
 
-```
-  noncomputable def f : ℕ → Q := Classical.choose hf
+```anchor f_def (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+noncomputable def f : ℕ → Q := Classical.choose hf
 ```
 
 Por ejemplo, podemos probar que tiene inversa.
 
-```
-  lemma f_has_inverse :  ∃ g, Function.LeftInverse g f ∧
-      Function.RightInverse g f := by
-    rw [← Function.bijective_iff_has_inverse]
-    exact f_prop.left
+```anchor f_has_inverse_full (module := UrysohnsLemma.MyDefs.my_denumerableQ)
+lemma f_has_inverse :  ∃ g, Function.LeftInverse g f ∧ Function.RightInverse g f
+  := by
+  rw [← Function.bijective_iff_has_inverse]
+  exact f_prop.left
 ```
 
 ## Encontrar el sucesor y predecesor inmediato
@@ -247,36 +257,42 @@ number := false
 
 Sea $`n > 1`. Entonces existe un $`r_n < n` de forma que $`f(r_n) < f(n)`, y si $`k < n` es tal que $`f(k) < f(n)` entonces $`f(k) \leq f(r_n)`.
 
-```
-  lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
+```anchor exists_r_sig (module := UrysohnsLemma.MyDefs.my_rs_functions)
+lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
-    (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by sorry
+    (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
 ```
 
 *Demostración.* Sea $`n>1`. Consideremos el conjunto
 
 $$`R = \{m : \mathbb{N} ~|~ m < n \land f(m) < f(n)\}`
 
-```
+```anchor exists_r_R_def (module := UrysohnsLemma.MyDefs.my_rs_functions)
   let R : Finset ℕ := (Finset.range n).filter (fun m ↦ f m < f n)
 ```
 
 $`R` es un conjunto finito no vacío, pues $`1 \in R`
 
-```
+```anchor exists_r_hR_nonempty_preview (module := UrysohnsLemma.Docs.Urysohn)
   have hR : R.Nonempty
   · use 1; sorry
 ```
 
 Tomamos el conjunto $`f(R)`, que también es un conjunto finito y no vacío, por serlo $`R`, luego tiene máximo. Tomamos el argumento máximo de $`f(R)`, $`r_n = \arg \max \{f(m) ~|~ m \in R\}`, y veamos que satisface las condiciones que pedimos.
 
-```
+```anchor exists_r_finish (module := UrysohnsLemma.MyDefs.my_rs_functions)
   let fR : Finset Q := R.image f
+  -- tomamos el conjunto de as imágenes de R
+
+  -- vemos que no es vacío
   have hfR : fR.Nonempty := (Finset.image_nonempty).mpr hR
+
+  -- tomamos el máximo de las imágenes
   let fr := Finset.max' fR ((Finset.image_nonempty).mpr hR)
-  obtain ⟨r, hr⟩ := Finset.mem_image.mp
-    (by exact Finset.max'_mem fR hfR)
-  use r
+  -- tomamos el argumento de fr, fr = f r
+  obtain ⟨r, hr⟩ := Finset.mem_image.mp (by exact Finset.max'_mem fR hfR)
+
+  use r -- probamos que este r nos vale
 ```
 
 Se tiene que $`r \in R`, luego $`r < n` y $`f(r) < f(n)`. Sea entonces un $`k < n` con $`f(k) < f(n)`. Por construcción, $`k \in R` y por tanto $`f(k) \in f(R)`. Como $`r` es el argumento máximo de $`f(R)`, $`f(r)` es el máximo de $`f(R)` y por tanto $`f(k) \leq f(R)`, como queríamos. ∎
@@ -285,14 +301,16 @@ La demostración completa está en el repositorio, así como el análogo para $`
 
 Garantizada la existencia de estas funciones, podemos tomar ahora las funciones $`r` y $`s` y empezar a trabajar con ellas.
 
+```anchor r_def (module := UrysohnsLemma.MyDefs.my_rs_functions)
+noncomputable def r : ℕ → ℕ := fun n ↦
+  if h : n > 1 then Classical.choose (exists_r n h)
+  else 1
 ```
-  noncomputable def r : ℕ → ℕ := fun n ↦
-    if h : n > 1 then Classical.choose (exists_r n h)
-    else 1
 
-  noncomputable def s : ℕ → ℕ := fun n ↦
-    if h : n > 1 then Classical.choose (exists_s n h)
-    else 0
+```anchor s_def (module := UrysohnsLemma.MyDefs.my_rs_functions)
+noncomputable def s : ℕ → ℕ := fun n ↦
+  if h : n > 1 then Classical.choose (exists_s n h)
+  else 0
 ```
 
 Veamos las principales propiedades de estas dos funciones. En primer lugar, tenemos las propiedades básicas de $`r` y $`s` que son simplemente por construcción.
@@ -312,11 +330,12 @@ $$`\left\{
   \end{array}
 \right.`
 
-```
-  lemma r_prop (n : ℕ) (hn : n > 1) : (
-      (r n ∈ Finset.range n) ∧ (f (r n) < f n) ∧
-      (∀ m ∈ Finset.range n, f m < f n → f m ≤ f (r n))
-    ) := by sorry
+```anchor r_prop_sig (module := UrysohnsLemma.MyDefs.my_rs_functions)
+lemma r_prop (n : ℕ) (hn : n > 1) : (
+  (r n ∈ Finset.range n) ∧
+  (f (r n) < f n) ∧
+  (∀ m ∈ Finset.range n, f m < f n → f m ≤ f (r n))
+) := by
 ```
 
 El resultado es simétrico para $`s` y recibe el nombre de `s_prop`.
@@ -328,9 +347,12 @@ number := false
 
 Sea $`n > 1`. Entonces o bien $`r(n) = 1` o bien $`r(n) > 1`. Es decir, no puede ser $`r(n) = 0`. De forma análoga, no puede ser $`s(n) = 1`, luego o bien $`s(n) = 0` o bien $`s(n) > 1`.
 
+```anchor r_options_sig (module := UrysohnsLemma.MyDefs.my_rs_functions)
+lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by
 ```
-  lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by sorry
-  lemma s_options (n : ℕ) (hn : n > 1) : s n = 0 ∨ s n > 1 := by sorry
+
+```anchor s_options_sig (module := UrysohnsLemma.MyDefs.my_rs_functions)
+lemma s_options (n : ℕ) (hn : n > 1) : s n = 0 ∨ s n > 1 := by
 ```
 
 También se obtiene un resultado `rs_options` que encapsula las cuatro combinaciones posibles de valores para $`r` y $`s`, para facilitar el trabajo con ellas.
@@ -346,23 +368,25 @@ Sea $`n > 1` y supongamos que $`s(n) > 1` y que $`r(n) < s(n)`. Entonces $`r(n) 
 
 De manera análoga, si $`r(n) >1` y $`s(n) < r(n)`, entonces $`s(n) = s(r(n))`.
 
-```
-  lemma rn_eq_rsn (n : ℕ) (hn : n > 1) (hsn : s n > 1)
-      (h : r n < s n) : r n = r (s n) := by
+```anchor rn_eq_rsn_sig (module := UrysohnsLemma.MyDefs.my_rs_functions)
+lemma rn_eq_rsn (n : ℕ) (hn : n > 1)
+    (hsn : s n > 1)
+    (h : r n < s n)
+    : r n = r (s n) := by
 ```
 
 El análogo a este recibe el nombre de `sn_eq_srn`.
 
 *Demostración.* Demostramos solo el primero y el segundo es parecido. Sea $`n > 1` y supongamos que $`s(n) > 1` y que $`r(n) < s(n)`. Queremos ver que $`r(n) = r(s(n))`. Por la inyectividad de $`f`, podemos comprobar en su lugar que $`f (r (n)) = f (r (s (n)))`. Veamos que se cumplen ambas desigualdades.
 
-```
+```anchor rn_eq_rsn_start (module := UrysohnsLemma.MyDefs.my_rs_functions)
   apply f_prop.left.left
   apply ge_antisymm
 ```
 
 (1) Para ver $`f (r (s (n))) \leq f (r (n))`, aplicamos la tercera parte de `r_prop`. Luego hay que ver que $`r(s(n)) < n`, lo cual sencillo por ser $`r(s(n)) < s(n) < n`, y que $`f (r (s (n))) < f n`. Esto último es cierto porque si fuera $`f(n) < f(r(s(n)))`, como $`r(s(n)) < s(n)` tendríamos $`f(s (n)) \leq f(r(s(n)))`, pero eso es imposible porque $`f(r(s(n))) < f(s(n))` por construcción (esta última parte viene dada por un resultado auxiliar `f_rs_prop`).
 
-```
+```anchor rn_eq_rsn_case1 (module := UrysohnsLemma.MyDefs.my_rs_functions)
   · -- f (r (s n)) ≤ f (r n)
     apply (r_prop n hn).right.right
     · simp
@@ -374,7 +398,7 @@ El análogo a este recibe el nombre de `sn_eq_srn`.
 
 (2) Para ver que $`f (r (n)) \leq f (r (s (n)))`, basta ver que $`r(n) < s(n)` por hipótesis y que $`f(r(n)) < f(n) < f(s(n))` por las propiedades de $`r` y $`s`. Luego aplicando la tercera propiedad básica a $`s(n) > 1` y $`r(n) < s(n)` obtenemos el resultado.
 
-```
+```anchor rn_eq_rsn_case2 (module := UrysohnsLemma.MyDefs.my_rs_functions)
   · -- f (r n) ≤ f (r (s n))
     apply (r_prop (s n) hsn).right.right
     · exact List.mem_range.mpr h
@@ -390,11 +414,11 @@ La construcción de $`G : \mathbb{Q} \to \mathcal{P}(X)` es, como hemos explicad
 
 Lean admite definiciones inductivas de una manera muy natural. Un ejemplo muy utilizado es la sucesión de Fibonacci: definir $`Fib(0) = 0` y $`Fib(1) = 1`, y a partir de ahí, $`Fib(n) = Fib(n-1)+Fib(n-2)` para cada $`n > 1`. En Lean, escribimos
 
-```
-  def Fib : ℕ → ℕ := fun n ↦
-    if n = 0 then 0
-    else if n = 1 then 1
-    else Fib (n-1) + Fib (n-2)
+```anchor Fib_def (module := UrysohnsLemma.Docs.Urysohn)
+def Fib : ℕ → ℕ := fun n ↦
+  if n = 0 then 0
+  else if n = 1 then 1
+  else Fib (n-1) + Fib (n-2)
 ```
 
 En vista de esto, mi primer acercamiento a la construcción de $`G` fue el siguiente:
@@ -431,42 +455,50 @@ number := false
 
 Dados $`U, C \subseteq X`, decimos que $`(U, C)` es un _par normal_ si $`U` es abierto, $`C` es cerrado y $`C \subseteq U`. Es decir, si satisfacen las condiciones para poder aplicar la caracterización de espacios normales ({ref "caracterizacion-normal"}[3.14]).
 
-```
-  def normal_pair {X : Type} [TopologicalSpace X]
-    : (Set X × Set X) → Prop := fun (U, C) ↦
-    (IsOpen U ∧ IsClosed C ∧ C ⊆ U)
+```anchor normal_pair_def (module := UrysohnsLemma.Separation.def_G)
+def normal_pair {X : Type} [TopologicalSpace X]
+    : (Set X × Set X) → Prop := fun (U, C) ↦ (IsOpen U ∧ IsClosed C ∧ C ⊆ U)
 ```
 
 Ahora, defino una función `from_normality` que toma dos conjuntos cualesquiera de $`X`, y devuelve el resultado de aplicar la caracterización de espacios normales si forman un par normal, y el conjunto vacío en caso contrario.
 
-```
-  noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
+```anchor from_normality_def (module := UrysohnsLemma.Separation.def_G)
+noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
-    : (Set X × Set X) → Set X := fun (U, C) ↦
-      if h : normal_pair (U, C) = True then
-        Classical.choose (hT U C
-          (by simp at h; exact h.left)
-          (by simp at h; exact h.right.left)
-          (by simp at h; exact h.right.right)
-        )
-      else ∅
+    : (Set X × Set X) → Set X :=
+
+    fun (U, C) ↦
+
+    if h : normal_pair (U, C) = True then
+      Classical.choose (hT
+        U
+        C
+        (by simp at h; exact h.left)
+        (by simp at h; exact h.right.left)
+        (by simp at h; exact h.right.right)
+      )
+
+    else ∅
 ```
 
 Ahora, al construir $`G`, ya no me tengo que preocupar de si produce siempre conjuntos abiertos o no, porque lo puedo definir a partir de esta última función, que está definida para cualquieras dos conjuntos. Una vez definida, puedo demostrar que cada conjunto obtenido es de hecho abierto.
 
-```
-  def G {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
-      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
-    (C1 C2 : Set X) : ℕ → Set X
-      := fun n ↦
-        if n = 0 then C2ᶜ
-        else if n = 1 then from_normality hT (C2ᶜ, C1)
-        else if n > 1 then
-          let U := G hT C1 C2 (s n)
-          let C := closure (G hT C1 C2 (r n))
-          from_normality hT (U, C)
-        else ∅
+```anchor G_def_body (module := UrysohnsLemma.Separation.def_G)
+def G {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+
+    : ℕ → Set X
+
+    := fun n ↦
+      if n = 0 then C2ᶜ
+      else if n = 1 then from_normality hT (C2ᶜ, C1)
+      else if n > 1 then
+        let U := G hT C1 C2 (s n)
+        let C := closure (G hT C1 C2 (r n))
+        from_normality hT (U, C)
+      else ∅
 ```
 
 Sin embargo, a Lean esto sigue sin parecerle suficiente, y recibimos este error: `fail to show termination for G`. Esto es, estamos definiendo una función recursiva, $`G`, pero no es evidente que las veces que estamos llamando a $`G` dentro de $`G` constituyan conjuntos ya definidos. Es decir, no es evidente que $`r(n) < n` y $`s(n) < n`. Por tanto, al final de la definición tenemos que añadir una demostración de que sí es así.
@@ -497,13 +529,17 @@ number := false
 
 Para cada $`n \in \mathbb{N}`, $`G(n)` es abierto en $`X`.
 
-```
-  lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
-      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
-    (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
+```anchor G_Prop1_sig (module := UrysohnsLemma.Separation.def_G)
+lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
+
     :
+
     ∀ n : ℕ, IsOpen (G hT C1 C2 n) := by
 ```
 
@@ -513,18 +549,24 @@ Sea $`n \in \mathbb{N}`. Tenemos que distinguir en tres casos, pues existen tres
 
 (1) Si $`n = 0`, entonces simplemente por hipótesis $`G(0) = C_2^c` es abierto.
 
-```
+```anchor G_Prop1_case_n0 (module := UrysohnsLemma.Separation.def_G)
   intro n
-  cases' Nat.eq_zero_or_pos n with hn hn -- n = 0 ∨ n > 0
-  · simp [hn, G] -- si n = 0
+
+
+  cases' Nat.eq_zero_or_pos n with hn hn
+  · -- n = 0
+    simp [hn, G]
     exact { isOpen_compl := hC2 }
 ```
 
 (2) Si $`n = 1`, entonces estamos aplicando la función `from_normality` a $`C_2^c` y $`C_1`. Luego es abierto.
 
-```
-  cases' LE.le.eq_or_gt hn with hn hn -- n = 1 ∨ n > 1
-  · simp [hn, G] -- n = 1
+```anchor G_Prop1_case_n1 (module := UrysohnsLemma.Separation.def_G)
+  have : n = 1 ∨ n > 1  := Or.symm (Decidable.lt_or_eq_of_le' hn)
+  cases' this with hn1 hn1
+  · -- n = 1
+    rw [G]
+    simp [hn1]
     exact from_normality_open hT C2ᶜ C1
 ```
 
@@ -532,10 +574,11 @@ Sea $`n \in \mathbb{N}`. Tenemos que distinguir en tres casos, pues existen tres
 
 Para el siguiente resultado vamos a utilizar inducción completa. Yo he definido mi propio principio de inducción completa, demostrado a partir de la inducción completa usual en Lean, por sencillez.
 
-```
-  theorem my_stronger_induction (n : ℕ) (P Q : ℕ → Prop)
-    (hn : P n) (h : ∀ n : ℕ, P n → ((∀ m < n, P m → Q m) → Q n)) :
-    (Q n) := by sorry
+```anchor my_stronger_induction_sig (module := UrysohnsLemma.MyDefs.my_induction)
+theorem my_stronger_induction (n : ℕ) (P Q : ℕ → Prop)
+    (hn : P n)
+    (h : ∀ n : ℕ, P n → ((∀ m < n, P m → Q m) → Q n)) :
+    (Q n) := by
 ```
 
 ### Lema 4.6
@@ -547,24 +590,30 @@ Para cada $`n > 1`, se tiene:
 
 $$`\overline{G(r(n))} \subseteq G(n) \subseteq \overline{G(n)} \subseteq G(s(n))`
 
-```
-  lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
-      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
-    (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
+```anchor G_Prop2_sig (module := UrysohnsLemma.Separation.def_G)
+lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
+
     :
+
     ∀ n > 1, closure (G hT C1 C2 (r n)) ⊆ (G hT C1 C2 n)
       ∧ closure (G hT C1 C2 n) ⊆ (G hT C1 C2 (s n)) := by
 ```
 
 *Demostración.* Procedemos por inducción completa sobre $`n`.
 
-```
+```anchor G_Prop2_start (module := UrysohnsLemma.Separation.def_G)
   intro n hn
+
   let P : ℕ → Prop := fun m ↦ m > 1
   apply my_stronger_induction n P
-  exact hn -- probar que n cumple P
+  exact hn
+  simp [P]
   intro n hn hi
 ```
 
@@ -580,7 +629,7 @@ hi : ∀ m < n, 1 < m → closure (G hT C1 C2 (r m)) ⊆ G hT C1 C2 m ∧ closur
 
 Notemos que si $`G(n)` está obtenido mediante {ref "caracterizacion-normal"}[3.14] aplicado a $`G(s(n))` y $`\overline{G(r(n))}`, lo anterior se reduce a comprobar que $`(G(s(n)), \overline{G(r(n))})` es un par normal (demostrado en `from_normality_prop2`).
 
-```
+```anchor G_Prop2_normalpair_stmt (module := UrysohnsLemma.Separation.def_G)
   have normalpair : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
 ```
 
@@ -631,24 +680,28 @@ Sean $`n, m \in \mathbb{N}` con $`f(n) < f(m)`. Entonces
 
 $$`\overline{G(n)} \subseteq G(m)`
 
-```
-  lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
-      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
-    (C1 C2 : Set X) (hC1 : IsClosed C1) (hC2 : IsOpen C2ᶜ)
+```anchor G_Prop2_ext_sig (module := UrysohnsLemma.Separation.def_G)
+lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
     (hC1C2 : C1 ⊆ C2ᶜ)
+
     :
-    ∀ n m, f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by sorry
+
+    ∀ n m, f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by
 ```
 
 Para demostrar este resultado vamos a utilizar un principio de inducción más general que la inducción usual sobre los naturales. Siempre que se cuente con una relación bien fundada en un conjunto, se puede describir un principio de inducción sobre este conjunto.
 
 En nuestro caso, vamos a utilizar el orden lexicográfico sobre $`\mathbb{N}^2`, definido por $`(n, m) < (n', m') \iff n<n' \lor (n=n' \land m<m')`. Este ya está definido en Mathlib, y también está demostrado que es una relación bien fundada.
 
-```
-  def lt_pair : (ℕ × ℕ) → (ℕ × ℕ) → Prop := Prod.Lex (Nat.lt) (Nat.lt)
-  def lt_pair_wfr : WellFoundedRelation (ℕ × ℕ) := Prod.lex (Nat.lt_wfRel) (Nat.lt_wfRel)
-  lemma lt_pair_wf : WellFounded lt_pair := lt_pair_wfr.wf
+```anchor lt_pair_defs (module := UrysohnsLemma.MyDefs.my_lex_order)
+def lt_pair : (ℕ × ℕ) → (ℕ × ℕ) → Prop := Prod.Lex (Nat.lt) (Nat.lt)
+def lt_pair_wfr : WellFoundedRelation (ℕ × ℕ) := Prod.lex (Nat.lt_wfRel) (Nat.lt_wfRel)
+lemma lt_pair_wf : WellFounded lt_pair := lt_pair_wfr.wf
 ```
 
 *Demostración.* Procedemos por tanto por inducción bien fundada sobre el par $`(n, m)`
@@ -725,15 +778,17 @@ $$`H : \mathbb{Q} \to \mathcal{P}(X), ~~ q \mapsto
 X & \text{si } 1 < q
 \end{cases}`
 
-```
-  def H {X : Type} [TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
-      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+```anchor H_def (module := UrysohnsLemma.Separation.def_H)
+def H {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
     (C1 C2 : Set X)
+
     : ℚ → Set X := fun q ↦
-      if q < 0 then ∅
-      else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
-      else Set.univ
+
+  if q < 0 then ∅
+  else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
+  else Set.univ
 ```
 
 ### Lema 4.8
@@ -759,11 +814,12 @@ $$`\begin{array}{rcrcl}
     & & x & \longmapsto & \{p \in \mathbb{Q} ~|~ x \in H(p)\}
 \end{array}`
 
-```
-  def F {X : Type} [TopologicalSpace X]
-    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U →
-      ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+```anchor F_def (module := UrysohnsLemma.Separation.def_F)
+def F {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
     (C1 C2 : Set X)
+
     : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ H hT C1 C2 p}
 ```
 
@@ -790,11 +846,15 @@ Sea $`F :  X  \to \mathcal{P}(\mathbb{Q})` la función definida anteriormente. E
 
 *Demostración.* Sea $`x \in X`. Cualquier $`q > 1` es tal que $`q \in F(x)`, pues si $`q >1`, $`H(q) = X`, luego $`x \in H(q)`. ∎
 
-```
-  lemma hF_non_empty (...) :  ∀ x : X, (F hT C1 C2 x).Nonempty := by
-    intro x
-    use 2 -- por ejemplo 2 > 1
-    simp [F, H]
+```anchor hF_non_empty_full (module := UrysohnsLemma.Separation.def_F)
+lemma hF_non_empty {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    :  ∀ x : X, (F hT C1 C2 x).Nonempty := by
+  intro x
+  use 2
+  simp [F, H]
 ```
 
 ### Lema 4.10
@@ -815,16 +875,19 @@ number := false
 
 Para cada $`x \in X`, $`0` es una cota inferior de $`F(x)`.
 
-```
-  lemma hFx_has_lb_0 (...)
-    : ∀ x : X, 0 ∈ lowerBounds (F hT C1 C2 x) := by sorry
+```anchor hFx_has_lb_0_sig (module := UrysohnsLemma.Separation.def_F)
+lemma hFx_has_lb_0 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    : ∀ x : X, 0 ∈ lowerBounds (F hT C1 C2 x) := by
 ```
 
 Por tanto, dado $`x \in X`, puesto que $`F(x)` es un conjunto no vacío y acotado inferiormente, podemos concluir que $`F(x)` tiene un ínfimo *como conjunto real*, es decir, podemos concluir que existe un número $`r \in \mathbb{R}` de forma que $`r = \inf F(x)`. Este resultado está incluido en Mathlib:
 
-```
-  Real.exists_isGLB {s : Set ℝ} (hne : s.Nonempty) (hbdd : BddBelow s) :
-      ∃ x, IsGLB s x
+```anchor Real_exists_isGLB_quote (module := UrysohnsLemma.Docs.Urysohn)
+theorem Real.exists_isGLB {s : Set ℝ} (hne : s.Nonempty) (hbdd : BddBelow s) :
+    ∃ x, IsGLB s x
 ```
 
 Podríamos intentar escribir algo así:
@@ -842,19 +905,24 @@ Sin embargo, esto nos da el siguiente error:
 
 Esto es porque, en Mathlib, `IsGLB` está definido de la siguiente forma:
 
-```
-  def IsGLB [Preorder α] (s : Set α) : α → Prop :=
-    IsGreatest (lowerBounds s)
+```anchor IsGLB_def_quote (module := UrysohnsLemma.Docs.Urysohn)
+def IsGLB [Preorder α] (s : Set α) : α → Prop :=
+  IsGreatest (lowerBounds s)
 ```
 
 Es decir, sólo está definido para valores de tipo $`\alpha` si $`s \subset \alpha`. Como $`F(x) \subset \mathbb{Q}`, no podemos decir que $`r \in \mathbb{R}` sea su ínfimo.
 
 Por tanto, necesitamos definir en Lean una función auxiliar $`\tilde{F}` de forma que $`\tilde{F}(x) = F(x)` para cada $`x`, pero visto como subconjunto de $`\mathbb{R}`. Lo hacemos de la siguiente manera.
 
-```
-  def inclQR : ℚ → ℝ := fun q ↦ q
+```anchor inclQR_F_Real_def (module := UrysohnsLemma.Separation.def_F)
+def inclQR : ℚ → ℝ := fun q ↦ q
 
-  def F_Real (...) : X → Set ℝ :=
+def F_Real {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    : X → Set ℝ :=
+
     fun x ↦ inclQR '' (F hT C1 C2 x)
 ```
 
@@ -862,13 +930,17 @@ Esta nueva función $`\tilde{F}` es una función con las mismas propiedades que 
 
 Pero ahora $`\tilde{F}` devuelve subconjuntos de $`\mathbb{R}`, luego podemos asegurar que tiene un ínfimo en $`\mathbb{R}`.
 
-```
-  lemma F_Real_has_inf (...)
-      : ∀ x : X, ∃ r : ℝ, IsGLB (F_Real hT C1 C2 x) r := by
-    intro x
-    apply Real.exists_isGLB
-    exact F_Real_Nonempty hT C1 C2 x
-    exact F_Real_BddBelow hT C1 C2 x
+```anchor F_Real_has_inf_full (module := UrysohnsLemma.Separation.def_F)
+lemma F_Real_has_inf {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    : ∀ x : X, ∃ r : ℝ, IsGLB (F_Real hT C1 C2 x) r := by
+
+  intro x
+  apply Real.exists_isGLB
+  exact F_Real_Nonempty hT C1 C2 x
+  exact F_Real_BddBelow hT C1 C2 x
 ```
 
 ## La función $`f`
@@ -891,16 +963,23 @@ $$`\begin{array}{rcrcl}
 
 y probamos que en efecto $`k(x) \in [0, 1]` para cada $`x\in X`. Más tarde, utilizaremos la función $`f(x) = k(x)` teniendo cuidado en especificar que $`k(x) \in [0, 1]`.
 
-```
-  noncomputable def k (...) : X → ℝ :=
+```anchor k_def (module := UrysohnsLemma.Separation.def_k)
+noncomputable def k {X : Type} [TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    : X → ℝ :=
     fun x ↦ Classical.choose (F_Real_has_inf hT C1 C2 x)
 ```
 
 Obtenemos la siguiente propiedad, fruto de aplicar `Classical.choose_spec` a $`k`.
 
-```
-  lemma k_prop (...)
-    : ∀ x, IsGLB (F_Real hT C1 C2 x) (k hT C1 C2 x) := by sorry
+```anchor k_prop_sig (module := UrysohnsLemma.Separation.def_k)
+lemma k_prop {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    : ∀ x, IsGLB (F_Real hT C1 C2 x) (k hT C1 C2 x) := by
 ```
 
 ### Lema 4.12
@@ -910,8 +989,11 @@ number := false
 
 Para cada $`x \in X`, la función $`k : X \to \mathbb{R}` que acabamos de definir satisface $`k(x) \in [0, 1]`.
 
-```
-  lemma k_in_01 (...)
+```anchor k_in_01_sig (module := UrysohnsLemma.Separation.def_k)
+lemma k_in_01 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
     : ∀ x : X, (k hT C1 C2 x) ∈ Set.Icc 0 1 := by
 ```
 
@@ -919,7 +1001,7 @@ Para cada $`x \in X`, la función $`k : X \to \mathbb{R}` que acabamos de defini
 
 Sea $`x \in X`. Recordemos que $`k(x)` es cota inferior de $`\tilde{F}(x)` (`klb`) y es la mayor de ellas (`kglb`).
 
-```
+```anchor k_in_01_start (module := UrysohnsLemma.Separation.def_k)
   intro x
   have ⟨klb, kglb⟩ := k_prop hT C1 C2 x
   constructor
@@ -927,21 +1009,20 @@ Sea $`x \in X`. Recordemos que $`k(x)` es cota inferior de $`\tilde{F}(x)` (`klb
 
 Ver que $`k(x) \geq 0` es fácil, porque ya hemos visto que $`0` es cota superior, y $`k(x)` es la mayor.
 
-```
+```anchor k_in_01_case1 (module := UrysohnsLemma.Separation.def_k)
   · exact kglb (F_Real_0_is_LB hT C1 C2 x)
 ```
 
 Ahora, para ver que $`k(x) \leq 1`, procedemos por reducción al absurdo. Supongamos que $`k(x) > 1`. Entonces existe un número racional $`q` de forma que $`1 < q < k(x)`. Como $`q > 1`, sabemos que $`q \in \tilde{F}(x)`. Pero en ese caso, como $`k(x)` es cota inferior, $`k(x) \leq q`, lo que es contradictorio.
 
-```
+```anchor k_in_01_case2 (module := UrysohnsLemma.Separation.def_k)
   · by_contra c
     simp at c
-    obtain ⟨q, hq1, hqk⟩ := exists_rat_btwn c -- obtener q
+    obtain ⟨q, hq1, hqk⟩ := exists_rat_btwn c
     have hq := F_Real_1inf hT C1 C2 x q (by exact_mod_cast hq1)
-      -- hq : q ∈ F_Real x
-    apply klb at hq -- hq : k x ≤ q
-    apply not_lt.mpr at hq -- hq : ¬ q < k x
-    exact hq hqk -- contradiccion
+    apply klb at hq
+    apply not_lt.mpr at hq
+    exact hq hqk
 ```
 ∎
 
@@ -955,37 +1036,48 @@ number := false
 
 Para cada $`p \in \mathbb{Q}` y cada $`x \in X`, si $`x \in \overline{H(p)}` entonces $`k(x) \leq p`.
 
-```
-  lemma k_claim1 (...)
-    : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) →
-    (k hT C1 C2 x) ≤ p := by sorry
+```anchor k_claim1_sig (module := UrysohnsLemma.Separation.def_k)
+lemma k_claim1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by
 ```
 
 *Demostración.* Sean $`p \in \mathbb{Q}` y $`x \in X` con $`x \in \overline{H(p)}`. Supongamos, por reducción al absurdo, que $`k(x) > p`. Entonces existe un racional $`q \in \mathbb{Q}` de forma que $`p < q < k(x)`.
 
-```
-  intro p x hx -- hx : x ∈ closure (H hT C1 C2 p)
+```anchor k_claim1_start (module := UrysohnsLemma.Separation.def_k)
+  intro p x hx
   by_contra c
-  simp at c -- c : p < k hT C1 C2 x
+  simp at c
   have ⟨q, hq⟩ := exists_rat_btwn c
 ```
 
 Como $`p < q` y $`x \in \overline{H(p)}`, por ({ref "eq-star"}[★]) se tiene que $`x \in H(q)`.
 
-```
+```anchor k_claim1_apply_ordered (module := UrysohnsLemma.Separation.def_k)
   apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 p q
     (by exact_mod_cast hq.left)
-    at hx -- x ∈ H hT C1 C2 q
+    at hx
 ```
 
 Ahora, $`x \in H(q)` quiere decir que $`q \in \tilde{F}(x)`. Pero $`k(x)` es cota superior de $`\tilde{F}(x)`, luego $`k(x) < q`, lo que contradice $`q < k(x)`.
 
-```
-  have aux : inclQR q ∈ F_Real hT C1 C2 x := by sorry
+```anchor k_claim1_finish (module := UrysohnsLemma.Separation.def_k)
+  have aux : inclQR q ∈ F_Real hT C1 C2 x
+  · simp [F_Real]
+    use q
+    simp
+    exact hx
+
   have ⟨klb, _⟩ := k_prop hT C1 C2 x
-  apply klb at aux -- aux : k x ≤ q
-  apply not_lt.mpr at aux -- aux : ¬ q < k x
-  exact aux hq.right -- contradiccion
+  apply klb at aux
+  apply not_lt.mpr at aux
+  exact aux hq.right
 ```
 ∎
 
@@ -997,10 +1089,16 @@ number := false
 
 Para cada $`p \in \mathbb{Q}` y cada $`x \in X`, si $`x \notin H(p)` entonces $`k(x) \geq p`.
 
-```
-  lemma k_claim2 (...)
-    : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) →
-    (k hT C1 C2 x) ≥ p := by sorry
+```anchor k_claim2_sig (module := UrysohnsLemma.Separation.def_k)
+lemma k_claim2 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) → (k hT C1 C2 x) ≥ p := by
 ```
 
 *Demostración.* La demostración es muy parecida a la anterior y puede encontrarse en el repositorio. ∎
@@ -1018,22 +1116,32 @@ number := false
 
 Consideremos $`F : X \to \mathcal{P}(\mathbb{Q})`. Para cada $`x \in C_1`, se tiene que $`F(x) = \{q \in \mathbb{Q} ~|~ q \geq 0\}`.
 
-```
-  lemma F_at_C1 (...)
-      : ∀ x : X, x ∈ C1 → F hT C1 C2 x = {q : ℚ | q ≥ 0} := by
+```anchor F_at_C1_sig (module := UrysohnsLemma.Separation.def_F)
+lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C1 → F hT C1 C2 x = {q : ℚ | q ≥ 0} := by
 ```
 
 *Demostración.* Sea $`x \in C_1`. Ver que $`F(x) \subseteq \{q \in \mathbb{Q} ~|~ q \geq 0\}` es sencillo, pues ya hemos visto que ningún valor de $`F(x)` es negativo (`hFx_non_neg`). Ahora, sea $`q \geq 0` y veamos que $`q \in F(x)`, es decir, que $`x \in H(q)`.
 
 Si $`q > 0`, por la propiedad ({ref "eq-star"}[★]) de $`H`, $`\overline{H(0)} \subseteq H(q)`. Y por construcción de $`H` se tiene $`C_1 \subseteq H(0)`. Luego $`x \in H(q)`. Si $`q = 0`, como $`C_1 \subseteq H(0)`, $`x\in H(q)`.
 
-```
-    · cases' Decidable.lt_or_eq_of_le hq with hq hq
-      · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq -- si q > 0
-        apply subset_closure
-        exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
-      · rw [← hq] -- si q = 0
-        exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
+```anchor F_at_C1_case_q_geq_0 (module := UrysohnsLemma.Separation.def_F)
+  · simp only [ge_iff_le, Set.mem_setOf_eq] at hq
+    cases' Decidable.lt_or_eq_of_le hq with hq hq
+
+    · apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 0 q hq
+      apply subset_closure
+      exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
+
+    · rw [← hq]
+      exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
 ```
 ∎
 
@@ -1044,9 +1152,16 @@ number := false
 
 Consideremos $`F : X \to \mathcal{P}(\mathbb{Q})`. Para cada $`x \in C_1`, se tiene que $`\inf{F}(x) = 0`.
 
-```
-lemma F_0_GLB_in_C1 (...)
-    : ∀ x : X, x ∈ C1 → IsGLB (F hT C1 C2 x) 0 := by sorry
+```anchor F_0_GLB_in_C1_sig (module := UrysohnsLemma.Separation.def_F)
+lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C1 → IsGLB (F hT C1 C2 x) 0 := by
 ```
 
 Una vez sabemos que $`F(x) = \{q \in \mathbb{Q} ~|~ q \geq 0\}`, ver que el ínfimo de este conjunto es 0 es directo. Notemos que aquí sí podemos definir el ínfimo sobre $`F` porque $`0 \in \mathbb{Q}`. Ahora podemos afirmar lo mismo para $`\tilde{F}`, simplemente teniendo cuidado con el tipo de $`F(x)` y de $`0`.
@@ -1058,9 +1173,16 @@ number := false
 
 Consideremos $`\tilde{F} : X \to \mathcal{P}(\mathbb{R})`. Para cada $`x \in C_1`, se tiene que $`\inf{\tilde{F}}(x) = 0`.
 
-```
-  lemma F_Real_0_GLB_in_C1 (...)
-      : ∀ x : X, x ∈ C1 → IsGLB (F_Real hT C1 C2 x) 0 := by sorry
+```anchor F_Real_0_GLB_in_C1_sig (module := UrysohnsLemma.Separation.def_F)
+lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+
+    (C1 C2 : Set X)
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+
+    : ∀ x : X, x ∈ C1 → IsGLB (F_Real hT C1 C2 x) 0 := by
 ```
 
 Por último, tenemos:
@@ -1073,18 +1195,25 @@ number := false
 
 Consideremos $`k : X \to \mathbb{R}`. Recordemos que $`C_1` es no vacío. Se tiene que $`k (C_1) = \{0\}`.
 
-```
-  lemma k_in_C1_is_0 (...)
-      (hC1_nonempty : C1 ≠ ∅)
-      : k hT C1 C2 '' C1 = {0} := by
+```anchor k_in_C1_is_0_sig (module := UrysohnsLemma.Separation.def_k)
+lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
+    (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
+    (C1 C2 : Set X)
+
+    (hC1 : IsClosed C1)
+    (hC2 : IsOpen C2ᶜ)
+    (hC1C2 : C1 ⊆ C2ᶜ)
+    (hC1_nonempty : C1 ≠ ∅)
+
+    : k hT C1 C2 '' C1 = {0} := by
 ```
 
 *Demostración.* Para ver que $`k(C_1) \subseteq \{0\}`, puesto que $`k(x) := \inf \tilde{F}(x)`, y $`\inf \tilde{F}(x) = 0` para $`x \in C_1` por el resultado anterior, basta utilizar el el ínfimo es único.
 
-```
+```anchor k_in_C1_is_0_forward (module := UrysohnsLemma.Separation.def_k)
   ext r
   constructor
-  · intro ⟨x, hx, hr⟩ -- hr : k x = r
+  · intro ⟨x, hx, hr⟩
     rw [← hr]
     apply IsGLB.unique (k_prop hT C1 C2 x)
     exact F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
@@ -1092,10 +1221,10 @@ Consideremos $`k : X \to \mathbb{R}`. Recordemos que $`C_1` es no vacío. Se tie
 
 Para ver que $`\{0\} \subseteq k(x)`, necesitamos ver que existe un $`x \in C_1` tal que $`k(x) = 0`. Como $`C_1` es no vacío, sea $`x \in C_1` cualquiera. Entonces $`k(x) = 0`, procediendo de la misma forma que en el primer contenido.
 
-```
-  · intro hr -- hr : r = 0
+```anchor k_in_C1_is_0_backward (module := UrysohnsLemma.Separation.def_k)
+  · intro hr
     rw [hr]
-    obtain ⟨x, hx⟩ := nonempty_has_element C1 hC1_nonempty -- hx : x ∈ C1
+    obtain ⟨x, hx⟩ := nonempty_has_element C1 hC1_nonempty
     use x
     constructor
     · exact hx
@@ -1113,81 +1242,82 @@ Sea $`X` un espacio normal. Queremos demostrar que para cada par de cerrados dis
 
 Sean por tanto $`C_1` y $`C_2` cerrados con esas condiciones.
 
-```
+```anchor Urysohn_forward_intro (module := UrysohnsLemma.Separation.urysohn)
   · -- →
     intro hT C1 C2 C1nempty C2nempty C1closed C2closed C1C2disj
 ```
 
 Para empezar, demostramos algunas propiedades auxiliares, como que $`C_2^c` es abierto (por ser $`C_2` cerrado), y que $`C_1 \subseteq C_2^c` (por ser disjuntos), que nos facilitarán aplicar el resto de resultados que hemos ido probando. También utilizaremos la caracterización de espacios normales ({ref "caracterizacion-normal"}[3.14]) sobre la hipótesis de $`X` normal.
 
-```
-  have C2c_open : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
-  have hC1C2 : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left
-    (id (Disjoint.symm C1C2disj))
-  rw [characterization_of_normal] at hT
+```anchor Urysohn_forward_aux (module := UrysohnsLemma.Separation.urysohn)
+    have C2c_open : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
+    have hC1C2 : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left (id (Disjoint.symm C1C2disj))
+
+    rw [characterization_of_normal] at hT
 ```
 
 Ahora, por comodidad vamos a definir las siguientes funciones.
 
-```
-  let G := H hT C1 C2
-  let g := fun x ↦ k hT C1 C2 x
+```anchor Urysohn_forward_let_Gg (module := UrysohnsLemma.Separation.urysohn)
+    let G := H hT C1 C2
+    let g := fun x ↦ k hT C1 C2 x
 ```
 
 De esta forma no tenemos que arrastrar los argumentos de $`H` y $`k` en cada paso. Cambio el nombre de $`H` a $`G` para seguir con la notación del esquema, puesto que es la función de la forma $`G : \mathbb{N} \to \mathcal{P}(X)`. También cambio el nombre de $`k` a $`g`, para evitar confusiones.
 
 Ahora, recordemos que $`k : X \to \mathbb{R}` no era exactamente la función que buscábamos. Vamos a definir finalmente la función a utilizar para separar nuestros cerrados, $`f`, de la siguiente manera:
 
-```
-  let f : X → Y := fun x ↦ ⟨g x, by
-      rw [hY]; exact k_in_01 hT C1 C2 x⟩
+```anchor Urysohn_forward_let_f (module := UrysohnsLemma.Separation.urysohn)
+    let f : X → Y := fun x ↦ ⟨g x, by
+      rw [hY]
+      exact k_in_01 hT C1 C2 x⟩
 ```
 
 Es decir, $`f` es una función que toma valores en $`X` y devuelve un valor real y una demostración de que este valor está en realidad en el intervalo $`[0, 1]`, dada utilizando `k_in_01`, que habíamos demostrado antes. Por tanto, Lean la interpreta como una función $`f : X \to [0, 1]`, que es justo lo que queríamos.
 
 Así que ya tenemos la función separadora y podemos dar el gran paso:
 
-```
-  use f
+```anchor Urysohn_forward_use_f (module := UrysohnsLemma.Separation.urysohn)
+    use f
 ```
 
 Nos queda por demostrar que $`f` es continua, que $`f(C_1) = \{0\}` y que $`f(C_1) = \{1\}`.
 
-```
-  constructor
+```anchor Urysohn_forward_constructor (module := UrysohnsLemma.Separation.urysohn)
+    constructor
 ```
 
 ## Continuidad de $`f`
 
 Queremos ver que $`f` es continua. Para ello, aplicamos el resultado `continuousInSubspace_iff_trueForBase`, que vimos que era combinación de {ref "prop-continuidad-subespacio"}[3.12] y {ref "prop-continuous-base"}[3.13].
 
-```
-  · rw [@continuousInSubspace_iff_trueForBase
-      X ℝ Y T T' R hR f
-      {s | ∃ a b : ℝ, s = Set.Ioo a b}
-      (by exact BaseOfRealTopo hT')]
+```anchor Urysohn_continuity_rw (module := UrysohnsLemma.Separation.urysohn)
+    · rw [@continuousInSubspace_iff_trueForBase
+        X ℝ Y T T' R hR f
+        {s | ∃ a b : ℝ, s = Set.Ioo a b}
+        (by exact BaseOfRealTopo hT')]
 ```
 
 Luego basta demostrar que para cada abierto básico $`W` de $`\mathbb{R}`, $`f^{-1}(W)` es abierto en $`X`. Sea $`W = (a, b)` un abierto de la base formada por los intervalos abiertos reales.
 
-```
-    intro W hW
-    obtain ⟨a, b, hW⟩ := hW -- hW : W = (a, b)
+```anchor Urysohn_continuity_introW (module := UrysohnsLemma.Separation.urysohn)
+      intro W hW
+      obtain ⟨a, b, hW⟩ := hW
 ```
 
 Queremos ver que $`f^{-1}(W)` es abierto en $`X`. Utilizando la caracterización de abiertos ({ref "caracterizacion-abierto"}[3.1]), basta ver que es entorno de todos sus puntos. Sea entonces $`x \in f^{-1}(W)`, lo que quiere decir que $`f(x) \in (a, b)`.
 
-```
-    rw [A_open_iff_neighbourhood_of_all]
-    intro x hx
-    rw [Set.mem_preimage, hW] at hx -- h x : f x ∈ (a, b)
+```anchor Urysohn_continuity_neighbourhood (module := UrysohnsLemma.Separation.urysohn)
+      rw [A_open_iff_neighbourhood_of_all]
+      intro x hx
+      rw [Set.mem_preimage, hW] at hx
 ```
 
 Puesto que $`f(x) \in (a, b)`, se tiene que existe $`p \in \mathbb{Q}` con $`a < p < f(x)`, y también existe $`q \in \mathbb{Q}` con $`f(x) < q < b`.
 
-```
-  obtain ⟨p, hp⟩ := exists_rat_btwn hx.left
-  obtain ⟨q, hq⟩ := exists_rat_btwn hx.right
+```anchor Urysohn_continuity_pq (module := UrysohnsLemma.Separation.urysohn)
+      obtain ⟨p, hp⟩ := exists_rat_btwn hx.left
+      obtain ⟨q, hq⟩ := exists_rat_btwn hx.right
 ```
 
 Vamos a demostrar que $`x \in G(q)` y que $`x \notin \overline{G(p)}`.
@@ -1197,87 +1327,95 @@ Primero recordemos los resultados {ref "claim1"}[4.13] y {ref "claim2"}[4.14] (c
 * `k_claim1`: $`\forall p \in \mathbb{Q},\forall x \in X, x \in \overline{G(p)} \implies g(x) \leq p`
 * `k_claim2`: $`\forall p \in \mathbb{Q},\forall x \in X, x \notin G(p) \implies g(x) \geq p`
 
-```
-    have claim1 := k_claim1 (...)
-    have claim2 := k_claim2 (...)
+```anchor Urysohn_continuity_claims (module := UrysohnsLemma.Separation.urysohn)
+      have claim1 := k_claim1 hT C1 C2
+        C1closed (by exact IsClosed.isOpen_compl)
+        (by exact hC1C2)
+
+      have claim2 := k_claim2 hT C1 C2
+        C1closed (by exact IsClosed.isOpen_compl)
+        (by exact hC1C2)
 ```
 
 (1) Para ver que $`x \notin \overline{G(p)}`, por reducción al absurdo supongamos que sí está. Entonces podemos aplicar `claim1` y obtener que $`g(x) \leq p` pero teníamos $`p < f(x) = g(x)`, contradicción.
 
-```
-    have aux1 : x ∉ closure (G p)
-    · by_contra c
-      apply claim1 p x at c
-      linarith
+```anchor Urysohn_continuity_aux1 (module := UrysohnsLemma.Separation.urysohn)
+      have aux1 : x ∉ closure (G p)
+      · by_contra c
+        apply claim1 p x at c
+        linarith
 ```
 
 (2) De manera similar, si suponemos por reducción al absurdo que $`x \notin U(q)`, entonces por `claim2` obtenemos que $`g(x) \geq q`, pero teníamos $`q > f(x) = g(x)`, contradicción.
 
-```
-    have aux2 : x ∈ G q
-    · by_contra c
-      apply claim2 q x at c
-      linarith
+```anchor Urysohn_continuity_aux2 (module := UrysohnsLemma.Separation.urysohn)
+      have aux2 : x ∈ G q
+      · by_contra c
+        apply claim2 q x at c
+        linarith
 ```
 
 Recapitulando, queremos ver que $`f^{-1}(W)` es entorno de $`x` ($`x` era arbitrario). Esto es, por definición, encontrar un conjunto $`U\subseteq X` que sea abierto y de manera que $`x \in U \subseteq f^{-1}(W)`.
 
 Tomemos el conjunto $`U = G(q) \cap (\overline{G(p)})^c` y veamos que cumple estas condiciones.
 
-```
-    use (G q) ∩ (closure (G p))ᶜ
-    constructor
+```anchor Urysohn_continuity_use_U (module := UrysohnsLemma.Separation.urysohn)
+      use (G q) ∩ (closure (G p))ᶜ
+
+      constructor
 ```
 
 (1) Veamos que $`U \subseteq f^{-1}(W)`. Para ello, sea $`y \in U` y veamos que $`y \in f^{-1}(W) = f^{-1}((a, b))`, es decir, veamos que $`a < f(y) < b`.
 
-```
-    · intro y hy
-      rw [hW]
-      constructor
+```anchor Urysohn_continuity_use_U_intro_y (module := UrysohnsLemma.Separation.urysohn)
+      · intro y hy
+        rw [hW]
+        constructor
 ```
 
 Se tiene que $`y \notin G(p)`, pues en caso contrario, $`y \in G(p) \subseteq \overline{G(p)}`, pero $`y \in \overline{G(p)}^c`. Aplicando `claim1`, se tiene que $`f(y) = g(y) \geq p > a`.
 
-```
-      · have hy : y ∉ G p
-        · by_contra c
-          apply subset_closure at c
-          exact hy.right c
-        apply claim2 p y at hy
-        linarith
+```anchor Urysohn_continuity_case_a (module := UrysohnsLemma.Separation.urysohn)
+        · have hy : y ∉ G p
+          · by_contra c
+            apply subset_closure at c
+            exact hy.right c
+          apply claim2 p y at hy
+          linarith
 ```
 
 Por otro lado, como $`y \in G(q) \subseteq \overline{G(q)}`, por `claim2` se tiene que $`f(y) = g(y) \leq q < b`.
 
-```
-      · have hy := hy.left
-        apply subset_closure at hy
-        specialize claim1 q y hy
-        linarith
+```anchor Urysohn_continuity_case_b (module := UrysohnsLemma.Separation.urysohn)
+        · have hy := hy.left
+          apply subset_closure at hy
+          specialize claim1 q y hy
+          linarith
 ```
 
 Luego concluimos que $`f(y) \in (a, b) = W`. El trabajo duro ya está hecho, ya solo falta ver que $`x \in U` y que $`U` es abierto.
 
-```
-    constructor
+```anchor Urysohn_continuity_constructor2 (module := UrysohnsLemma.Separation.urysohn)
+      constructor
 ```
 
 (2) Como habíamos visto, $`x \in G(q)` y $`x \notin \overline{G(p)}`. Luego $`x \in U`.
 
-```
-    · constructor
-      · exact aux2
-      · exact aux1
+```anchor Urysohn_continuity_xinV (module := UrysohnsLemma.Separation.urysohn)
+      · -- probar que `x ∈ V`
+        constructor
+        · exact aux2
+        · exact aux1
 ```
 
 (3) Probar que $`U` es abierto es sencillo: como es una intersección finita, basta ver que ambos componentes son abiertos. Por {ref "prop-G-open"}[4.5], $`G(q)` es abierto. Además, $`\overline{G(p)}` es cerrado por ser una clausura, luego su complementario es abierto.
 
-```
-    · apply IsOpen.inter
-      · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
-      · rw [isOpen_compl_iff]
-        exact isClosed_closure
+```anchor Urysohn_continuity_Vopen (module := UrysohnsLemma.Separation.urysohn)
+      · -- probar que `V` es abierto
+        apply IsOpen.inter
+        · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
+        · rw [isOpen_compl_iff]
+          exact isClosed_closure
 ```
 
 ## Imagen de $`f`
@@ -1286,18 +1424,25 @@ Para terminar la demostración, solo nos falta ver que $`f(C_1) = \{0\}` y que $
 
 Para empezar, notemos que $`f(A) = g(A)` para cualquier $`A \subseteq X`.
 
-```
-  have aux : ∀ A : Set X, f '' A = g '' A
-  · intro A; ext x; simp
+```anchor Urysohn_image_aux (module := UrysohnsLemma.Separation.urysohn)
+    have aux : ∀ A : Set X, f '' A = g '' A
+    · intro A; ext x; simp [f]
 ```
 
 Luego podemos reducir el objetivo a $`g(C_1) = \{0\}` y que $`g(C_2) = \{1\}`.
 
 El resultado se deduce entonces del lema {ref "prop-kC1"}[4.18] y su análogo para $`C_2`.
 
-```
+```anchor Urysohn_forward_finish (module := UrysohnsLemma.Separation.urysohn)
     constructor
+    /-
+            2. f(C1) = {0}
+    -/
     · exact k_in_C1_is_0 hT C1 C2 C1closed C2c_open hC1C2 C1nempty
+    /-
+            3. f(C2) = {1}
+    -/
+
     · exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
 ```
 

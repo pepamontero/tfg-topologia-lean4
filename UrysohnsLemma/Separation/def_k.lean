@@ -2,19 +2,23 @@ import UrysohnsLemma.Separation.def_F
 import UrysohnsLemma.MyDefs.sets
 
 
+-- ANCHOR: k_def
 noncomputable def k {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : X → ℝ :=
     fun x ↦ Classical.choose (F_Real_has_inf hT C1 C2 x)
+-- ANCHOR_END: k_def
 
 
+-- ANCHOR: k_prop_sig
 lemma k_prop {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x, IsGLB (F_Real hT C1 C2 x) (k hT C1 C2 x) := by
+-- ANCHOR_END: k_prop_sig
 
   intro x
   rw [k]
@@ -22,16 +26,23 @@ lemma k_prop {X : Type} [T : TopologicalSpace X]
 
 
 
+-- ANCHOR: k_in_01_sig
 lemma k_in_01 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, (k hT C1 C2 x) ∈ Set.Icc 0 1 := by
+-- ANCHOR_END: k_in_01_sig
 
+-- ANCHOR: k_in_01_start
   intro x
   have ⟨klb, kglb⟩ := k_prop hT C1 C2 x
   constructor
+-- ANCHOR_END: k_in_01_start
+-- ANCHOR: k_in_01_case1
   · exact kglb (F_Real_0_is_LB hT C1 C2 x)
+-- ANCHOR_END: k_in_01_case1
+-- ANCHOR: k_in_01_case2
   · by_contra c
     simp at c
     obtain ⟨q, hq1, hqk⟩ := exists_rat_btwn c
@@ -39,8 +50,10 @@ lemma k_in_01 {X : Type} [T : TopologicalSpace X]
     apply klb at hq
     apply not_lt.mpr at hq
     exact hq hqk
+-- ANCHOR_END: k_in_01_case2
 
 
+-- ANCHOR: k_claim1_sig
 lemma k_claim1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
@@ -50,16 +63,22 @@ lemma k_claim1 {X : Type} [T : TopologicalSpace X]
     (hC1C2 : C1 ⊆ C2ᶜ)
 
     : ∀ p : ℚ, ∀ x : X, x ∈ closure (H hT C1 C2 p) → (k hT C1 C2 x) ≤ p := by
+-- ANCHOR_END: k_claim1_sig
 
+-- ANCHOR: k_claim1_start
   intro p x hx
   by_contra c
   simp at c
   have ⟨q, hq⟩ := exists_rat_btwn c
+-- ANCHOR_END: k_claim1_start
 
+-- ANCHOR: k_claim1_apply_ordered
   apply H_isOrdered hT C1 C2 hC1 hC2 hC1C2 p q
     (by exact_mod_cast hq.left)
     at hx
+-- ANCHOR_END: k_claim1_apply_ordered
 
+-- ANCHOR: k_claim1_finish
   have aux : inclQR q ∈ F_Real hT C1 C2 x
   · simp [F_Real]
     use q
@@ -70,9 +89,11 @@ lemma k_claim1 {X : Type} [T : TopologicalSpace X]
   apply klb at aux
   apply not_lt.mpr at aux
   exact aux hq.right
+-- ANCHOR_END: k_claim1_finish
 
 
 
+-- ANCHOR: k_claim2_sig
 lemma k_claim2 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
@@ -82,6 +103,7 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
     (hC1C2 : C1 ⊆ C2ᶜ)
 
     : ∀ p : ℚ, ∀ x : X, x ∉ (H hT C1 C2 p) → (k hT C1 C2 x) ≥ p := by
+-- ANCHOR_END: k_claim2_sig
 
   intro p x hx
 
@@ -126,6 +148,7 @@ lemma k_claim2 {X : Type} [T : TopologicalSpace X]
 
 ----- COMPORTAMIENTO EN C1
 
+-- ANCHOR: k_in_C1_is_0_sig
 lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
@@ -136,14 +159,18 @@ lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
     (hC1_nonempty : C1 ≠ ∅)
 
     : k hT C1 C2 '' C1 = {0} := by
+-- ANCHOR_END: k_in_C1_is_0_sig
 
+-- ANCHOR: k_in_C1_is_0_forward
   ext r
   constructor
   · intro ⟨x, hx, hr⟩
     rw [← hr]
     apply IsGLB.unique (k_prop hT C1 C2 x)
     exact F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
+-- ANCHOR_END: k_in_C1_is_0_forward
 
+-- ANCHOR: k_in_C1_is_0_backward
   · intro hr
     rw [hr]
     obtain ⟨x, hx⟩ := nonempty_has_element C1 hC1_nonempty
@@ -153,6 +180,7 @@ lemma k_in_C1_is_0 {X : Type} [T : TopologicalSpace X]
     · have aux := F_Real_0_GLB_in_C1 hT C1 C2 hC1 hC2 hC1C2 x hx
       have aux' := Classical.choose_spec (F_Real_has_inf hT C1 C2 x)
       exact IsGLB.unique aux' aux
+-- ANCHOR_END: k_in_C1_is_0_backward
 
 lemma k_in_C2_is_1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)

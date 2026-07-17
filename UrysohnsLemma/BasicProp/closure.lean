@@ -43,56 +43,74 @@ lemma my_closure  {X : Type} [T : TopologicalSpace X] (A : Set X) : Closure A = 
 -- T: A está contenido en su clausura
 
 #check subset_closure
+-- ANCHOR: subset_closure_example
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     A ⊆ closure A := by
   intro x hx
   intro K hK
   apply hK.right
   exact hx
+-- ANCHOR_END: subset_closure_example
 
 
 #check interior_compl
+-- ANCHOR: interior_compl_sig
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     (closure A)ᶜ = interior (Aᶜ) := by
 
   ext x; constructor; all_goals intro hx
+-- ANCHOR_END: interior_compl_sig
 
+-- ANCHOR: interior_compl_forward_start
   · simp [closure] at hx
     obtain ⟨K, hKclosed, hKA, hKx⟩ := hx
+-- ANCHOR_END: interior_compl_forward_start
 
+-- ANCHOR: interior_compl_forward_finish
     use Kᶜ
     constructor
     · constructor
       · exact isOpen_compl_iff.mpr hKclosed
       · exact Set.compl_subset_compl_of_subset hKA
     · exact hKx
+-- ANCHOR_END: interior_compl_forward_finish
 
+-- ANCHOR: interior_compl_backward_start
   · obtain ⟨U, hU, hUx⟩ := hx
     obtain ⟨hUopen, hUA⟩ := hU
     by_contra hx
+-- ANCHOR_END: interior_compl_backward_start
 
+-- ANCHOR: interior_compl_backward_finish
     simp [closure] at hx
     specialize hx Uᶜ (by exact isClosed_compl_iff.mpr hUopen) (by exact Set.subset_compl_comm.mp hUA)
     exact hx hUx
+-- ANCHOR_END: interior_compl_backward_finish
 
 
 #check isClosed_closure
+-- ANCHOR: isClosed_closure_example
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     IsClosed (closure A) := by
   apply isOpen_compl_iff.mp
   rw [← interior_compl]
   exact isOpen_interior
+-- ANCHOR_END: isClosed_closure_example
 
 
 #check closure_eq_iff_isClosed
+-- ANCHOR: closure_eq_iff_isClosed_forward
 example {X : Type} [T : TopologicalSpace X] (A : Set X) :
     IsClosed A ↔ closure A = A := by
   constructor; swap; all_goals intro h
   · rw [← h]
     exact isClosed_closure
+-- ANCHOR_END: closure_eq_iff_isClosed_forward
+-- ANCHOR: closure_eq_iff_isClosed_backward
   · rw [← isOpen_compl_iff, ← interior_eq_iff_isOpen, interior_compl] at h
     rw [← compl_compl A, ← h, compl_compl]
     exact closure_closure
+-- ANCHOR_END: closure_eq_iff_isClosed_backward
 
 
 

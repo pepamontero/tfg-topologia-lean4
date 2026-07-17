@@ -10,11 +10,15 @@ y estas son las mejores elecciones de r y s
 
 
 -- existencia de tal r
+-- ANCHOR: exists_r_sig
 lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
     ((f r < f n) ∧
     (∀ m ∈ Finset.range n, f m < f n → f m ≤ f r)) := by
+-- ANCHOR_END: exists_r_sig
 
+-- ANCHOR: exists_r_R_def
   let R : Finset ℕ := (Finset.range n).filter (fun m ↦ f m < f n)
+-- ANCHOR_END: exists_r_R_def
   -- tomamos `R = {m ∈ {0, 1, ..., n-1} | f m < f n}`
 
   -- vemos que R no es vacío
@@ -31,6 +35,7 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
         linarith
 
 
+-- ANCHOR: exists_r_finish
   let fR : Finset Q := R.image f
   -- tomamos el conjunto de as imágenes de R
 
@@ -43,6 +48,7 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
   obtain ⟨r, hr⟩ := Finset.mem_image.mp (by exact Finset.max'_mem fR hfR)
 
   use r -- probamos que este r nos vale
+-- ANCHOR_END: exists_r_finish
   simp [R] at hr
 
   constructor
@@ -80,15 +86,19 @@ lemma exists_r (n : ℕ) (hn : n > 1) : ∃ r ∈ Finset.range n,
 
 -- definición de r y propiedades
 
+-- ANCHOR: r_def
 noncomputable def r : ℕ → ℕ := fun n ↦
   if h : n > 1 then Classical.choose (exists_r n h)
   else 1
+-- ANCHOR_END: r_def
 
+-- ANCHOR: r_prop_sig
 lemma r_prop (n : ℕ) (hn : n > 1) : (
   (r n ∈ Finset.range n) ∧
   (f (r n) < f n) ∧
   (∀ m ∈ Finset.range n, f m < f n → f m ≤ f (r n))
 ) := by
+-- ANCHOR_END: r_prop_sig
   let h := Classical.choose_spec (exists_r n hn)
   simp [r]
   simp [hn]
@@ -176,9 +186,11 @@ lemma exists_s (n : ℕ) (hn : n > 1) : ∃ s ∈ Finset.range n,
 
 -- definición de s y propiedades
 
+-- ANCHOR: s_def
 noncomputable def s : ℕ → ℕ := fun n ↦
   if h : n > 1 then Classical.choose (exists_s n h)
   else 0
+-- ANCHOR_END: s_def
 
 lemma s_prop (n : ℕ) (hn : n > 1) : (
   (s n ∈ Finset.range n) ∧
@@ -201,7 +213,9 @@ lemma r_is_not_0 (n : ℕ) (hn : n > 1) : r n ≠ 0 := by
   have h := (f_in_icc01 n).right
   exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hr h -- exact?
 
+-- ANCHOR: r_options_sig
 lemma r_options (n : ℕ) (hn : n > 1) : r n = 1 ∨ r n > 1 := by
+-- ANCHOR_END: r_options_sig
   have cases : r n = 0 ∨ r n > 0
   exact Nat.eq_zero_or_pos (r n)
   cases' cases with c1 c2
@@ -217,7 +231,9 @@ lemma s_is_not_1 (n : ℕ) (hn : n > 1) : s n ≠ 1 := by
   have h := (f_in_icc01 n).left
   exact Std.Tactic.BVDecide.Reflect.Bool.false_of_eq_true_of_eq_false hs h -- exact?
 
+-- ANCHOR: s_options_sig
 lemma s_options (n : ℕ) (hn : n > 1) : s n = 0 ∨ s n > 1 := by
+-- ANCHOR_END: s_options_sig
   have cases : s n = 0 ∨ s n > 0
   exact Nat.eq_zero_or_pos (s n)
   cases' cases with c1 c2
@@ -318,14 +334,19 @@ lemma rs_options (n : ℕ) (hn : n > 1) :
 
 #check ge_antisymm
 
+-- ANCHOR: rn_eq_rsn_sig
 lemma rn_eq_rsn (n : ℕ) (hn : n > 1)
     (hsn : s n > 1)
     (h : r n < s n)
     : r n = r (s n) := by
+-- ANCHOR_END: rn_eq_rsn_sig
 
+-- ANCHOR: rn_eq_rsn_start
   apply f_prop.left.left
   apply ge_antisymm
+-- ANCHOR_END: rn_eq_rsn_start
 
+-- ANCHOR: rn_eq_rsn_case1
   · -- f (r (s n)) ≤ f (r n)
     apply (r_prop n hn).right.right
     · simp
@@ -333,13 +354,16 @@ lemma rn_eq_rsn (n : ℕ) (hn : n > 1)
       · exact List.mem_range.mp (r_prop (s n) hsn).left
       · exact List.mem_range.mp (s_prop n hn).left
     · exact f_rs_prop n hn hsn
+-- ANCHOR_END: rn_eq_rsn_case1
 
+-- ANCHOR: rn_eq_rsn_case2
   · -- f (r n) ≤ f (r (s n))
     apply (r_prop (s n) hsn).right.right
     · exact List.mem_range.mpr h
     · trans f n
       · exact (r_prop n hn).right.left
       · exact (s_prop n hn).right.left
+-- ANCHOR_END: rn_eq_rsn_case2
 
 
 lemma sn_eq_srn (n : ℕ) (hn : n > 1)

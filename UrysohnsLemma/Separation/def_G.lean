@@ -31,9 +31,12 @@ let (U, C) a Pair. Let V = from_normality (U, C)
   C ⊆ V ⊆ closure V ⊆ U
 -/
 
+-- ANCHOR: normal_pair_def
 def normal_pair {X : Type} [TopologicalSpace X]
     : (Set X × Set X) → Prop := fun (U, C) ↦ (IsOpen U ∧ IsClosed C ∧ C ⊆ U)
+-- ANCHOR_END: normal_pair_def
 
+-- ANCHOR: from_normality_def
 noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     : (Set X × Set X) → Set X :=
@@ -50,6 +53,7 @@ noncomputable def from_normality {X : Type} [T : TopologicalSpace X]
       )
 
     else ∅
+-- ANCHOR_END: from_normality_def
 
 
 lemma from_normality_prop1 {X : Type} [T : TopologicalSpace X]
@@ -104,6 +108,7 @@ Def: `G : ℕ → Set X`
 -/
 
 
+-- ANCHOR: G_def_body
 def G {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -119,6 +124,7 @@ def G {X : Type} [T : TopologicalSpace X]
         let C := closure (G hT C1 C2 (r n))
         from_normality hT (U, C)
       else ∅
+-- ANCHOR_END: G_def_body
 
     decreasing_by
     · let s_prop := s_prop
@@ -144,6 +150,7 @@ def G {X : Type} [T : TopologicalSpace X]
 Para cada n ∈ ℕ, G n es Abierto.
 -/
 
+-- ANCHOR: G_Prop1_sig
 lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -155,7 +162,9 @@ lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
     :
 
     ∀ n : ℕ, IsOpen (G hT C1 C2 n) := by
+-- ANCHOR_END: G_Prop1_sig
 
+-- ANCHOR: G_Prop1_case_n0
   intro n
 
 
@@ -163,13 +172,16 @@ lemma G_Prop1 {X : Type} [T : TopologicalSpace X]
   · -- n = 0
     simp [hn, G]
     exact { isOpen_compl := hC2 }
+-- ANCHOR_END: G_Prop1_case_n0
 
+-- ANCHOR: G_Prop1_case_n1
   have : n = 1 ∨ n > 1  := Or.symm (Decidable.lt_or_eq_of_le' hn)
   cases' this with hn1 hn1
   · -- n = 1
     rw [G]
     simp [hn1]
     exact from_normality_open hT C2ᶜ C1
+-- ANCHOR_END: G_Prop1_case_n1
 
   · -- n > 1
     have aux : n ≠ 1 := Ne.symm (Nat.ne_of_lt hn1)
@@ -187,6 +199,7 @@ Para cada n > 1, se tiene:
   2. `closure (G n) ⊆ G (s n)`
 -/
 
+-- ANCHOR: G_Prop2_sig
 lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -199,7 +212,9 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
 
     ∀ n > 1, closure (G hT C1 C2 (r n)) ⊆ (G hT C1 C2 n)
       ∧ closure (G hT C1 C2 n) ⊆ (G hT C1 C2 (s n)) := by
+-- ANCHOR_END: G_Prop2_sig
 
+-- ANCHOR: G_Prop2_start
   intro n hn
 
   let P : ℕ → Prop := fun m ↦ m > 1
@@ -207,6 +222,7 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
   exact hn
   simp [P]
   intro n hn hi
+-- ANCHOR_END: G_Prop2_start
 
 
 
@@ -219,7 +235,9 @@ lemma G_Prop2 {X : Type} [T : TopologicalSpace X]
   rw [G] at U_def
   simp [hn, aux, aux'] at U_def
 
+-- ANCHOR: G_Prop2_normalpair_stmt
   have normalpair : normal_pair (G hT C1 C2 (s n), closure (G hT C1 C2 (r n)))
+-- ANCHOR_END: G_Prop2_normalpair_stmt
 
   · have r_cases := r_options n hn
     cases' r_cases with hr hr
@@ -372,6 +390,7 @@ Para cada n, m ∈ ℕ con `f n < f m`
 se tiene `closure (G n) ⊆ G m`
 -/
 
+-- ANCHOR: G_Prop2_ext_sig
 lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -383,6 +402,7 @@ lemma G_Prop2_ext {X : Type} [T : TopologicalSpace X]
     :
 
     ∀ n m, f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m := by
+-- ANCHOR_END: G_Prop2_ext_sig
 
   intro n m
   let P : ℕ × ℕ → Prop := fun (n, m) ↦ (f n < f m → closure (G hT C1 C2 n) ⊆ G hT C1 C2 m)

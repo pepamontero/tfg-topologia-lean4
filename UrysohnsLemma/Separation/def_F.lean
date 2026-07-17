@@ -1,13 +1,16 @@
 import UrysohnsLemma.Separation.def_H
 import UrysohnsLemma.MyDefs.my_inf
 
+-- ANCHOR: F_def
 def F {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
     (C1 C2 : Set X)
 
     : X → Set ℚ := fun x : X ↦ {p : ℚ | x ∈ H hT C1 C2 p}
+-- ANCHOR_END: F_def
 
+-- ANCHOR: hF_non_empty_full
 lemma hF_non_empty {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
@@ -16,6 +19,7 @@ lemma hF_non_empty {X : Type} [T : TopologicalSpace X]
   intro x
   use 2
   simp [F, H]
+-- ANCHOR_END: hF_non_empty_full
 
 
 lemma hFx_non_neg {X : Type} [T : TopologicalSpace X]
@@ -27,11 +31,13 @@ lemma hFx_non_neg {X : Type} [T : TopologicalSpace X]
   intro x p hp
   simp [F, H, hp]
 
+-- ANCHOR: hFx_has_lb_0_sig
 lemma hFx_has_lb_0 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
 
     : ∀ x : X, 0 ∈ lowerBounds (F hT C1 C2 x) := by
+-- ANCHOR_END: hFx_has_lb_0_sig
 
   intro x p hp
   by_contra c
@@ -54,6 +60,7 @@ lemma hF_contains_bt1 {X : Type} [T : TopologicalSpace X]
 -------- COMPORTAMIENTO DE F EN C1
 
 
+-- ANCHOR: F_at_C1_sig
 lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -63,6 +70,7 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
     (hC1C2 : C1 ⊆ C2ᶜ)
 
     : ∀ x : X, x ∈ C1 → F hT C1 C2 x = {q : ℚ | q ≥ 0} := by
+-- ANCHOR_END: F_at_C1_sig
 
   intro x hx
   ext q
@@ -74,6 +82,7 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
     apply hFx_non_neg hT C1 C2 x at c
     exact c hq
 
+-- ANCHOR: F_at_C1_case_q_geq_0
   · simp only [ge_iff_le, Set.mem_setOf_eq] at hq
     cases' Decidable.lt_or_eq_of_le hq with hq hq
 
@@ -83,6 +92,7 @@ lemma F_at_C1 {X : Type} [T : TopologicalSpace X]
 
     · rw [← hq]
       exact H_C1_in_H0 hT C1 C2 hC1 hC2 hC1C2 hx
+-- ANCHOR_END: F_at_C1_case_q_geq_0
 
 lemma F_at_C2 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
@@ -143,6 +153,7 @@ lemma F_1_LB_in_C2 {X : Type} [T : TopologicalSpace X]
   exact hx hq
 
 
+-- ANCHOR: F_0_GLB_in_C1_sig
 lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -152,6 +163,7 @@ lemma F_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     (hC1C2 : C1 ⊆ C2ᶜ)
 
     : ∀ x : X, x ∈ C1 → IsGLB (F hT C1 C2 x) 0 := by
+-- ANCHOR_END: F_0_GLB_in_C1_sig
 
   intro x hx
   constructor
@@ -200,6 +212,7 @@ lemma F_1_GLB_in_C2 {X : Type} [T : TopologicalSpace X]
 -- a partir de F quiero describir I que tome el infimo de F
 
 
+-- ANCHOR: inclQR_F_Real_def
 def inclQR : ℚ → ℝ := fun q ↦ q
 
 def F_Real {X : Type} [TopologicalSpace X]
@@ -209,6 +222,7 @@ def F_Real {X : Type} [TopologicalSpace X]
     : X → Set ℝ :=
 
     fun x ↦ inclQR '' (F hT C1 C2 x)
+-- ANCHOR_END: inclQR_F_Real_def
 
 
 lemma relF_F_Real {X : Type} [T : TopologicalSpace X]
@@ -283,6 +297,7 @@ lemma F_Real_BddBelow {X : Type} [T : TopologicalSpace X]
   exact F_Real_0_is_LB hT C1 C2 x
 
 
+-- ANCHOR: F_Real_has_inf_full
 lemma F_Real_has_inf {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
     (C1 C2 : Set X)
@@ -293,6 +308,7 @@ lemma F_Real_has_inf {X : Type} [T : TopologicalSpace X]
   apply Real.exists_isGLB
   exact F_Real_Nonempty hT C1 C2 x
   exact F_Real_BddBelow hT C1 C2 x
+-- ANCHOR_END: F_Real_has_inf_full
 
 lemma F_Real_1inf {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
@@ -307,6 +323,7 @@ lemma F_Real_1inf {X : Type} [T : TopologicalSpace X]
   · rfl
 
 
+-- ANCHOR: F_Real_0_GLB_in_C1_sig
 lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -316,6 +333,7 @@ lemma F_Real_0_GLB_in_C1 {X : Type} [T : TopologicalSpace X]
     (hC1C2 : C1 ⊆ C2ᶜ)
 
     : ∀ x : X, x ∈ C1 → IsGLB (F_Real hT C1 C2 x) 0 := by
+-- ANCHOR_END: F_Real_0_GLB_in_C1_sig
 
   intro x hx
   rw [relF_F_Real]

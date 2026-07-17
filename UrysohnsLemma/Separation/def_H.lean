@@ -1,5 +1,6 @@
 import UrysohnsLemma.Separation.def_G
 
+-- ANCHOR: H_def
 def H {X : Type} [TopologicalSpace X]
     (hT : ∀ (U C : Set X), IsOpen U → IsClosed C → C ⊆ U → ∃ V, IsOpen V ∧ C ⊆ V ∧ closure V ⊆ U)
 
@@ -10,6 +11,7 @@ def H {X : Type} [TopologicalSpace X]
   if q < 0 then ∅
   else if h : 0 ≤ q ∧ q ≤ 1 then G hT C1 C2 (f_inv ⟨q, h⟩)
   else Set.univ
+-- ANCHOR_END: H_def
 
 
 lemma H_value1 {X : Type} [T : TopologicalSpace X]

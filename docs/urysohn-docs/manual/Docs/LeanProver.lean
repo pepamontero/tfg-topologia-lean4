@@ -2,8 +2,12 @@ import VersoManual
 import Docs.Referencias
 
 open Verso.Genre Manual
+open Verso.Code.External
 
 set_option pp.rawOnError true
+
+set_option verso.exampleProject "../../.."
+set_option verso.exampleModule "UrysohnsLemma.Docs.TypeTheory"
 
 #doc (Manual) "Lean Theorem Prover" =>
 %%%
@@ -40,7 +44,7 @@ Empecemos por lo más básico: la teoría de tipos. Cambiamos el paradigma de "c
 
 Por ejemplo, $`3` es un término de tipo "natural" ($`\mathbb{N}`), mientras que "true" es un término de tipo "booleano". En Lean, podemos comprobar el tipo de estas expresiones utilizando el comando `#check`.
 
-```
+```anchor check_basic (module := UrysohnsLemma.Docs.TypeTheory)
 #check 3    -- 3 : ℕ
 #check true   -- Bool.true : Bool
 ```
@@ -49,13 +53,13 @@ Como en este ejemplo, en Lean utilizamos el símbolo $`:` para describir la info
 
 Por otro lado, un tipo, como es $`\mathbb{N}`, también es un término. Podemos comprobar su tipo:
 
-```
+```anchor check_nat_type (module := UrysohnsLemma.Docs.TypeTheory)
 #check ℕ    -- ℕ : Type
 ```
 
 En Lean, los tipos tienen su propio tipo, que recibe el nombre de `Type`. Esto nos permite definir nuevos tipos. Podemos utilizar el comando `variable` para definir objetos en nuestro código{margin}[Veremos este comando en detalle más adelante.].
 
-```
+```anchor var_x (module := UrysohnsLemma.Docs.TypeTheory)
 variable (X : Type)
 #check X    -- X : Type
 variable (x : X)
@@ -64,7 +68,7 @@ variable (x : X)
 
 Ahora, podemos combinar distintos tipos para obtener tipos más complejos. Sean $`X` e $`Y` dos tipos. Podemos considerar el tipo $`X \times Y`, que denota los pares formados por un elemento de $`X` y otro de $`Y`. El tipo que más utilizaremos es $`X \to Y`, que denota las funciones de $`X` en $`Y`. Escribimos esto en Lean.
 
-```
+```anchor var_xy (module := UrysohnsLemma.Docs.TypeTheory)
 variable (X Y : Type)
 #check X × Y    -- X × Y : Type
 variable (x : X) (y : Y)
@@ -77,7 +81,7 @@ variable (f : X → Y)
 
 Por otro lado, a partir de la yuxtaposición de términos simples, podemos formar términos más complejos. En Lean, las reglas de tipado dictan el tipo de estos nuevos términos obtenidos. Por ejemplo, si $`x` es de tipo $`X` y $`f` es de tipo $`A \to B`, como en el ejemplo anterior, entonces $`f x` tiene tipo $`B`. En efecto:
 
-```
+```anchor apply_fx (module := UrysohnsLemma.Docs.TypeTheory)
 #check f x    -- f x : Y
 ```
 
@@ -91,13 +95,13 @@ Por ejemplo, un término válido podría ser $`\lambda n, n + 2`, que representa
 
 En Lean, definimos funciones utilizando el comando `fun`, que corresponde a la notación $`\lambda` del cálculo lambda clásico{margin}[En la versión anterior de Lean, se utilizaba la notación `λ n, n + 2`, sin embargo en esta última versión se ha cambiado a `fun n ↦ n + 2` para mejorar la legibilidad del código.]. Por ejemplo{margin}[Estudiaremos el comando `def` en detalle más adelante.]:
 
-```
+```anchor lambda_f_def (module := UrysohnsLemma.Docs.TypeTheory)
 def f := fun n ↦ n + 2
 ```
 
 Además, Lean admite reducción por aplicación funcional sobre estos términos. Por ejemplo, si aplicamos la anterior función a $`3`, $`(n \mapsto n + 2)3`, se puede reducir a $`3 + 2` por aplicación funcional, y, suponiendo que la operación $`+` estaba definida anteriormente, podemos reducir esta expresión a $`5`. Podemos comprobar el resultado de esta reducción utilizando el comando `#eval`.
 
-```
+```anchor lambda_f_eval (module := UrysohnsLemma.Docs.TypeTheory)
 #eval f 3    -- 5
 ```
 
@@ -109,7 +113,7 @@ El cálculo lambda clásico no incorpora tipos: cualquier función puede aplicar
 
 Podemos escribir el ejemplo anterior de la siguiente forma en Lean:
 
-```
+```anchor typed_lambda_f (module := UrysohnsLemma.Docs.TypeTheory)
 def f : ℕ → ℕ := fun n => 2 * n
 ```
 
@@ -121,7 +125,7 @@ Para poder expresar los distintos objetos matemáticos en esta teoría, necesita
 
 Por ejemplo, en Lean, el tipo `List α` representa una lista de elementos de tipo $`\alpha`. Si definimos un objeto de tipo `List α`, el tipo de este objeto dependerá del tipo $`\alpha` que le asignemos Internamente, se define como una función de tipo `Type u → Type u`.
 
-```
+```anchor list_dependent (module := UrysohnsLemma.Docs.TypeTheory)
 #check List    -- List.{u} (α : Type u) : Type u
 #check List ℝ    -- List ℝ : Type
 ```
@@ -152,7 +156,7 @@ inductive Foo where
 
 Un ejemplo clásico de definición inductiva es el conjunto de los números naturales, $`\mathbb{N}`. En Lean, podemos describir el tipo `Nat` de los números naturales como
 
-```
+```anchor inductive_nat_demo (module := UrysohnsLemma.Docs.TypeTheory)
 inductive Nat where
   | zero : Nat
   | succ : Nat → Nat
@@ -164,7 +168,7 @@ Internamente, la declaración `inductive` genera automáticamente una colección
 * Una serie de reglas de introducción o constructores, que indican las posibles formas de construir términos del nuevo tipo.
 * Una regla de eliminación, `Nat.rec`, que indica la forma de "usar" un término de este tipo{margin}[El comando `#print` muestra la definición completa del objeto, a diferencia de `#check`, que solo muestra su tipo.].
 
-```
+```anchor print_nat_rec (module := UrysohnsLemma.Docs.TypeTheory)
 #print Nat.rec
     -- recursor Nat.rec.{u}  :  {motive : ℕ → Sort u} → motive Nat.zero → ((n : ℕ) → motive n → motive n.succ) → (t : ℕ) → motive t
 ```
@@ -182,7 +186,7 @@ axiom (Nat.rec : {motive : Nat → Sort u} → motive Nat.zero →
 
 Este último objeto, `Nat.rec`, codifica el principio de inducción sobre los naturales{margin}[`Nat.rec` es un tipo que depende de `motive`, que es una propiedad cualquiera sobre los naturales. `Nat.rec` nos dice que si se cumple `motive` para `Nat.zero` (`motive Nat.zero`), entonces si para cada `n` (`n : Nat`) que cumpla `motive` (`motive n`) se tiene que `n+1` cumple `motive` (`motive Nat.succ n`), entonces se cumple `motive` para cualquier `n` (`(t : Nat) → motive t`).]. Este principio se utiliza implícitamente en muchas definiciones por casos, como por ejemplo:
 
-```
+```anchor add_def (module := UrysohnsLemma.Docs.TypeTheory)
 def add (m n : Nat) : Nat :=
   match n with
   | Nat.zero   => m
@@ -201,12 +205,12 @@ En el cálculo de construcciones inductivas, en cambio, la lógica se expresa de
 
 Las proposiciones, como cualquier otro objeto en esta teoría, son términos con un tipo asociado. En Lean, este tipo recibe el nombre de `Prop`.
 
-```
+```anchor prop_check (module := UrysohnsLemma.Docs.TypeTheory)
 #check Prop    -- Prop : Type
 #print True    -- inductive True : Prop
 ```
 
-```
+```anchor prop_var_p (module := UrysohnsLemma.Docs.TypeTheory)
 variable (P : Prop)
 #check P    -- P : Prop
 #check ¬ P    -- ¬ P : Prop
@@ -214,7 +218,7 @@ variable (P : Prop)
 
 En Lean, interpretamos los objetos de tipo `Prop` como tipos en sí mismos y las demostraciones de cada proposición como términos que habitan este tipo, siguiendo la correspondencia de Curry-Howard. Es decir, una proposición `p : Prop` es el tipo de las demostraciones de `p`; una expresión de la forma `h : p` quiere decir que `h` es una demostración de `p`. Decimos que una proposición `p` es verdadera si podemos construir término de tipo `p`.
 
-```
+```anchor prop_var_ph (module := UrysohnsLemma.Docs.TypeTheory)
 variable (p : Prop)
 variable (h : p)
 #check h    -- h : p
@@ -270,14 +274,14 @@ Podemos introducir nueva información en el contexto de distintas formas. Distin
 
 Permiten introducir hipótesis que se asumen sin demostración. En particular, escribir que x "es de tipo X" es también una hipótesis, por lo que los axiomas pueden utilizarse para introducir nuevos objetos{margin}[En este sentido decíamos que definir un tipo inductivo es análogo a escribir una colección de axiomas. `inductive Nat` se puede ver como una versión estructurada de `axiom Nat : Type`, `axiom zero : Nat`, `axiom succ : Nat to Nat`, etc.]. Por ejemplo:
 
-```
+```anchor axiom_p_h (module := UrysohnsLemma.Docs.Definitions)
 axiom P : Prop
 axiom h : P → P
 ```
 
 Estamos declarando una proposición $`P` y una prueba de que $`P` implica $`P`.
 
-```
+```anchor axiom_n_hn (module := UrysohnsLemma.Docs.Definitions)
 axiom n : ℕ
 axiom hn : n > 2
 ```
@@ -290,7 +294,7 @@ Así, los axiomas nos permiten fijar hechos que queremos asumir como válidos a 
 
 Introducen objetos nuevos a partir de otros ya conocidos. A diferencia de los axiomas, no basta con indicar el tipo del nuevo objeto, sino que también hay que dar su construcción. Por ejemplo:
 
-```
+```anchor defs_f_n_espar (module := UrysohnsLemma.Docs.Definitions)
 def f : ℕ → ℕ := fun n ↦ 2 * n
 def n : ℕ := 3
 def es_par : ℕ → Prop := fun n ↦ ∃ m, n = f m
@@ -298,7 +302,7 @@ def es_par : ℕ → Prop := fun n ↦ ∃ m, n = f m
 
 Además, cuando el tipo puede inferirse a partir de la construcción, no es necesario indicarlo explícitamente:
 
-```
+```anchor def_n_infer (module := UrysohnsLemma.Docs.Definitions)
 def n := 3
 #check n    -- n : ℕ
 ```
@@ -307,7 +311,7 @@ def n := 3
 
 En la mayoría de lenguajes de programación, estamos acostumbrados a que definir una variable implique asignarle un valor concreto. Sin embargo, en Lean las variables se comportan más bien como en lógica. Al introducir una variable $`x`, lo que se introduce es un contexto universal: siempre que $`x` aparezca de forma libre, Lean interpretará que lo que sigue está cuantificado universalmente respecto a $`x`. Por ejemplo{margin}[Las variables, a diferencia de los axiomas y las definiciones, se escriben entre paréntesis. Lo mismo ocurre con los argumentos que toman las proposiciones, como veremos más adelante. Esto está relacionado con la correspondencia de Curry–Howard: declarar una variable equivale a abstraer sobre ella, lo que corresponde a cuantificar universalmente.]:
 
-```
+```anchor var_x_axiom_hx (module := UrysohnsLemma.Docs.Definitions)
 variable (x : ℕ)
 axiom hx : x ≥ 0
 #print hx    -- axiom hx : ∀ (x : ℕ), x ≥ 0
@@ -353,7 +357,7 @@ En una demostración informal, solemos avanzar mediante pasos lógicos encadenad
 
 Además, el modo táctico nos permite trabajar de manera *interactiva* con Lean. Si escribimos un enunciado, e inmediatamente después de `:=` escribimos `by`, estamos indicando a Lean que para la construcción de este término vamos a utilizar el modo táctico. Por ejemplo:
 
-```
+```anchor by_pq_and (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
 ```
 
@@ -389,7 +393,7 @@ En esta sección veremos algunas de las tácticas más básicas y útiles para c
 
 Para poder utilizar las tácticas mencionadas a continuación, es necesario importar el módulo de Mathlib correspondiente al modo táctico mediante
 
-```
+```anchor import_mathlib_tactic (module := UrysohnsLemma.Docs.Tactics)
 import Mathlib.Tactic
 ```
 
@@ -401,103 +405,50 @@ La táctica `intro` introduce un nuevo objeto en el contexto, de manera similar 
 
 Es útil cuando el objetivo tiene la forma de una implicación o un cuantificador universal: transformamos la primera parte de la tesis en una nueva hipótesis y la segunda en la nueva tesis. Por ejemplo, para la implicación:
 
-```
+```anchor intro_before1 (module := UrysohnsLemma.Docs.Tactics)
 example (p : Prop) : p → p := by
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p : Prop
-  ⊢ p → p
 ```
 
 ↓
 
-```
+```anchor intro_after1 (module := UrysohnsLemma.Docs.Tactics)
 example (p : Prop) : p → p := by
   intro hp
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p : Prop
-  hp : p
-  ⊢ p
-```
-
 Y para deshacer cuantificadores:
 
-```
+```anchor intro_before2 (module := UrysohnsLemma.Docs.Tactics)
 example : ∀ (p : Prop), p → p := by
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  ⊢ ∀ (p : Prop), p → p
 ```
 
 ↓
 
-```
+```anchor intro_after2 (module := UrysohnsLemma.Docs.Tactics)
 example : ∀ (p : Prop), p → p := by
   intro q
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  q : Prop
-  ⊢ q → q
 ```
 
 ### `exact`
 
 La táctica `exact` se utiliza cuando ya tenemos, en nuestro contexto, exactamente lo que queremos demostrar. Es decir, existe una hipótesis que coincide con la tesis actual. Por ejemplo:
 
-```
+```anchor exact_before1 (module := UrysohnsLemma.Docs.Tactics)
 example : ∀ (p : Prop), p → p := by
   intro p hp
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p : Prop
-  hp : p
-  ⊢ p
-```
-
 ↓
 
-```
+```anchor exact_after1 (module := UrysohnsLemma.Docs.Tactics)
 example : ∀ (p : Prop), p → p := by
   intro p hp
   exact hp
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  No goals
-```
-
 A modo de comparación, podríamos construir esta demostración utilizando sólo términos de la siguiente forma:
 
-```
+```anchor exact_term_mode (module := UrysohnsLemma.Docs.Tactics)
 example : ∀ (p : Prop), p → p := fun p ↦ (fun hp : p ↦ hp)
 ```
 
@@ -507,39 +458,17 @@ En este caso puede resultar más sencillo, pero en demostraciones más complejas
 
 La táctica `apply` nos permite usar una implicación para reducir un objetivo a otro más simple. Equivale a utilizar la regla del _Modus Ponens_: si tenemos una hipótesis de la forma $`p \rightarrow q` y queremos demostrar $`q`, basta con demostrar $`p`.
 
-```
-example : (p q : Prop) (hp : p)
+```anchor apply_before (module := UrysohnsLemma.Docs.Tactics)
+example (p q : Prop) (hp : p)
     (hpq : p → q) : q := by
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p q : Prop
-  hp : p
-  hpq : p → q
-  ⊢ q
 ```
 
 ↓
 
-```
-example : (p q : Prop) (hp : p)
+```anchor apply_after (module := UrysohnsLemma.Docs.Tactics)
+example (p q : Prop) (hp : p)
     (hpq : p → q) : q := by
   apply hpq
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p q : Prop
-  hp : p
-  hpq : p → q
-  ⊢ p
 ```
 
 Podríamos completar esta demostración usando `exact hp`.
@@ -550,31 +479,15 @@ Utilizamos `use` para trabajar con el cuantificador existencial. Si queremos dem
 
 En este caso, aplicamos `use` para indicarle a Lean el valor concreto $`x_0` que queremos usar para demostrar la existencia. El objetivo pasa a ser entonces demostrar que $`x_0` satisface $`P`. Por ejemplo:
 
-```
+```anchor use_before (module := UrysohnsLemma.Docs.Tactics)
 example : ∃ n : ℕ, n > 3 := by
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  ⊢ ∃ n, n > 3
 ```
 
 ↓
 
-```
+```anchor use_after (module := UrysohnsLemma.Docs.Tactics)
 example : ∃ n : ℕ, n > 3 := by
   use 5
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  ⊢ 5 > 3
 ```
 
 ### `left`, `right`
@@ -583,37 +496,17 @@ Las tácticas `left` y `right` se utilizan para trabajar con disyunciones, es de
 
 En una demostración informal, si queremos demostrar que "$`A` o $`B`" es cierto, nos basta con demostrar una de las dos. Utilizamos `left` para indicar que vamos a demostrar la parte izquierda ($`A`), y `right` si queremos demostrar la parte derecha ($`B`). Por ejemplo:
 
-```
-example : (p q : Prop) (hp : p) :
+```anchor leftright_before (module := UrysohnsLemma.Docs.Tactics)
+example (p q : Prop) (hp : p) :
     p ∨ q := by
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p q : Prop
-  hp : p
-  ⊢ p ∨ q
 ```
 
 ↓
 
-```
-example : (p q : Prop) (hp : p) :
+```anchor leftright_after (module := UrysohnsLemma.Docs.Tactics)
+example (p q : Prop) (hp : p) :
     p ∨ q := by
   left
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p q : Prop
-  hp : p
-  ⊢ p
 ```
 
 Podríamos completar esta demostración aplicando `exact hp`.
@@ -624,50 +517,22 @@ Utilizamos `constructor` para trabajar con conjunciones, es decir, proposiciones
 
 Cuando queremos demostrar que "$`A` y $`B`" es cierto, podemos demostrar $`A` por un lado y $`B` por otro. Al aplicar `constructor`, Lean divide un objetivo `A ∧ B` en dos sub-objetivos con el mismo contexto: uno para `A` y otro para `B`. Por ejemplo:
 
-```
+```anchor constructor_before (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (hp : p)
     (hq : q) : p ∧ q := by
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p q : Prop
-  hp : p
-  hq : q
-  ⊢ p ∧ q
-```
-
 ↓
 
-```
+```anchor constructor_after (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (hp : p)
     (hq : q) : p ∧ q := by
   constructor
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  2 goals
-  case left
-    p q : Prop
-    hp : p
-    hq : q
-    ⊢ p
-  case right
-    p q : Prop
-    hp : p
-    hq : q
-    ⊢ q
-```
-
 Después de aplicar `constructor`, el InfoView mostrará dos objetivos pendientes (`2 goals`). Al resolver cada uno por separado, completamos la demostración.
 
-```
+```anchor constructor_complete (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (hp : p)
     (hq : q) : p ∧ q := by
   constructor
@@ -675,49 +540,23 @@ example (p q : Prop) (hp : p)
   exact hq
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  No goals
-```
-
 Aunque lo anterior es correcto, lo habitual cuando trabajamos con más de una tesis es utilizar `·` para separarlas. Cuando escribimos `·` tras un salto de línea, Lean enfoca el primer objetivo, ocultando temporalmente el resto. Por ejemplo:
 
-```
+```anchor constructor_dot_before (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (hp : p)
     (hq : q) : p ∧ q := by
   constructor
   ·
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  case left
-    p q : Prop
-    hp : p
-    hq : q
-    ⊢ p
-```
-
 Si colocamos el cursor al final, el InfoView solo muestra `1 goal`, porque el segundo objetivo está oculto por ahora. La demostración completa en este estilo sería:
 
-```
+```anchor constructor_dot_complete (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (hp : p)
     (hq : q) : p ∧ q := by
   constructor
   · exact hp
   · exact hq
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  No goals
 ```
 
 ### `cases'`
@@ -728,63 +567,28 @@ En una demostración informal, equivale a hacer un razonamiento por casos: "Supo
 
 Al aplicar `cases' h` sobre una hipótesis h, Lean duplica el objetivo (que no cambia), pero modifica el contexto en cada uno de los nuevos objetivos, introduciendo las hipótesis correspondientes a cada caso. Utilizamos el comando `with` para asignar nombres a las nuevas hipótesis. Por ejemplo:
 
-```
+```anchor cases_before (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (h : p ∨ q)
     (hpq : p → q) : q := by
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  p q : Prop
-  h : p ∨ q
-  hpq : p → q
-  ⊢ q
-```
-
 ↓
 
-```
+```anchor cases_after (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (h : p ∨ q)
     (hpq : p → q) : q := by
   cases' h with hp hq
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  2 goals
-  case inl
-    p q : Prop
-    hpq : p → q
-    hp : p
-    ⊢ q
-  case inr
-    p q : Prop
-    hpq : p → q
-    hq : q
-    ⊢ q
-```
-
 Podemos entonces completar la demostración con las herramientas que tenemos hasta ahora:
 
-```
+```anchor cases_complete (module := UrysohnsLemma.Docs.Tactics)
 example (p q : Prop) (h : p ∨ q)
     (hpq : p → q) : q := by
   cases' h with hp hq
   · apply hpq
     exact hp
   · exact hq
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  No goals
 ```
 
 Como hemos visto por medio de estos ejemplos, completar una demostración en modo táctico consiste en combinar estas instrucciones una después de otra, haciendo que las hipótesis y las tesis vayan avanzando hasta alcanzar el estado deseado: `No goals`. Las tácticas nos dan la flexibilidad necesaria para formalizar una gran variedad de resultados matemáticos.
@@ -807,7 +611,7 @@ La manera más sencilla de apoyarse en la librería de Mathlib es utilizar la t�
 
 La táctica `simp` se puede utilizar en cualquier momento de la demostración, pero resulta especialmente útil cuando algo que queremos demostrar parece evidente o suficientemente simple. Por ejemplo:
 
-```
+```anchor simp_group (module := UrysohnsLemma.Docs.Automation)
 example (G : Type) [Group G] (a b c : G) :
     a * a⁻¹ * 1 * b = b * c * c⁻¹ := by
   simp
@@ -825,31 +629,17 @@ A lo largo del proyecto, la que he utilizado con mayor frecuencia es `exact?`. E
 
 Por ejemplo, en el caso de encontrar hipótesis locales:
 
-```
+```anchor exactq_local (module := UrysohnsLemma.Docs.Automation)
 example (p : Prop) : p → p := by
   intro hp
   exact?
 ```
 
-_Estado en el InfoView:_
-
-```
-Suggestions
-  Try this: exact hp
-```
-
 Y en el caso de encontrar resultados de Mathlib:
 
-```
+```anchor exactq_mathlib (module := UrysohnsLemma.Docs.Automation)
 example (n : ℕ) : n ≥ 0 := by
   exact?
-```
-
-_Estado en el InfoView:_
-
-```
-Suggestions
-  Try this: exact Nat.zero_le n
 ```
 
 En general, utilizar la expresión sugerida por `exact?` concluirá la prueba.
@@ -858,33 +648,21 @@ A pesar de que `exact?` nos puede ayudar en muchos casos, es una herramienta rel
 
 Cuando trabajamos con hipótesis más complejas, lo habitual no es utilizar `exact?` directamente para probar nuestra tesis, sino para probar ciertos resultados intermedios. Por esto, una táctica crucial a la hora de trabajar con `exact?` es `have`, el equivalente en demostraciones informales a declarar un lema en mitad de una demostración. Por ejemplo, supongamos que queremos probar:
 
-```
+```anchor have_goal_r_stmt (module := UrysohnsLemma.Docs.Automation)
 example (p q r : Prop) (hpq : p → q) (hqr : q → r) (hp : p) : r
 ```
 
 En lugar de tratar de demostrar inmediatamente `r`, podríamos probar, de manera intermedia, que se tiene `q`. Para esto utilizamos `have`:
 
-```
+```anchor have_goal_r_incomplete (module := UrysohnsLemma.Docs.Automation)
 example (p q r : Prop) (hpq : p → q)
     (hqr : q → r) (hp : p) : r := by
   have hq : q
 ```
 
-_Estado en el InfoView:_
-
-```
-Tactic state
-  2 goals
-  case hq
-    (...)
-    ⊢ q
-  (...)
-  ⊢ r
-```
-
 Escribir `have hq : q` introduce una nueva tesis, `q`, independiente de la anterior. Una vez completemos la prueba de esta nueva tesis, podremos usar el resultado en nuestra demostración. Por tanto, podríamos completar el ejemplo anterior de la siguiente forma:
 
-```
+```anchor have_goal_r_complete (module := UrysohnsLemma.Docs.Automation)
 example (p q r : Prop) (hpq : p → q) (hqr : q → r) (hp : p) : r := by
   have hq : q
   · apply hpq
@@ -918,49 +696,29 @@ Messages
 1. Mirando el estado actual de la demostración, identificar cuál sería una hipótesis que desearíamos tener en nuestro contexto. En este caso, al tratarse de una división, podría ser necesario tener la hipótesis $`x \neq 0`.
 1. Añadir la nueva tesis utilizando `have`{margin}[En algunos casos, será más útil escribir aquello que creemos poder necesitar fuera de la demostración, utilizando `example`, porque podremos escribir resultados más generales.].
 
-  ```
+  ```anchor xdivx_have_empty (module := UrysohnsLemma.Docs.Automation)
   example (x : ℝ) (hx : x > 0) :
       x / x = 1 := by
     have h : x ≠ 0
     ·
   ```
-  _Estado en el InfoView:_
-  ```
-  Tactic state
-    1 goal
-    x : ℝ
-    hx : x > 0
-    ⊢ x ≠ 0
-  ```
 1. Intentar demostrar la nueva tesis utilizando `exact?`.
 
-  ```
+  ```anchor xdivx_have_exactq (module := UrysohnsLemma.Docs.Automation)
   example (x : ℝ) (hx : x > 0) :
       x / x = 1 := by
     have h : x ≠ 0
     · exact?
   ```
-  _Estado en el InfoView:_
-  ```
-  Suggestions
-    Try this: Ne.symm (ne_of_lt hx)
-  ```
 
 Con esta nueva hipótesis, parece probable que `exact?` sea capaz de terminar la demostración. En efecto:
 
-```
+```anchor xdivx_complete (module := UrysohnsLemma.Docs.Automation)
 example (x : ℝ) (hx : x > 0) :
     x / x = 1 := by
   have h : x ≠ 0
   · exact Ne.symm (ne_of_lt hx)
   exact?
-```
-
-_Estado en el InfoView:_
-
-```
-Suggestions
-  Try this: (div_eq_one_iff_eq h).mpr rfl
 ```
 
 La táctica `exact?` es un ejemplo de motor de búsqueda formal: una herramienta que, mediante meta-programación en Lean, compara el objetivo actual con los tipos de todos los lemas disponibles y devuelve aquellos con coincidencias exactas. Por tanto, la clave de usar `exact?` de manera eficaz reside en *desarrollar gradualmente una cierta intuición* sobre qué resultados es probable que estén formalizados en Mathlib, y la forma concreta en la que están formulados.
@@ -984,20 +742,10 @@ Por ejemplo, si en el caso anterior no se nos hubiera ocurrido la idea de demost
 
 Que no es el mismo resultado que proponía `exact?`, pero parece incluso más simple. Podríamos volver a nuestro ejemplo y escribir
 
-```
+```anchor xdivx_apply_divself (module := UrysohnsLemma.Docs.Automation)
 example (x : ℝ) (hx : x > 0) :
     x / x = 1 := by
   apply div_self
-```
-
-_Estado en el InfoView:_
-
-```
-Tactic state
-  1 goal
-  x : ℝ
-  hx : x > 0
-  ⊢ x ≠ 0
 ```
 
 Con lo que ya sólo faltaría demostrar que $`x \neq 0`.
@@ -1018,7 +766,7 @@ Para finalizar esta sección sobre Lean en la práctica, es útil comentar breve
 
 En Lean, el axioma de elección se introduce de la siguiente forma:
 
-```
+```anchor choice_axiom (module := UrysohnsLemma.Docs.Automation)
 axiom choice {α : Sort u} : Nonempty α → α
 ```
 
@@ -1026,7 +774,7 @@ Es decir, dado un tipo no vacío, `choice` devuelve un elemento de ese tipo, aun
 
 En consecuencia, cuando definimos funciones o construcciones que dependen de `choice`, Lean nos obliga a marcarlas como `noncomputable`. Un ejemplo es la función `choose`, que dada una prueba de tipo existencial, selecciona un testigo:
 
-```
+```anchor choose_def (module := UrysohnsLemma.Docs.Automation)
 noncomputable def choose {α : Sort u} {p : α → Prop}
     (h : ∃ x, p x) : α :=
   (indefiniteDescription p h).val
@@ -1034,7 +782,7 @@ noncomputable def choose {α : Sort u} {p : α → Prop}
 
 A menudo utilizaremos `choose` (`Classical.choose`, ya que se encuentra en el módulo `Classical`) en nuestros resultados, junto con el siguiente lema
 
-```
+```anchor choose_spec_def (module := UrysohnsLemma.Docs.Automation)
 theorem choose_spec {α : Sort u} {p : α → Prop}
     (h : ∃ x, p x) : p (choose h) :=
   (indefiniteDescription p h).property

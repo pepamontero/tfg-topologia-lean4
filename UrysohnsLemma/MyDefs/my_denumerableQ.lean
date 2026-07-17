@@ -3,10 +3,12 @@ import Mathlib.Data.Rat.Denumerable
 import Mathlib.Data.Rat.Cardinal
 
 
+-- ANCHOR: bijective_nat_rat_full
 lemma bijective_nat_rat : ∃ f : ℕ → ℚ, f.Bijective  := by
     have f := (Rat.instDenumerable.eqv).symm
     use f
     exact f.bijective
+-- ANCHOR_END: bijective_nat_rat_full
 
 /-
 things i will need:
@@ -36,7 +38,9 @@ It is equivalent for a set `A`:
 #check Cardinal.lt_aleph0_iff_set_finite
 
 
+-- ANCHOR: non_finite_rat_set_cardinal_aleph0_sig
 lemma non_finite_rat_set_cardinal_aleph0 (A : Set ℚ) (hA : ¬ A.Finite) : Cardinal.mk ↑A = Cardinal.aleph0 := by
+-- ANCHOR_END: non_finite_rat_set_cardinal_aleph0_sig
 
   apply le_antisymm
 
@@ -126,6 +130,7 @@ then for every a, b ∈ A,
 is also bijective
 -/
 
+-- ANCHOR: permute_f_def
 def permute_f {X Y : Type} [DecidableEq X]
     (f : X → Y) (a b : X)
     : X → Y :=
@@ -133,6 +138,7 @@ def permute_f {X Y : Type} [DecidableEq X]
       if x = a then f b
       else if x = b then f a
       else f x
+-- ANCHOR_END: permute_f_def
 
 
 lemma permute_f_injectivity {X Y : Type} [DecidableEq X]
@@ -238,16 +244,20 @@ lemma permute_f_surjectivity {X Y : Type} [DecidableEq X]
     simp [permute_f, hca, hcb, hc]
 
 
+-- ANCHOR: permute_f_bijectivity_sig
 lemma permute_f_bijectivity {X Y : Type} [DecidableEq X]
     {f : X → Y} (a b : X)
     (h : f.Bijective) :
     (permute_f f a b).Bijective := by
+-- ANCHOR_END: permute_f_bijectivity_sig
   constructor
   · exact permute_f_injectivity a b h.left
   · exact permute_f_surjectivity a b h.right
 
 
+-- ANCHOR: hf_sig
 lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0, Q0⟩) := by
+-- ANCHOR_END: hf_sig
   obtain ⟨f, hf⟩ := bijetcive_nat_Q
 
   if H : (f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0, Q0⟩) then
@@ -304,7 +314,9 @@ lemma hf : ∃ f : ℕ → Q, (f.Bijective ∧ f 0 = ⟨1, Q1⟩ ∧ f 1 = ⟨0,
     · simp [h, permute_f, hm]
 
 
+-- ANCHOR: f_def
 noncomputable def f : ℕ → Q := Classical.choose hf
+-- ANCHOR_END: f_def
 
 
 lemma f_prop : (f.Bijective ∧ f 0 = ⟨1, Q1⟩  ∧ f 1 = ⟨0, Q0⟩) := by
@@ -318,10 +330,12 @@ lemma f_in_icc01 : ∀ n : ℕ, ⟨0, Q0⟩ ≤ f n ∧ f n ≤ ⟨1, Q1⟩ := b
   · exact (f n).property.right
 
 
+-- ANCHOR: f_has_inverse_full
 lemma f_has_inverse :  ∃ g, Function.LeftInverse g f ∧ Function.RightInverse g f
   := by
   rw [← Function.bijective_iff_has_inverse]
   exact f_prop.left
+-- ANCHOR_END: f_has_inverse_full
 
 noncomputable def f_inv : Q → ℕ := Classical.choose f_has_inverse
 

@@ -5,8 +5,10 @@ import Mathlib.Tactic
 
 set_option linter.unusedVariables false
 
+-- ANCHOR: Real_IsOpen_def
 def Real.IsOpen (s : Set ℝ) : Prop :=
   ∀ x ∈ s, ∃ δ > 0, ∀ y : ℝ, x - δ < y ∧ y < x + δ → y ∈ s
+-- ANCHOR_END: Real_IsOpen_def
 
 
 lemma Real.isOpen_univ : IsOpen (Set.univ : Set ℝ) := by
@@ -17,19 +19,29 @@ lemma Real.isOpen_univ : IsOpen (Set.univ : Set ℝ) := by
   intro y hy
   trivial
 
+-- ANCHOR: Real_isOpen_inter_sig_partial
 lemma Real.isOpen_inter (s t : Set ℝ) (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := by
   intro x hx
+-- ANCHOR_END: Real_isOpen_inter_sig_partial
+-- ANCHOR: Real_isOpen_inter_obtain
   obtain ⟨δ1, hδ1, hs⟩ := hs x hx.left
   obtain ⟨δ2, hδ2, ht⟩ := ht x hx.right
   use min δ1 δ2
+-- ANCHOR_END: Real_isOpen_inter_obtain
+-- ANCHOR: Real_isOpen_inter_constructor_partial
   constructor
   · exact lt_min hδ1 hδ2
+-- ANCHOR_END: Real_isOpen_inter_constructor_partial
+-- ANCHOR: Real_isOpen_inter_intro_y
   · intro y hy
     constructor
     · apply hs
+-- ANCHOR_END: Real_isOpen_inter_intro_y
+-- ANCHOR: Real_isOpen_inter_hs_finish
       have hδ := min_le_left δ1 δ2
       constructor
       all_goals linarith
+-- ANCHOR_END: Real_isOpen_inter_hs_finish
     · apply ht
       have hδ := min_le_right δ1 δ2
       constructor
@@ -59,11 +71,13 @@ lemma Real.isOpen_sUnion (F : Set (Set ℝ)) (hF : ∀ s ∈ F, IsOpen s) : IsOp
     exact h2
 
 
+-- ANCHOR: UsualTopology_def
 def UsualTopology : TopologicalSpace ℝ where
   IsOpen := Real.IsOpen
   isOpen_univ := Real.isOpen_univ
   isOpen_inter := Real.isOpen_inter
   isOpen_sUnion := Real.isOpen_sUnion
+-- ANCHOR_END: UsualTopology_def
 
 /-
 Extra results needed:
@@ -78,19 +92,24 @@ Extra results needed:
 Lemma: open intervals (a, b) are open in ℝ with the usual topology
 -/
 
+-- ANCHOR: ioo_open_sig_partial
 lemma ioo_open_in_R (a b : ℝ) :
     UsualTopology.IsOpen ((Set.Ioo a b) : Set ℝ) := by
 
   rw [UsualTopology]
   intro x hx
+-- ANCHOR_END: ioo_open_sig_partial
 
+-- ANCHOR: ioo_open_delta_pos
   use min (x-a) (b-x)  -- nuestro δ
 
   constructor
   · -- δ > 0 ?
     simp only [lt_inf_iff]
     exact ⟨sub_pos.mpr hx.1, sub_pos.mpr hx.2⟩
+-- ANCHOR_END: ioo_open_delta_pos
 
+-- ANCHOR: ioo_open_cases
   · -- (x - δ, x + δ) ⊆ (a, b) ?
     -- hay que diferenciar cuando δ = x-a y δ = b-x
     intro y hy
@@ -102,6 +121,7 @@ lemma ioo_open_in_R (a b : ℝ) :
       simp at hy
       constructor
       all_goals linarith
+-- ANCHOR_END: ioo_open_cases
 
 /--
 Proof that my Usual Topology is equivalent to the one Mathlib tipically uses.

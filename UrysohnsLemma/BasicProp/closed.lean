@@ -23,10 +23,12 @@ example {X : Type} : (∅ : Set X)ᶜ = Set.univ := by
 
 
 #check isClosed_univ
+-- ANCHOR: isClosed_univ_example
 example (X : Type) [TopologicalSpace X] : IsClosed (Set.univ : Set X) := by
   rw [← isOpen_compl_iff]
   rw [Set.compl_univ]
   exact isOpen_empty
+-- ANCHOR_END: isClosed_univ_example
 
 #check isClosed_empty
 example (X : Type) [TopologicalSpace X] : IsClosed (∅ : Set X) := by
@@ -35,12 +37,14 @@ example (X : Type) [TopologicalSpace X] : IsClosed (∅ : Set X) := by
   exact isOpen_univ
 
 #check IsClosed.union
+-- ANCHOR: isClosed_union_example
 example (X : Type) [TopologicalSpace X] (A B : Set X) (hA : IsClosed A) (hB : IsClosed B) : IsClosed (A ∪ B) := by
   rw [← isOpen_compl_iff] at *
   rw [Set.compl_union]
   apply TopologicalSpace.isOpen_inter
   exact hA
   exact hB
+-- ANCHOR_END: isClosed_union_example
 
 #check isClosed_sInter
 example (X : Type) [TopologicalSpace X] (S : Set (Set X)) (hS : ∀ t ∈ S, IsClosed t) : IsClosed (⋂₀ S) := by

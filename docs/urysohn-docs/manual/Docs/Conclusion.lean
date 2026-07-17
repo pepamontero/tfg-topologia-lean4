@@ -2,8 +2,12 @@ import VersoManual
 import Docs.Urysohn
 
 open Verso.Genre Manual
+open Verso.Code.External
 
 set_option pp.rawOnError true
+
+set_option verso.exampleProject "../../.."
+set_option verso.exampleModule "UrysohnsLemma.Docs.FutureWork"
 
 #doc (Manual) "Conclusión" =>
 %%%
@@ -62,19 +66,21 @@ Existen varias direcciones en las que podría ampliarse o mejorar el trabajo rea
 
   En particular, se propone expresar el teorema en la forma siguiente:
 
-  ```
+  ```anchor urysohn_mathlib_statement
   theorem Urysohn {X : Type} [T : TopologicalSpace X]
-    [N : NormalSpace X] {s t : Set X} (hs : IsClosed s)
-    (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : X → ℝ, Continuous f ∧ Set.EqOn f 0 s ∧ Set.EqOn f 1 t
-      ∧ ∀ x, f x ∈ Set.Icc 0 1
+      [N : NormalSpace X] {s t : Set X} (hs : IsClosed s)
+      (ht : IsClosed t) (hd : Disjoint s t) :
+      ∃ f : X → ℝ, Continuous f ∧ Set.EqOn f 0 s ∧ Set.EqOn f 1 t
+        ∧ ∀ x, f x ∈ Set.Icc 0 1 := by
+    sorry
   ```
 
   En este enunciado, la topología que acompaña al espacio de los números reales se asume automáticamente en la definición de continuidad mediante una instancia que Lean infiere por defecto. Por tanto, únicamente faltaría comprobar que dicha instancia se corresponde con la definición que he utilizado de topología usual, demostrando este resultado:
 
-  ```
+  ```anchor my_usual_equiv_statement
   lemma my_usual_equiv : @UniformSpace.toTopologicalSpace ℝ
-    (by exact PseudoEMetricSpace.toUniformSpace) = UsualTopology
+      (by exact PseudoEMetricSpace.toUniformSpace) = UsualTopology := by
+    sorry
   ```
 
 * *Documentación del código*

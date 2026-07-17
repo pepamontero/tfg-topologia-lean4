@@ -2,10 +2,12 @@ import Mathlib.Tactic
 
 #check Nat.strong_induction_on
 
+-- ANCHOR: my_stronger_induction_sig
 theorem my_stronger_induction (n : ℕ) (P Q : ℕ → Prop)
     (hn : P n)
     (h : ∀ n : ℕ, P n → ((∀ m < n, P m → Q m) → Q n)) :
     (Q n) := by
+-- ANCHOR_END: my_stronger_induction_sig
 
   have aux : ∀ k : ℕ, P k → ((P k → Q k) ↔ Q k)
   intro k hk

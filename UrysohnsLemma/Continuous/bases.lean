@@ -8,13 +8,19 @@ import UrysohnsLemma.Continuous.subspaces
       the condition of continuity is true for Basic sets
 -/
 
+-- ANCHOR: continuous_iff_trueForBasics_sig
 lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
     [T' : TopologicalSpace Y] (f : X → Y)
     (B : Set (Set Y)) (hB : isTopoBase B) :
-    Continuous f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U) := by
+    Continuous f ↔ ∀ U ∈ B, IsOpen (f ⁻¹' U)
+-- ANCHOR_END: continuous_iff_trueForBasics_sig
+    := by
+-- ANCHOR: continuous_iff_trueForBasics_forward
   rw [continuous_def]
   constructor; all_goals intro h
   · exact fun U hU ↦ h U (hB.left U hU)
+-- ANCHOR_END: continuous_iff_trueForBasics_forward
+-- ANCHOR: continuous_iff_trueForBasics_backward
   · intro V hV
     obtain ⟨UB, hUB⟩ := hB.right V hV
     rw [hUB.right, Set.preimage_sUnion]
@@ -22,6 +28,7 @@ lemma continuous_iff_trueForBasics {X Y : Type} [T : TopologicalSpace X]
     intro A hA
     apply h
     exact (hUB.left hA)
+-- ANCHOR_END: continuous_iff_trueForBasics_backward
 
 
 

@@ -8,6 +8,7 @@ import UrysohnsLemma.BasicProp.interior
       LEMA DE URYSOHN
 -/
 
+-- ANCHOR: Urysohn_sig
 lemma Urysohn {X : Type} {Y : Set ℝ}
     (T : TopologicalSpace X)
     [T' : TopologicalSpace ℝ]
@@ -24,6 +25,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
         Continuous f ∧
         f '' C1 = ({⟨0, by simp [hY]⟩} : Set Y) ∧
         f '' C2 = ({⟨1, by simp [hY]⟩} : Set Y) := by
+-- ANCHOR_END: Urysohn_sig
 
   constructor
   swap
@@ -46,9 +48,11 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
           * Luego `Ui` son abiertos por ser la preimagen por una función continua de abiertos
     -/
 
+-- ANCHOR: Urysohn_reciprocal_intro
     intro h
     rw [normal_space_def] -- `1`
     intro C1 C2 hC1 hC2 hinter -- `2`
+-- ANCHOR_END: Urysohn_reciprocal_intro
 
     -- `3`
     cases' eq_or_ne C1 ∅ with hC1empty hC1nempty
@@ -62,21 +66,27 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     -- `4`
 
+-- ANCHOR: Urysohn_reciprocal_obtain
     obtain ⟨f, hf, hfC1, hfC2⟩ := h C1 C2 hC1nempty hC2nempty hC1 hC2 hinter
+-- ANCHOR_END: Urysohn_reciprocal_obtain
 
+-- ANCHOR: Urysohn_reciprocal_use
     use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ico 0 (1 / 2)})
     use f ⁻¹' ({y | (y : ℝ) ∈ Set.Ioc (1 / 2) 1})
+-- ANCHOR_END: Urysohn_reciprocal_use
 
     rw [continuous_def] at hf
     rw [hT'] at hR
 
     constructor
     -- * is `f⁻¹( [0, 1/2) )` Open?
+-- ANCHOR: Urysohn_reciprocal_U1_open
     · apply hf -- aplicar def. de f continua
       apply ico_open_in_Icc01 -- `[0, 1/2)` es abierto en `[0, 1]`
       · exact hY
       · exact hR
       · norm_num
+-- ANCHOR_END: Urysohn_reciprocal_U1_open
 
     constructor
     -- * is `f⁻¹( (1/2, 0] )` Open?
@@ -88,8 +98,10 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
     constructor
     -- * is `C1 ⊆ U1` ?
+-- ANCHOR: Urysohn_reciprocal_C1_subset_U1
     · rw [← Set.image_subset_iff, hfC1] -- `{0} ⊆ [0, 1/2)` ?
       simp
+-- ANCHOR_END: Urysohn_reciprocal_C1_subset_U1
 
     constructor
     -- * is `C2 ⊆ U2` ?
@@ -98,6 +110,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 
 
     -- * is `U1 ∩ U2 = ∅` ?
+-- ANCHOR: Urysohn_reciprocal_disjoint
     · apply Disjoint.preimage
       by_contra c
       apply (not_iff_not.mpr (Set.disjoint_iff_inter_eq_empty)).mp at c
@@ -105,49 +118,71 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       obtain ⟨x, hxu, hxv⟩ := c
       simp at hxu hxv
       linarith
+-- ANCHOR_END: Urysohn_reciprocal_disjoint
 
 
+-- ANCHOR: Urysohn_forward_intro
   · -- →
     intro hT C1 C2 C1nempty C2nempty C1closed C2closed C1C2disj
+-- ANCHOR_END: Urysohn_forward_intro
 
+-- ANCHOR: Urysohn_forward_aux
     have C2c_open : IsOpen C2ᶜ := by exact IsClosed.isOpen_compl
     have hC1C2 : C1 ⊆ C2ᶜ := by exact Disjoint.subset_compl_left (id (Disjoint.symm C1C2disj))
 
     rw [characterization_of_normal] at hT
+-- ANCHOR_END: Urysohn_forward_aux
 
+-- ANCHOR: Urysohn_forward_let_Gg
     let G := H hT C1 C2
     let g := fun x ↦ k hT C1 C2 x
+-- ANCHOR_END: Urysohn_forward_let_Gg
 
+-- ANCHOR: Urysohn_forward_let_f
     let f : X → Y := fun x ↦ ⟨g x, by
       rw [hY]
       exact k_in_01 hT C1 C2 x⟩
+-- ANCHOR_END: Urysohn_forward_let_f
 
+-- ANCHOR: Urysohn_forward_use_f
     use f
+-- ANCHOR_END: Urysohn_forward_use_f
 
+-- ANCHOR: Urysohn_forward_constructor
     constructor
+-- ANCHOR_END: Urysohn_forward_constructor
 
     /-
             1. CONTINUITY OF f
     -/
 
+-- ANCHOR: Urysohn_continuity_rw
     · rw [@continuousInSubspace_iff_trueForBase
         X ℝ Y T T' R hR f
         {s | ∃ a b : ℝ, s = Set.Ioo a b}
         (by exact BaseOfRealTopo hT')]
+-- ANCHOR_END: Urysohn_continuity_rw
 
+-- ANCHOR: Urysohn_continuity_introW
       intro W hW
       obtain ⟨a, b, hW⟩ := hW
+-- ANCHOR_END: Urysohn_continuity_introW
 
+-- ANCHOR: Urysohn_continuity_neighbourhood
       rw [A_open_iff_neighbourhood_of_all]
       intro x hx
       rw [Set.mem_preimage, hW] at hx
+-- ANCHOR_END: Urysohn_continuity_neighbourhood
 
 
       -- paso 1. encontrar p, q racionales con `a < p < f(x) < q < b`
 
+-- ANCHOR: Urysohn_continuity_pq
       obtain ⟨p, hp⟩ := exists_rat_btwn hx.left
       obtain ⟨q, hq⟩ := exists_rat_btwn hx.right
+-- ANCHOR_END: Urysohn_continuity_pq
 
+-- ANCHOR: Urysohn_continuity_claims
       have claim1 := k_claim1 hT C1 C2
         C1closed (by exact IsClosed.isOpen_compl)
         (by exact hC1C2)
@@ -155,64 +190,86 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
       have claim2 := k_claim2 hT C1 C2
         C1closed (by exact IsClosed.isOpen_compl)
         (by exact hC1C2)
+-- ANCHOR_END: Urysohn_continuity_claims
 
       -- paso 2.1. probar: `x ∉ closure (U_p)`
+-- ANCHOR: Urysohn_continuity_aux1
       have aux1 : x ∉ closure (G p)
       · by_contra c
         apply claim1 p x at c
         linarith
+-- ANCHOR_END: Urysohn_continuity_aux1
 
       -- paso 2.1. probar: `x ∈ U_q`
+-- ANCHOR: Urysohn_continuity_aux2
       have aux2 : x ∈ G q
       · by_contra c
         apply claim2 q x at c
         linarith
+-- ANCHOR_END: Urysohn_continuity_aux2
 
       -- paso 3. tomamos el abierto `V = U_q \ closure (U_p)`
+-- ANCHOR: Urysohn_continuity_use_U
       use (G q) ∩ (closure (G p))ᶜ
 
       constructor
+-- ANCHOR_END: Urysohn_continuity_use_U
 
       -- paso 4. probar que `U` es entorno abierto de `x`
 
         -- 4.1. probar que `U ⊆ f ⁻¹' W`
+-- ANCHOR: Urysohn_continuity_use_U_intro_y
       · intro y hy
         rw [hW]
         constructor
+-- ANCHOR_END: Urysohn_continuity_use_U_intro_y
+-- ANCHOR: Urysohn_continuity_case_a
         · have hy : y ∉ G p
           · by_contra c
             apply subset_closure at c
             exact hy.right c
           apply claim2 p y at hy
           linarith
+-- ANCHOR_END: Urysohn_continuity_case_a
 
+-- ANCHOR: Urysohn_continuity_case_b
         · have hy := hy.left
           apply subset_closure at hy
           specialize claim1 q y hy
           linarith
+-- ANCHOR_END: Urysohn_continuity_case_b
 
+-- ANCHOR: Urysohn_continuity_constructor2
       constructor
+-- ANCHOR_END: Urysohn_continuity_constructor2
+-- ANCHOR: Urysohn_continuity_xinV
       · -- probar que `x ∈ V`
         constructor
         · exact aux2
         · exact aux1
+-- ANCHOR_END: Urysohn_continuity_xinV
+-- ANCHOR: Urysohn_continuity_Vopen
       · -- probar que `V` es abierto
         apply IsOpen.inter
         · exact H_isOpen hT C1 C2 C1closed C2c_open hC1C2 q
         · rw [isOpen_compl_iff]
           exact isClosed_closure
+-- ANCHOR_END: Urysohn_continuity_Vopen
 
 
     /-
             IMAGE OF f
     -/
 
+-- ANCHOR: Urysohn_image_aux
     have aux : ∀ A : Set X, f '' A = g '' A
     · intro A; ext x; simp [f]
+-- ANCHOR_END: Urysohn_image_aux
 
     rw [← Set.image_val_inj, ← Set.image_val_inj]
     rw [aux C1, aux C2]
     simp
+-- ANCHOR: Urysohn_forward_finish
     constructor
     /-
             2. f(C1) = {0}
@@ -223,6 +280,7 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
     -/
 
     · exact k_in_C2_is_1 hT C1 C2 C1closed C2c_open hC1C2 C2nempty
+-- ANCHOR_END: Urysohn_forward_finish
 
 
 /--

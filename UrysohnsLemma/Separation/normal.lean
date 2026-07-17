@@ -40,6 +40,7 @@ lemma normal_space_def {X : Type} (T : TopologicalSpace X) :
     `∃ V ⊆ X` open,, `C ⊆ V ⊆ closure(V) ⊆ U`
 -/
 
+-- ANCHOR: characterization_of_normal_sig
 lemma characterization_of_normal {X : Type}
     (T : TopologicalSpace X) :
     NormalSpace X ↔
@@ -47,29 +48,41 @@ lemma characterization_of_normal {X : Type}
     IsOpen U → IsClosed C → C ⊆ U →
     ∃ V : Set X, IsOpen V ∧
     C ⊆ V ∧ (closure V) ⊆ U := by
+-- ANCHOR_END: characterization_of_normal_sig
 
+-- ANCHOR: characterization_of_normal_rw_constructor
   rw [normal_space_def]
   constructor
+-- ANCHOR_END: characterization_of_normal_rw_constructor
+-- ANCHOR: characterization_of_normal_forward_intro
   · intro hT U C hU hC hCU
+-- ANCHOR_END: characterization_of_normal_forward_intro
 
+-- ANCHOR: characterization_of_normal_forward_obtain
     obtain ⟨V1, V2, V1_open, V2_open, hCV, hUV, hV⟩ :=
       hT C Uᶜ
       hC
       (by exact isClosed_compl_iff.mpr hU)
       (by rw [← Set.subset_compl_iff_disjoint_right, compl_compl]; exact hCU)
+-- ANCHOR_END: characterization_of_normal_forward_obtain
 
+-- ANCHOR: characterization_of_normal_forward_use_V1
     use V1
     constructor
     · exact V1_open
     constructor
     · exact hCV
+-- ANCHOR_END: characterization_of_normal_forward_use_V1
+-- ANCHOR: characterization_of_normal_forward_finish
     · trans V2ᶜ; swap
       · exact Set.compl_subset_comm.mp hUV
       · apply Disjoint.closure_left at hV
         specialize hV V2_open
         exact Set.subset_compl_iff_disjoint_right.mpr hV
+-- ANCHOR_END: characterization_of_normal_forward_finish
 
 
+-- ANCHOR: characterization_of_normal_backward_obtain
   · intro h C1 C2 C1_closed C2_closed hC
 
     obtain ⟨V, V_open, hV⟩ :=
@@ -77,19 +90,26 @@ lemma characterization_of_normal {X : Type}
       (by exact IsClosed.isOpen_compl)
       C2_closed
       (by rw [Set.subset_compl_iff_disjoint_left]; exact hC)
+-- ANCHOR_END: characterization_of_normal_backward_obtain
 
     use (closure V)ᶜ
     use V
 
+-- ANCHOR: characterization_of_normal_backward_isOpen
     constructor
     · apply isOpen_compl_iff.mpr
       exact isClosed_closure
     constructor
     · exact V_open
+-- ANCHOR_END: characterization_of_normal_backward_isOpen
+-- ANCHOR: characterization_of_normal_backward_subset
     constructor
     · apply Set.subset_compl_comm.mp
       exact hV.right
     constructor
     · exact hV.left
+-- ANCHOR_END: characterization_of_normal_backward_subset
+-- ANCHOR: characterization_of_normal_backward_disjoint
     · rw [← Set.subset_compl_iff_disjoint_left, compl_compl]
       exact subset_closure
+-- ANCHOR_END: characterization_of_normal_backward_disjoint

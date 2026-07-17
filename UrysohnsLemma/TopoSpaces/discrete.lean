@@ -7,9 +7,13 @@ open TopologicalSpace
 
 -- ANCHOR: DiscreteTopo
 @[reducible]
+-- ANCHOR: DiscreteTopo_isOpen_field
 def DiscreteTopo (X : Type) : TopologicalSpace X where
   IsOpen (_ : Set X) := true
+-- ANCHOR_END: DiscreteTopo_isOpen_field
+-- ANCHOR: DiscreteTopo_isOpen_univ_partial
   isOpen_univ := by
+-- ANCHOR_END: DiscreteTopo_isOpen_univ_partial
     trivial
   isOpen_inter := by
     intros

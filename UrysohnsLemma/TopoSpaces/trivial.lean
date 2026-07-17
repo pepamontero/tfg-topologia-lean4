@@ -16,17 +16,24 @@ pero me da problemas con los tipos...
 
 open TopologicalSpace
 
+-- ANCHOR: TrivialTopology_isOpen_field
+@[reducible]
 def TrivialTopology (X : Type) : TopologicalSpace X where
   IsOpen (s : Set X) := s = Set.univ ∨ s = ∅
+-- ANCHOR_END: TrivialTopology_isOpen_field
+-- ANCHOR: TrivialTopology_isOpen_univ
   isOpen_univ := by
     left
     rfl
+-- ANCHOR_END: TrivialTopology_isOpen_univ
 
+-- ANCHOR: TrivialTopology_isOpen_inter_partial
   isOpen_inter := by
     intro s t hs ht
     cases' hs with hs_univ hs_empty
     cases' ht with ht_univ ht_empty
-
+-- ANCHOR_END: TrivialTopology_isOpen_inter_partial
+-- ANCHOR: TrivialTopology_isOpen_inter_cases
     · left -- 1. both are univ
       rw [hs_univ, ht_univ]
       simp
@@ -36,7 +43,9 @@ def TrivialTopology (X : Type) : TopologicalSpace X where
     · right -- 3. s is empty
       rw [hs_empty]
       simp
+-- ANCHOR_END: TrivialTopology_isOpen_inter_cases
 
+-- ANCHOR: TrivialTopology_isOpen_sUnion
   isOpen_sUnion := by
     intro S hS
 
@@ -59,3 +68,4 @@ def TrivialTopology (X : Type) : TopologicalSpace X where
         rw [hS] at hs
         exact h2 hs
       · exact hS
+-- ANCHOR_END: TrivialTopology_isOpen_sUnion

@@ -10,6 +10,7 @@ import UrysohnsLemma.TopoSpaces.sorgenfrey
 #check UsualTopology
 
 
+-- ANCHOR: continuous_from_discrete
 lemma continuous_from_discrete {X Y : Type}
     [T : TopologicalSpace X]
     [TopologicalSpace Y]
@@ -24,8 +25,10 @@ lemma continuous_from_discrete {X Y : Type}
   rw [h, DiscreteTopo]
   -- (Aunque parezca que no hago nada)
   trivial
+-- ANCHOR_END: continuous_from_discrete
 
 
+-- ANCHOR: continuous_to_trivial
 lemma continuous_to_trivial {X Y : Type}
     [TopologicalSpace X]
     [T : TopologicalSpace Y]
@@ -44,6 +47,7 @@ lemma continuous_to_trivial {X Y : Type}
   · -- si U = ∅
     rw [hUempty]
     exact isOpen_empty
+-- ANCHOR_END: continuous_to_trivial
 
 
 example [T1 : TopologicalSpace ℝ]

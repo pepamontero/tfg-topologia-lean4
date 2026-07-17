@@ -16,6 +16,7 @@ example {X Y : Type} {Z : Set Y}
     Continuous f ↔ ∀ U : Set Y, TY.IsOpen U → TX.IsOpen (f ⁻¹' (Subtype.val ⁻¹' U)) := by
   sorry
 
+-- ANCHOR: continuousInSubspace_iff_trueForSpace_sig
 lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
     [TX : TopologicalSpace X] [TY : TopologicalSpace Y]
     [TZ : TopologicalSpace Z] (hZ : TZ = TopoSubspace TY Z)
@@ -25,7 +26,9 @@ lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
   rw [continuous_def]
   constructor
   all_goals intro h U hU
+-- ANCHOR_END: continuousInSubspace_iff_trueForSpace_sig
 
+-- ANCHOR: continuousInSubspace_iff_trueForSpace_forward
   · -- →
     apply h
     rw [hZ]
@@ -34,7 +37,9 @@ lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
     · exact hU
     · simp
       exact Set.inter_comm Z U
+-- ANCHOR_END: continuousInSubspace_iff_trueForSpace_forward
 
+-- ANCHOR: continuousInSubspace_iff_trueForSpace_backward
   · -- ←
     rw [hZ] at hU
     obtain ⟨V, hV⟩ := hU
@@ -43,3 +48,4 @@ lemma continuousInSubspace_iff_trueForSpace {X Y : Type} {Z : Set Y}
     simp
     apply h
     exact hV.left
+-- ANCHOR_END: continuousInSubspace_iff_trueForSpace_backward

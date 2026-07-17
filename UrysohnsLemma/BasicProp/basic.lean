@@ -5,6 +5,7 @@ Demostrar los siguientes resultados:
 -/
 
 #check isOpen_empty
+-- ANCHOR: isOpen_empty_example
 example (X : Type) [TopologicalSpace X] : IsOpen (∅ : Set X) := by
   have h1 : ∅ = ⋃₀ ∅
   simp
@@ -13,32 +14,40 @@ example (X : Type) [TopologicalSpace X] : IsOpen (∅ : Set X) := by
   intro t ht
   by_contra
   exact ht
+-- ANCHOR_END: isOpen_empty_example
 
 open TopologicalSpace
 
 
-
+-- ANCHOR: OpenNeighbourhood_def
 def OpenNeighbourhood {X : Type} [TopologicalSpace X]
     (U : Set X) (x : X) : Prop :=
     x ∈ U ∧ IsOpen U
+-- ANCHOR_END: OpenNeighbourhood_def
 
+-- ANCHOR: Neighbourhood_def
 def Neighbourhood {X : Type} [TopologicalSpace X]
     (V : Set X) (x : X) : Prop :=
     ∃ U : Set X, U ⊆ V ∧ OpenNeighbourhood U x
+-- ANCHOR_END: Neighbourhood_def
 
+-- ANCHOR: OpenNeighb_is_Neighb
 lemma OpenNeighb_is_Neighb {X : Type} [TopologicalSpace X]
     (U : Set X) (x : X) : OpenNeighbourhood U x →
     Neighbourhood U x := by
   intro hU
   use U
+-- ANCHOR_END: OpenNeighb_is_Neighb
 
 
 
+-- ANCHOR: univ_is_OpenNeighb
 lemma univ_is_OpenNeighb {X : Type} [TopologicalSpace X]
     (x : X) : OpenNeighbourhood Set.univ x := by
   constructor
   · trivial
   · exact isOpen_univ
+-- ANCHOR_END: univ_is_OpenNeighb
 
 lemma univ_is_Neighb {X : Type} [TopologicalSpace X]
     (x : X) : Neighbourhood Set.univ x := by
