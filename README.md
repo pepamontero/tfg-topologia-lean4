@@ -6,7 +6,7 @@
 Este repositorio contiene el código (en [Leantest/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) y la documentación (en [Memoria/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) de mi
 Trabajo de Fin de Grado en Matemáticas en la Universidad Complutense de Madrid.
 
-La versión final de la memoria (en pdf) se puede consultar [aquí](https://github.com/pepamontero/tfg-topologia-lean4/blob/main/Memoria/main.pdf).
+La versión final de la memoria se puede [consultar online](https://pepamontero.github.io/tfg-topologia-lean4/) y también se puede [ver en pdf](https://github.com/pepamontero/tfg-topologia-lean4/blob/main/Memoria/main.pdf).
 
 El objetivo principal del trabajo es documentar mi proceso de **aprendizaje de Lean 4**.
 Para ello, he empezando realizando dos cursos: uno impartido en mi Facultad, que me sirvió como introducción a las
@@ -34,7 +34,7 @@ mi dominio de esta herramienta.
 This repository contains the code (at [Leantest/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest)) and documentation (at [Memoria/](https://github.com/pepamontero/tfg-topologia-lean4/tree/main/Leantest))
 of my Bachelor's Final Project in Mathematics at Complutense University of Madrid.
 
-The final version of the report (in pdf format) can be found [here](https://github.com/pepamontero/tfg-topologia-lean4/blob/main/Memoria/main.pdf).
+The final version of the report can be [viewed online](https://pepamontero.github.io/tfg-topologia-lean4/) and also in [pdf format](https://github.com/pepamontero/tfg-topologia-lean4/blob/main/Memoria/main.pdf).
 
 The main goal of this project is to document my **learning process of Lean 4**.
 With this in mind, I begun by attending two courses:
