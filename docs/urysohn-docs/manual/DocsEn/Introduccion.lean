@@ -6,6 +6,7 @@ open Verso.Genre.Manual.Docs (citetOther citepOther citehereOther)
 open Docs (refTrinh2024Solving refGeuvers2009Proof refBuzzard2024Formalising)
 
 set_option pp.rawOnError true
+set_option docs.bib.lang "en"
 
 #doc (Manual) "Introduction" =>
 %%%

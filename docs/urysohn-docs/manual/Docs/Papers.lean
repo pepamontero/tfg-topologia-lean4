@@ -43,28 +43,32 @@ def refBuzzard2024Formalising : Misc where
   title := inlines!"Formalising Mathematics 2024"
   authors := #[inlines!"Kevin Buzzard"]
   year := some 2024
-  note := inlines!"Imperial College London. Última consulta: 22 de junio de 2025."
+  note := inlines!"Imperial College London."
+  accessed := some { day := 22, month := 6, year := 2025 }
   url := some "https://github.com/ImperialCollegeLondon/formalising-mathematics-2024"
 
 def refAvigad2024Theorem : Misc where
   title := inlines!"Theorem Proving in Lean 4"
   authors := #[inlines!"Jeremy Avigad", inlines!"Leonardo De Moura", inlines!"Soonho Kong", inlines!"Sebastian Ullrich", inlines!"contribuidores de la comunidad Lean"]
   year := some 2024
-  note := inlines!"Última consulta: 23 de abril de 2025."
+  note := inlines!""
+  accessed := some { day := 23, month := 4, year := 2025 }
   url := some "https://leanprover.github.io/theorem_proving_in_lean4"
 
 def refMathlib : Misc where
   title := inlines!"mathlib4: The Lean4 Mathematical Library"
   authors := #[inlines!"Lean Prover Community"]
   year := none
-  note := inlines!"Última consulta: 23 de abril de 2025."
+  note := inlines!""
+  accessed := some { day := 23, month := 4, year := 2025 }
   url := some "https://github.com/leanprover-community/mathlib4"
 
 def refBailey2024Type : Misc where
   title := inlines!"Type Checking in Lean 4"
   authors := #[inlines!"Christopher A. Bailey", inlines!"contribuidores de la comunidad Lean"]
   year := some 2024
-  note := inlines!"Última consulta: 23 de abril de 2025."
+  note := inlines!""
+  accessed := some { day := 23, month := 4, year := 2025 }
   url := some "https://ammkrn.github.io/type_checking_in_lean4"
 
 def refAvigad2021Theorem : Misc where
@@ -101,14 +105,16 @@ def refTacticas : Misc where
   title := inlines!"Mathlib manual: Tactics"
   authors := #[inlines!"Lean Prover Community"]
   year := some 2023
-  note := inlines!"Última consulta: 24 de junio de 2025."
+  note := inlines!""
+  accessed := some { day := 24, month := 6, year := 2025 }
   url := some "https://leanprover-community.github.io/mathlib-manual/html-multi/Tactics/#tactics"
 
 def refMoogle : Misc where
   title := inlines!"Moogle, a semantic search engine for Mathlib, the Lean mathematical library"
   authors := #[inlines!"Morph"]
   year := some 2023
-  note := inlines!"Última consulta: 24 de mayo de 2025."
+  note := inlines!""
+  accessed := some { day := 24, month := 5, year := 2025 }
   url := some "https://www.moogle.ai/"
 
 def refWillard2012General : Misc where
@@ -121,7 +127,8 @@ def refMathlib2023Urysohn : Misc where
   title := inlines!"Urysohn's lemma"
   authors := #[inlines!"Lean Prover Community"]
   year := some 2023
-  note := inlines!"Última consulta: 22 de junio de 2025."
+  note := inlines!""
+  accessed := some { day := 22, month := 6, year := 2025 }
   url := some "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/UrysohnsLemma.html"
 
 end Docs
