@@ -22,6 +22,9 @@ En esta sección veremos cómo se representan en Lean algunos conceptos básicos
 Las definiciones y resultados matemáticos utilizados son los habituales en topología general. Aunque inicialmente me basé en los apuntes que tomé en la asignatura Topología Elemental, posteriormente los he contrastado con{citepOther refWillard2012General}[] como referencia estándar.
 
 # Espacios topológicos
+%%%
+file := "espacios"
+%%%
 
 ## Definición 3.1 (Espacio topológico)
 %%%
@@ -724,6 +727,9 @@ Ahora, supongamos que $`A` es cerrado. Entonces $`A^c` es abierto, luego es igua
 ∎
 
 # Bases
+%%%
+file := "bases"
+%%%
 
 ## Definición 3.7
 %%%
@@ -817,6 +823,9 @@ $`(\supseteq)` Sea $`u \in \bigcup \{B_{\delta_x}(x) | x \in U\}`. Entonces exis
 ∎
 
 # Topología relativa
+%%%
+file := "topologia-relativa"
+%%%
 
 ## Definición 3.8 (Topología relativa)
 %%%
@@ -907,6 +916,9 @@ lemma ico_open_in_Icc01 {Y : Set ℝ}
 ∎
 
 # Continuidad
+%%%
+file := "continuidad"
+%%%
 
 ## Definición 3.9
 %%%
@@ -1177,6 +1189,9 @@ que será abierto cuando cada uno de los componentes de la unión sea abierto. P
 Estos dos últimos resultados se pueden combinar, de manera que para demostrar que $`f : X \to Z \subseteq Y` es continua, basta con demostrar la condición para los abiertos básicos de $`Y`. Este resultado, que he demostrado en Lean y llamado `continuousInSubspace_iff_trueForBase`, es uno de los que utilizaremos para demostrar la continuidad en el lema de Urysohn.
 
 # Separación
+%%%
+file := "separacion"
+%%%
 
 No cualquier topología sobre un conjunto refleja adecuadamente las propiedades de dicho conjunto. Por ejemplo, la topología trivial no permite diferenciar elementos del espacio, por lo que bajo esta topología no es posible diferenciar unos conjuntos de otros o incluso de un único punto.
 
