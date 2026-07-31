@@ -8,6 +8,10 @@ and jump to the same page in the other language. If that page does not exist
 there (e.g. a chapter that is not translated yet), it falls back to the
 closest existing ancestor page, and finally to the other language's home page.
 
+On desktop the button is mounted in the header's logo slot (left of the
+title, above the table of contents). On narrow screens that slot is hidden,
+so the button floats at the bottom-right corner instead.
+
 Pages must use the same `file :=` slug in both languages for the mapping to
 work (see the `%%%` metadata blocks in `Docs/` and `DocsEn/`).
 -/
@@ -20,35 +24,35 @@ namespace Docs
 
 def langToggleCss : String := r#"
 #lang-toggle {
-  position: fixed;
-  top: 0.65rem;
-  right: 0.85rem;
-  z-index: 10000;
   display: inline-flex;
   align-items: center;
   gap: 0.45em;
-  padding: 0.45em 1.1em;
+  padding: 0.35em 1em;
   border-radius: 999px;
   background: #205ea6;
   color: #ffffff;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   transition: background 0.15s ease;
+  white-space: nowrap;
 }
 #lang-toggle:hover {
   background: #2d77cc;
   color: #ffffff;
   text-decoration: none;
 }
-@media (max-width: 700px) {
-  #lang-toggle {
-    top: auto;
-    bottom: 1rem;
-  }
+/* Fallback position when the button cannot live in the header (narrow
+   screens hide the logo slot): float it at the bottom-right corner. */
+body > #lang-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 10000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 "#
 
@@ -67,7 +71,20 @@ def langToggleJsBody : String := r#"
       ev.preventDefault();
       go();
     });
-    document.body.appendChild(btn);
+
+    var headerSlot = document.querySelector('header .header-logo-wrapper');
+    var narrow = window.matchMedia('(max-width: 700px)');
+    function place() {
+      if (headerSlot && !narrow.matches) {
+        headerSlot.appendChild(btn);
+      } else {
+        document.body.appendChild(btn);
+      }
+    }
+    place();
+    if (narrow.addEventListener) {
+      narrow.addEventListener('change', place);
+    }
 
     function go() {
       var path = window.location.pathname;
