@@ -68,12 +68,28 @@ def AccessDate.text (lang : String) (d : AccessDate) : String :=
 
 structure Misc where
   title : Doc.Inline Manual
+  /-- Author list used in both languages unless `authorsEn` overrides it. -/
   authors : Array (Doc.Inline Manual)
+  /-- English author list, for entries whose `authors` contain Spanish text. -/
+  authorsEn : Option (Array (Doc.Inline Manual)) := none
   year : Option Int := none
+  /-- Note shown in both languages unless `noteEs`/`noteEn` overrides it. -/
   note : Doc.Inline Manual
+  /-- Spanish-specific note; falls back to `note` when absent. -/
+  noteEs : Option (Doc.Inline Manual) := none
+  /-- English-specific note; falls back to `note` when absent. -/
+  noteEn : Option (Doc.Inline Manual) := none
   url : Option String := none
   accessed : Option AccessDate := none
 deriving ToJson, FromJson, BEq, Hashable, Ord
+
+/-- The note to display for the given language. -/
+def Misc.noteFor (lang : String) (c : Misc) : Doc.Inline Manual :=
+  if lang == "en" then c.noteEn.getD c.note else c.noteEs.getD c.note
+
+/-- The author list to display for the given language. -/
+def Misc.authorsFor (lang : String) (c : Misc) : Array (Doc.Inline Manual) :=
+  if lang == "en" then c.authorsEn.getD c.authors else c.authors
 
 private def andList (lang : String) (xs : Array Html) : Html :=
   if h : xs.size = 0 then panic! "tried to construct empty list of authors"
@@ -86,10 +102,10 @@ private def andList (lang : String) (xs : Array Html) : Html :=
 def Misc.bibHtml [Monad m]
     (go : Doc.Inline Genre.Manual → HtmlT Manual m Html) (lang : String) (c : Misc) : HtmlT Manual m Html :=
   wrap <$> open Html in do
-    let authors ← andList lang <$> c.authors.mapM go
+    let authors ← andList lang <$> (c.authorsFor lang).mapM go
     let yearPart := c.year.map (s!", {·}. ") |>.getD ". "
     let accessedPart : Html := c.accessed.map (fun d => {{" " {{d.text lang}} }}) |>.getD .empty
-    return {{ {{authors}} {{yearPart}} {{ link {{"“" {{← go c.title}} "”"}} }} ". " {{← go c.note}} {{accessedPart}} }}
+    return {{ {{authors}} {{yearPart}} {{ link {{"“" {{← go c.title}} "”"}} }} ". " {{← go (c.noteFor lang)}} {{accessedPart}} }}
 where
   wrap (content : Html) : Html := {{<span class="citation">{{content}}</span>}}
   link (title : Html) : Html :=
@@ -120,20 +136,21 @@ def Misc.inlineHtml [Monad m]
     pure <| andList lang (← ps.toArray.mapM (·.bibHtml go lang))
 where
   authorHtml p := open Html in do
-    if p.authors.size = 0 then
+    let authors := Misc.authorsFor lang p
+    if authors.size = 0 then
       pure {{""}}
-    else if h : p.authors.size = 1 then
-      go p.authors[0]
-    else if h : p.authors.size > 3 then
-      (· ++ {{" "<em>"et al."</em>}}) <$> go p.authors[0]
-    else andList lang <$> p.authors.mapM go
+    else if h : authors.size = 1 then
+      go authors[0]
+    else if h : authors.size > 3 then
+      (· ++ {{" "<em>"et al."</em>}}) <$> go authors[0]
+    else andList lang <$> authors.mapM go
 
 open Verso.Doc.TeX in
 def Misc.bibTeX
     (go : Doc.Inline Genre.Manual → TeXT Manual (ReaderT ExtensionImpls IO) Output.TeX)
     (lang : String) (c : Misc) :
     TeXT Manual (ReaderT ExtensionImpls IO) Output.TeX := open Output.TeX in do
-  let authors ← andListTeX <$> c.authors.mapM go
+  let authors ← andListTeX <$> (c.authorsFor lang).mapM go
   let link (title : Output.TeX) : Output.TeX :=
     match c.url with
     | .none => title
@@ -143,7 +160,7 @@ def Misc.bibTeX
   return \TeX{
     \Lean{authors} \Lean{yearPart}
     \Lean{ link \TeX{ "``" \Lean{← go c.title} "''" } } ". "
-    \Lean{← go c.note} \Lean{accessedPart}
+    \Lean{← go (c.noteFor lang)} \Lean{accessedPart}
   }
 where
   andListTeX (xs : Array Output.TeX) : Output.TeX :=
@@ -185,13 +202,14 @@ where
       open Output.TeX in
       (xs.extract 0 (xs.size - 1)).foldr (init := \TeX{\Lean{andSep lang} \Lean{xs.back} }) (· ++ ", " ++ ·)
   authorTeX p := open Output.TeX in do
-    if p.authors.size = 0 then
+    let authors := Misc.authorsFor lang p
+    if authors.size = 0 then
       pure .empty
-    else if h : p.authors.size = 1 then
-      go p.authors[0]
-    else if h : p.authors.size > 3 then
-      (· ++ \TeX{" " \em{"et al."} }) <$> go p.authors[0]
-    else andListTeX <$> p.authors.mapM go
+    else if h : authors.size = 1 then
+      go authors[0]
+    else if h : authors.size > 3 then
+      (· ++ \TeX{" " \em{"et al."} }) <$> go authors[0]
+    else andListTeX <$> authors.mapM go
 
 inline_extension Inline.citeMisc (citations : List Misc) (style : Style := .parenthetical) (lang : String := "es") where
   data := ToJson.toJson (citations, style, lang)

@@ -50,6 +50,7 @@ def refBuzzard2024Formalising : Misc where
 def refAvigad2024Theorem : Misc where
   title := inlines!"Theorem Proving in Lean 4"
   authors := #[inlines!"Jeremy Avigad", inlines!"Leonardo De Moura", inlines!"Soonho Kong", inlines!"Sebastian Ullrich", inlines!"contribuidores de la comunidad Lean"]
+  authorsEn := some #[inlines!"Jeremy Avigad", inlines!"Leonardo De Moura", inlines!"Soonho Kong", inlines!"Sebastian Ullrich", inlines!"Lean community contributors"]
   year := some 2024
   note := inlines!""
   accessed := some { day := 23, month := 4, year := 2025 }
@@ -66,6 +67,7 @@ def refMathlib : Misc where
 def refBailey2024Type : Misc where
   title := inlines!"Type Checking in Lean 4"
   authors := #[inlines!"Christopher A. Bailey", inlines!"contribuidores de la comunidad Lean"]
+  authorsEn := some #[inlines!"Christopher A. Bailey", inlines!"Lean community contributors"]
   year := some 2024
   note := inlines!""
   accessed := some { day := 23, month := 4, year := 2025 }
@@ -82,6 +84,7 @@ def refSorensen2006Lectures : Misc where
   authors := #[inlines!"Morten Heine Sørensen", inlines!"Pawel Urzyczyn"]
   year := some 2006
   note := inlines!"Volumen 149. Elsevier. Capítulo 5, \"The Untyped Lambda Calculus\"."
+  noteEn := some (inlines!"Volume 149. Elsevier. Chapter 5, \"The Untyped Lambda Calculus\".")
 
 def refPierce2002Types : Misc where
   title := inlines!"Types and programming languages"
@@ -94,6 +97,7 @@ def refCarneiro2019Type : Misc where
   authors := #[inlines!"Mario Carneiro"]
   year := some 2019
   note := inlines!"Sección 5, \"Reduction of inductive types to W-types\"."
+  noteEn := some (inlines!"Section 5, \"Reduction of inductive types to W-types\".")
 
 def refCarneiro2024Lean4Lean : Misc where
   title := inlines!"Lean4Lean: Towards a formalized metatheory for the Lean theorem prover"
