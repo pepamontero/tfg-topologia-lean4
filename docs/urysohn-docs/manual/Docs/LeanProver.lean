@@ -35,6 +35,9 @@ Las demostraciones son verificadas automáticamente por el núcleo lógico de Le
 En esta sección seguiremos principalmente el manual en línea _Theorem Proving in Lean 4_{citepOther refAvigad2024Theorem}[] que es una versión actualizada del libro _Theorem Proving in Lean_{citepOther refAvigad2021Theorem}[] publicado en 2021 para adaptarse a la nueva versión de Lean. A nivel teórico, no existe una gran diferencia entre los dos, por lo que ambas referencias son válidas para comprender los fundamentos que exponemos aquí.
 
 # La teoría de tipos de Lean
+%%%
+file := "teoria-de-tipos"
+%%%
 
 La teoría de conjuntos de Zermelo-Fraenkel con el axioma de elección (ZFC) es la base fundacional elegida para formalizar la mayoría de las matemáticas que conocemos. En este marco, todos los objetos matemáticos (números, funciones, estructuras algebraicas, etc.) pueden representarse como conjuntos, construidos a partir de unos pocos axiomas básicos.
 
@@ -145,6 +148,9 @@ end VarXY
 Como ocurre en el ejemplo anterior, Lean puede deducir automáticamente el tipo de muchos términos a partir del contexto. Esta capacidad se conoce como *inferencia de tipos* y en muchas ocasiones nos facilita el trabajo, permitiendo un código más conciso.
 
 # El cálculo lambda
+%%%
+file := "calculo-lambda"
+%%%
 
 El Cálculo Lambda, introducido por Alonzo Church en los años 1930, es un sistema formal que permite construir expresiones mediante dos operaciones básicas: la abstracción y la aplicación{citepOther refPierce2002Types}[]. En este sistema, algunas expresiones representan funciones (usando la notación lambda) y otras representan valores sobre los que pueden aplicarse dichas funciones. Dos expresiones pueden yuxtaponerse para formar una nueva expresión; si la primera es una abstracción, entonces se interpreta como aplicación funcional. A partir de ahí, pueden realizarse reducciones para simplificar la expresión resultante si corresponde.
 
@@ -375,6 +381,9 @@ Una última característica destacable de las proposiciones en Lean es que la im
 En resumen, para poder expresar un resultado matemático en este lenguaje, tenemos que escribir un término de la forma `p : Prop`. Para probar que el resultado es cierto, debemos construir un término `h : p`. El trabajo de Lean como asistente de demostración es verificar que el término `h` está bien construido y tiene el tipo correcto.
 
 # ¿Por qué fiarnos de Lean?
+%%%
+file := "por-que-fiarnos-de-lean"
+%%%
 
 Ahora que hemos descrito la manera en la que un resultado se considera demostrado en Lean, tiene sentido hacerse la pregunta: ¿por qué deberíamos fiarnos de la inferencia de tipos de Lean? ¿Qué garantías tenemos de que las demostraciones que Lean acepta, son realmente correctas?
 
@@ -385,6 +394,9 @@ El resto de componentes de Lean con el que interactuamos para construir demostra
 Ahora, ¿por qué nos fiamos del kernel de Lean? Gracias a que el kernel es pequeño y está aislado del resto del sistema, es posible escribir implementaciones independientes del mismo que verifiquen de manera autónoma las demostraciones aceptadas por Lean. Lean permite exportar estas demostraciones en un formato intermedio que contiene toda la información necesaria para reconstruirlas y validarlas externamente. Además, puesto que este formato modular, es posible validar solo ciertos aspectos concretos del kernel{citepOther refBailey2024Type}[]. Por ejemplo, Carneiro{citepOther refCarneiro2024Lean4Lean}[] describe una nueva implementación externa del verificador de tipos de Lean 4, escrita en el propio lenguaje Lean y capaz de verificar toda la biblioteca de Mathlib.
 
 # Demostraciones en Lean
+%%%
+file := "demostraciones-en-lean"
+%%%
 
 Hasta ahora, hemos explorado la teoría de tipos dependientes sobre la que se construye Lean, así como los fundamentos que garantizan la corrección de sus demostraciones. Pasamos por tanto a un enfoque más práctico: ¿cómo escribimos matemáticas en Lean?
 
