@@ -14,6 +14,7 @@ set_option verso.exampleModule "UrysohnsLemma.BasicProp.basic"
 #doc (Manual) "Espacios topológicos en Lean" =>
 %%%
 tag := "espacios-topologicos"
+file := "espacios-topologicos"
 %%%
 
 En esta sección veremos cómo se representan en Lean algunos conceptos básicos de topología general. El objetivo no es desarrollar la teoría completa, sino mostrar ejemplos concretos de definiciones y demostraciones formales, que sirvan como primer contacto con el trabajo en Lean sobre espacios topológicos.

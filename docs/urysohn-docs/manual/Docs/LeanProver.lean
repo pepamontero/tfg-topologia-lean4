@@ -17,6 +17,7 @@ set_option verso.exampleProject "../../.."
 #doc (Manual) "Lean Theorem Prover" =>
 %%%
 tag := "lean-theorem-prover"
+file := "lean-theorem-prover"
 %%%
 
 A medida que las matemáticas se vuelven más técnicas y especializadas, verificar con rigor las demostraciones formales es una tarea cada vez más costosa. Con la motivación de facilitarla, en las últimas décadas ha surgido un interés por la verificación computacional de teoremas, dando lugar al desarrollo de sistemas como Lean, Coq o Isabelle.

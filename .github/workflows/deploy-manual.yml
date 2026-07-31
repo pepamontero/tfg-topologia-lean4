@@ -31,14 +31,25 @@ jobs:
           build: false
           test: false
 
-      - name: Build manual
+      - name: Build manual (Spanish)
         working-directory: docs/urysohn-docs/manual
         run: lake exe docs
+
+      - name: Build manual (English)
+        working-directory: docs/urysohn-docs/manual
+        run: lake exe docs-en
+
+      - name: Assemble bilingual site
+        working-directory: docs/urysohn-docs/manual
+        run: |
+          mkdir -p _site/en
+          cp -r _out/html-multi/. _site/
+          cp -r _out-en/html-multi/. _site/en/
 
       - name: Upload manual site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/urysohn-docs/manual/_out/html-multi
+          path: docs/urysohn-docs/manual/_site
 
       - name: Deploy to GitHub Pages
         id: deployment

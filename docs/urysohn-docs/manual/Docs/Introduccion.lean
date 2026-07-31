@@ -11,6 +11,7 @@ set_option pp.rawOnError true
 #doc (Manual) "Introducción" =>
 %%%
 tag := "introduccion"
+file := "introduccion"
 %%%
 
 En los últimos años, ha vuelto con fuerza una pregunta que ronda desde hace décadas: ¿pueden las máquinas hacer matemáticas?
@@ -28,6 +29,9 @@ He elegido Lean por encima de otros verificadores porque tenía a mi disposició
 En particular, he decidido trabajar sobre resultados de topología porque me parece una rama especialmente interesante (probablemente influida por la fama de las tazas y los donuts) y porque es un área suficientemente abstracta como para poner a prueba las capacidades del lenguaje formal, además de las mías propias, en este puzzle de piezas topológicas.
 
 # Objetivos
+%%%
+file := "objetivos"
+%%%
 
 El objetivo principal es adquirir un conocimiento sólido del asistente de demostración Lean, llegando a ser capaz de formalizar resultados sencillos del grado en Matemáticas.
 
@@ -38,6 +42,9 @@ Para ello, se ha elegido el lema de Urysohn, un resultado central de la topolog�
 Finalmente, mediante este proceso de aprendizaje y puesta a prueba se quiere llegar a comprender las ventajas y las dificultades que supone trasladar las matemáticas al entorno de un asistente de demostración.
 
 # Plan de trabajo
+%%%
+file := "plan-de-trabajo"
+%%%
 
 El primer paso fue adquirir los conocimientos básicos sobre Lean. Para ello, me inscribí al curso de Lean impartido por CompuMates en la Facultad de Matemáticas durante el curso 2023/24. Esto me permitió tener unas primeras nociones básicas y empezar a escribir pequeñas demostraciones en Lean 3, centradas principalmente lógica proposicional.
 
@@ -52,6 +59,9 @@ Al avanzar en esta tarea, llegué hasta el tema de los axiomas de separación. C
 Finalmente, dado que este resultado ya estaba demostrado en la biblioteca oficial Mathlib, he consultado dicha implementación con el objetivo de comprender su enfoque y comparar las ideas fundamentales con las utilizadas en mi propia formalización.
 
 # Estructura del trabajo
+%%%
+file := "estructura-del-trabajo"
+%%%
 
 Este trabajo se organiza en cuatro partes principales. En primer lugar, se presenta una introducción detallada al lenguaje Lean, incluyendo sus fundamentos matemáticos y su uso como asistente de demostración matemática.
 

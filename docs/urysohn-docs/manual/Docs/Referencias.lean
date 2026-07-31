@@ -15,6 +15,7 @@ set_option pp.rawOnError true
 %%%
 tag := "referencias"
 number := false
+file := "referencias"
 %%%
 
 # \[1\] Trinh, Wu, Le, He y Luong (2024)

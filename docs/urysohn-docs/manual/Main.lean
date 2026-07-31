@@ -8,6 +8,7 @@ import Std.Data.HashMap
 import VersoManual
 
 import Docs
+import Docs.LangToggle
 
 open Verso Doc
 open Verso.Genre Manual
@@ -24,5 +25,6 @@ def config : RenderConfig where
   extraFiles := [
     ("figuras", "figuras")
   ]
+  extraHead := Docs.langToggle "es"
 
 def main := manualMain (%doc Docs) (config := config)

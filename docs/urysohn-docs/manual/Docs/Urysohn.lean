@@ -15,6 +15,7 @@ set_option verso.exampleModule "UrysohnsLemma.Separation.urysohn"
 #doc (Manual) "El Lema de Urysohn" =>
 %%%
 tag := "lema-urysohn"
+file := "lema-urysohn"
 %%%
 
 El lema de Urysohn es uno de los resultados centrales de la topología general. Su importancia radica en que permite caracterizar la normalidad de un espacio topológico en términos de funciones continuas.

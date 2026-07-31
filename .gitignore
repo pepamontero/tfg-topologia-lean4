@@ -5,6 +5,8 @@
 
 # Archivos HTML de verso
 **/_out/
+**/_out-en/
+**/_site/
 
 # Archivos generados por LaTeX
 *.aux

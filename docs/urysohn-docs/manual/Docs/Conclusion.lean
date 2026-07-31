@@ -12,6 +12,7 @@ set_option verso.exampleModule "UrysohnsLemma.Docs.FutureWork"
 #doc (Manual) "Conclusión" =>
 %%%
 tag := "conclusion"
+file := "conclusion"
 %%%
 
 A lo largo de este trabajo se han perseguido tres objetivos principales: aprender a utilizar Lean como asistente de demostración, formalizar un resultado matemático de nivel avanzado, el lema de Urysohn, y, como resultado de ambas, adquirir una comprensión profunda del proceso de verificación formal, sus ventajas y sus dificultades. En esta sección se exponen las principales conclusiones que he extraído de esta experiencia.
