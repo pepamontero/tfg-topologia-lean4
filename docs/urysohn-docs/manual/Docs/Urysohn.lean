@@ -28,6 +28,7 @@ Este resultado tiene aplicaciones clave, como su uso en la demostración del teo
 %%%
 tag := "thm-urysohn"
 number := false
+file := "teorema-4-1"
 %%%
 
 {citepOther refWillard2012General}[] (p. 102, 15.6. Urysohn's Lemma).
@@ -56,6 +57,9 @@ lemma Urysohn {X : Type} {Y : Set ℝ}
 ```
 
 # El recíproco
+%%%
+file := "el-reciproco"
+%%%
 
 Veamos primero la demostración del recíproco, que es más sencilla.
 
@@ -115,6 +119,9 @@ Para ver que son disjuntos, vemos que $`[0, \frac{1}{2})` y $`(\frac{1}{2}, 1]` 
 La otra implicación es mucho más compleja, especialmente en su formalización en Lean, como veremos a continuación.
 
 # Esquema de la demostración
+%%%
+file := "esquema"
+%%%
 
 Para la demostración de la primera implicación, he seguido la estrategia clásica basada en construir una familia de abiertos indexada por racionales. Aunque existen variantes que emplean subconjuntos particulares como los racionales diádicos, aquí hemos optado por una construcción sobre $`\mathbb{Q} \cap [0,1]`, siguiendo versiones habituales del lema presentes en la literatura. Aún así, el esquema que se presenta a continuación es también el resultado del proceso de demostración en Lean, que ha ido tomando forma a medida que se resolvían los distintos obstáculos que se han ido presentando.
 
@@ -157,6 +164,9 @@ Después, para demostrar que efectivamente se cumple la condición ({ref "eq-sta
 La principal dificultad de esta construcción ha sido encontrar los objetos adecuados para poder formalizar las ideas de la demostración, como la numerabilidad de los racionales o el orden lexicográfico, y aprender la forma correcta en la que trabajar con ciertas estructuras en Lean, como definir funciones recursivas con una recursión no usual.
 
 # Construcción de la sucesión de abiertos
+%%%
+file := "construccion-abiertos"
+%%%
 
 En primer lugar construiremos una sucesión de abiertos sobre $`\mathbb{Q}\cap[0, 1]`, y después la extenderemos al resto de los racionales. Sea $`Q = \mathbb{Q}\cap[0, 1]`. Para construir la sucesión $`\{U_p ~|~ p \in Q\}`, o, lo que es lo mismo, la función $`G : Q \to \mathcal{P}(X)`, $`G(p) = U_p`, vamos a proceder de la siguiente forma.
 
@@ -810,6 +820,9 @@ Para los cerrados $`C_1` y $`C_2` elegidos al principio de la sección, la funci
 *Demostración.* Todas estas propiedades se deducen casi trivialmente de las de $`G`, utilizando que $`f` es biyectiva y los valores fijos que toma en el $`0` y el $`1`. El único añadido son los valores fuera de $`[0, 1]`, para los que las últimas propiedades se demuestran fácilmente puesto que $`\emptyset` y $`X` son abiertos, $`\overline{\emptyset} = \emptyset \subseteq U` para cualquier $`U` y $`U \subseteq X` para cualquier $`U`. ∎
 
 # Construcción de una función continua separadora
+%%%
+file := "construccion-funcion"
+%%%
 
 Siguiendo con el esquema que habíamos propuesto, construimos ahora la siguiente función
 
@@ -1239,6 +1252,9 @@ Para ver que $`\{0\} \subseteq k(x)`, necesitamos ver que existe un $`x \in C_1`
 ∎
 
 # La demostración
+%%%
+file := "la-demostracion"
+%%%
 
 Vamos a demostrar, por tanto, la implicación principal del lema de Urysohn, siguiendo paso a paso la demostración en Lean.
 
@@ -1453,6 +1469,9 @@ El resultado se deduce entonces del lema {ref "prop-kC1"}[4.18] y su análogo pa
 Lo que concluye la prueba del lema de Urysohn.
 
 # La prueba de Mathlib
+%%%
+file := "prueba-mathlib"
+%%%
 
 La prueba del lema de Urysohn que he descrito en este capítulo ha sido implementada por mí de manera completamente independiente a la de Mathlib, la cual no leí hasta haber escrito completamente mi demostración. Para cerrar este capítulo me gustaría hacer una breve comparación de ambas.
 
