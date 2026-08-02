@@ -18,6 +18,9 @@ file := "conclusion"
 A lo largo de este trabajo se han perseguido tres objetivos principales: aprender a utilizar Lean como asistente de demostración, formalizar un resultado matemático de nivel avanzado, el lema de Urysohn, y, como resultado de ambas, adquirir una comprensión profunda del proceso de verificación formal, sus ventajas y sus dificultades. En esta sección se exponen las principales conclusiones que he extraído de esta experiencia.
 
 # Aprendizaje de Lean
+%%%
+file := "aprendizaje"
+%%%
 
 El proceso de aprendizaje de Lean ha resultado muy fluido. La disponibilidad de recursos como el curso de Kevin Buzzard (_Formalising Mathematics_), la documentación oficial y otros materiales creados por la comunidad, como el _Natural Number Game_{margin}[El _Natural number game_ es un juego interactivo dedicado a aprender a trabajar con números naturales en el modo táctico de Lean. Ver: [https://adam.math.hhu.de/#/g/leanprover-community/nng4](https://adam.math.hhu.de/#/g/leanprover-community/nng4).], me han facilitado enormemente los primeros pasos.
 
@@ -38,6 +41,9 @@ Por último, esta transición me permitió empezar a desarrollar cierta intuici�
 Por todo esto, incluir esta parte en el trabajo me parecía especialmente relevante.
 
 # Formalización del lema de Uryshon
+%%%
+file := "formalizacion-urysohn"
+%%%
 
 La formalización del lema de Urysohn ha sido, sin duda, la parte más exigente del trabajo. Al tratarse de una demostración con ideas matemáticas relativamente complejas, intentar adaptarlas al paradigma de Lean, que es mucho más estructurado y restrictivo, ha supuesto una dificultad añadida. Muchas intuiciones que en papel resultan inmediatas requieren un esfuerzo considerable para ser traducidas al lenguaje formal.
 
@@ -56,6 +62,9 @@ Sin embargo, esta dificultad también me ha llevado a aprender a utilizar herram
 En resumen, este proceso ha sido clave para consolidar mis conocimientos sobre Lean y entender cómo afrontar la formalización de resultados matemáticos complejos dentro de un entorno asistido.
 
 # Posibles mejoras y ampliaciones
+%%%
+file := "mejoras"
+%%%
 
 Existen varias direcciones en las que podría ampliarse o mejorar el trabajo realizado:
 

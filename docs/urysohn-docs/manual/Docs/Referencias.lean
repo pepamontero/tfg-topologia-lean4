@@ -21,6 +21,7 @@ file := "referencias"
 # \[1\] Trinh, Wu, Le, He y Luong (2024)
 %%%
 tag := "ref-trinh2024solving"
+file := "ref-trinh2024solving"
 number := false
 %%%
 
@@ -29,6 +30,7 @@ number := false
 # \[2\] Geuvers (2009)
 %%%
 tag := "ref-geuvers2009proof"
+file := "ref-geuvers2009proof"
 number := false
 %%%
 
@@ -37,6 +39,7 @@ number := false
 # \[3\] Buzzard (2024)
 %%%
 tag := "ref-buzzard2024formalising"
+file := "ref-buzzard2024formalising"
 number := false
 %%%
 
@@ -45,6 +48,7 @@ number := false
 # \[4\] Avigad, De Moura, Kong, Ullrich y contribuidores de la comunidad Lean (2024)
 %%%
 tag := "ref-avigad2024theorem"
+file := "ref-avigad2024theorem"
 number := false
 %%%
 
@@ -53,6 +57,7 @@ number := false
 # \[5\] Lean Prover Community
 %%%
 tag := "ref-mathlib"
+file := "ref-mathlib"
 number := false
 %%%
 
@@ -61,6 +66,7 @@ number := false
 # \[6\] Bailey y contribuidores de la comunidad Lean (2024)
 %%%
 tag := "ref-bailey2024type"
+file := "ref-bailey2024type"
 number := false
 %%%
 
@@ -69,6 +75,7 @@ number := false
 # \[7\] Avigad, De Moura y Kong (2021)
 %%%
 tag := "ref-avigad2021theorem"
+file := "ref-avigad2021theorem"
 number := false
 %%%
 
@@ -77,6 +84,7 @@ number := false
 # \[8\] Sørensen y Urzyczyn (2006)
 %%%
 tag := "ref-sorensen2006lectures"
+file := "ref-sorensen2006lectures"
 number := false
 %%%
 
@@ -85,6 +93,7 @@ number := false
 # \[9\] Coquand y Huet (1986)
 %%%
 tag := "ref-coquand1986calculus"
+file := "ref-coquand1986calculus"
 number := false
 %%%
 
@@ -93,6 +102,7 @@ number := false
 # \[10\] Pierce (2002)
 %%%
 tag := "ref-pierce2002types"
+file := "ref-pierce2002types"
 number := false
 %%%
 
@@ -101,6 +111,7 @@ number := false
 # \[11\] Carneiro (2019)
 %%%
 tag := "ref-carneiro2019type"
+file := "ref-carneiro2019type"
 number := false
 %%%
 
@@ -109,6 +120,7 @@ number := false
 # \[12\] Carneiro (2024)
 %%%
 tag := "ref-carneiro2024lean4lean"
+file := "ref-carneiro2024lean4lean"
 number := false
 %%%
 
@@ -117,6 +129,7 @@ number := false
 # \[13\] Lean Prover Community (2023)
 %%%
 tag := "ref-tacticas"
+file := "ref-tacticas"
 number := false
 %%%
 
@@ -125,6 +138,7 @@ number := false
 # \[14\] Morph (2023)
 %%%
 tag := "ref-moogle"
+file := "ref-moogle"
 number := false
 %%%
 
@@ -133,6 +147,7 @@ number := false
 # \[15\] Gao, Ju, Jiang, Qin y Dong (2024)
 %%%
 tag := "ref-gao2024semantic"
+file := "ref-gao2024semantic"
 number := false
 %%%
 
@@ -141,6 +156,7 @@ number := false
 # \[16\] Willard (2012)
 %%%
 tag := "ref-willard2012general"
+file := "ref-willard2012general"
 number := false
 %%%
 
@@ -149,6 +165,7 @@ number := false
 # \[17\] Lean Prover Community (2023)
 %%%
 tag := "ref-mathlib2023urysohn"
+file := "ref-mathlib2023urysohn"
 number := false
 %%%
 
